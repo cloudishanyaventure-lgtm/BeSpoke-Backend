@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: BeSpoke-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/BeSpoke
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    baseline-on-migrate: true    # safe if pointed at an already-created schema
+    baseline-version: 0
+    validate-on-migrate: false   # tolerate whitespace/checksum edits to applied migrations (seed is idempotent)
+  jpa:
+    hibernate:
+      # Flyway owns the schema (V1). Hibernate reconciles as a no-op safety net.
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    # HS256 secret - must be at least 32 bytes. Override in production!
+    secret: "BeSpoke-super-secret-jwt-signing-key-change-me-0123456789"
+    expiration-ms: 86400000 # 24 hours
+    # Patterns (see SecurityConfig). "http://localhost:*" allows any local dev port.
+  cors:
+    allowed-origins: "http://localhost:*,http://127.0.0.1:*"

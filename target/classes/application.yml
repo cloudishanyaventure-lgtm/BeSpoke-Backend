@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: BeSpoke-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/BeSpoke
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    # HS256 secret - must be at least 32 bytes. Override in production!
+    secret: "BeSpoke-super-secret-jwt-signing-key-change-me-0123456789"
+    expiration-ms: 86400000 # 24 hours
+  cors:
+    allowed-origins: "http://localhost:3000"
