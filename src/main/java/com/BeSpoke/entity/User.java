@@ -32,6 +32,18 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(length = 1000)
+    private String avatarUrl;
+
+    @Column(length = 30)
+    private String phone;
+
+    @Column(length = 120)
+    private String city;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
 
@@ -83,6 +95,38 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Instant getCreatedAt() {

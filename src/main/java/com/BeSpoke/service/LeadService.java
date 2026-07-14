@@ -1,6 +1,7 @@
 package com.BeSpoke.service;
 
 import com.BeSpoke.dto.AdminOverviewDto;
+import com.BeSpoke.dto.DesignerStatsDto;
 import com.BeSpoke.dto.EnquiryRequest;
 import com.BeSpoke.dto.LeadDto;
 import com.BeSpoke.entity.ChatThread;
@@ -14,13 +15,16 @@ import com.BeSpoke.exception.ForbiddenException;
 import com.BeSpoke.exception.NotFoundException;
 import com.BeSpoke.repository.ChatThreadRepository;
 import com.BeSpoke.repository.DesignServiceRepository;
+import com.BeSpoke.repository.DesignerProfileRepository;
 import com.BeSpoke.repository.LeadRepository;
 import com.BeSpoke.repository.OrderRepository;
 import com.BeSpoke.repository.PaymentRepository;
+import com.BeSpoke.repository.ReviewRepository;
 import com.BeSpoke.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,19 +39,25 @@ public class LeadService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final DesignServiceRepository designServiceRepository;
+    private final DesignerProfileRepository designerProfileRepository;
+    private final ReviewRepository reviewRepository;
 
     public LeadService(LeadRepository leadRepository,
                        UserRepository userRepository,
                        ChatThreadRepository chatThreadRepository,
                        PaymentRepository paymentRepository,
                        OrderRepository orderRepository,
-                       DesignServiceRepository designServiceRepository) {
+                       DesignServiceRepository designServiceRepository,
+                       DesignerProfileRepository designerProfileRepository,
+                       ReviewRepository reviewRepository) {
         this.leadRepository = leadRepository;
         this.userRepository = userRepository;
         this.chatThreadRepository = chatThreadRepository;
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.designServiceRepository = designServiceRepository;
+        this.designerProfileRepository = designerProfileRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     /** Rule 3: free enquiry -> admin queue (status ENQUIRY). Anonymous allowed. */
@@ -124,6 +134,55 @@ public class LeadService {
         lead.setDesigner(null);
         lead.setStatus(LeadStatus.REJECTED);
         return LeadDto.from(leadRepository.save(lead));
+    }
+
+    /** Designer moves an approved project forward: APPROVED -> IN_PROGRESS -> COMPLETED. */
+    @Transactional
+    public LeadDto updateDesignerLeadStatus(User designer, Long leadId, String status) {
+        LeadStatus target;
+        try {
+            target = LeadStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequestException("Unknown lead status: " + status);
+        }
+        if (target != LeadStatus.IN_PROGRESS && target != LeadStatus.COMPLETED) {
+            throw new BadRequestException("Designers can only move leads to IN_PROGRESS or COMPLETED");
+        }
+        Lead lead = requireLead(leadId);
+        requireAssignedTo(lead, designer);
+        boolean allowed = (target == LeadStatus.IN_PROGRESS && lead.getStatus() == LeadStatus.APPROVED)
+                || (target == LeadStatus.COMPLETED && lead.getStatus() == LeadStatus.IN_PROGRESS);
+        if (!allowed) {
+            throw new BadRequestException("Cannot move lead from " + lead.getStatus() + " to " + target);
+        }
+        lead.setStatus(target);
+        return LeadDto.from(leadRepository.save(lead));
+    }
+
+    @Transactional(readOnly = true)
+    public DesignerStatsDto designerStats(User designer) {
+        long profileViews = designerProfileRepository.findByUserId(designer.getId())
+                .map(profile -> profile.getViewCount())
+                .orElse(0L);
+        EnumSet<LeadStatus> earningStatuses =
+                EnumSet.of(LeadStatus.APPROVED, LeadStatus.IN_PROGRESS, LeadStatus.COMPLETED);
+        BigDecimal totalEarnings = leadRepository.sumOrderTotalsForDesigner(designer.getId(), earningStatuses);
+        Double avgRating = reviewRepository.averageRatingForDesigner(designer.getId());
+        if (avgRating == null) {
+            avgRating = designerProfileRepository.findByUserId(designer.getId())
+                    .map(profile -> profile.getRating())
+                    .orElse(null);
+        }
+        return new DesignerStatsDto(
+                profileViews,
+                leadRepository.countByDesignerIdAndStatus(designer.getId(), LeadStatus.ASSIGNED),
+                leadRepository.countByDesignerIdAndStatusIn(designer.getId(),
+                        EnumSet.of(LeadStatus.APPROVED, LeadStatus.IN_PROGRESS)),
+                leadRepository.countByDesignerIdAndStatus(designer.getId(), LeadStatus.COMPLETED),
+                totalEarnings != null ? totalEarnings : BigDecimal.ZERO,
+                avgRating,
+                reviewRepository.countByDesignerId(designer.getId())
+        );
     }
 
     // ---- Admin ----

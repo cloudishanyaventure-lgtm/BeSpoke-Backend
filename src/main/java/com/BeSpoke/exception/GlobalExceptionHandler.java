@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -48,7 +49,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
-        return body(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        // e.g. "Invalid email or password" or "Account is deactivated" - always a 401.
+        return body(HttpStatus.UNAUTHORIZED,
+                ex.getMessage() != null ? ex.getMessage() : "Invalid email or password");
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
+        return body(HttpStatus.BAD_REQUEST, "File exceeds the 5MB size limit");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

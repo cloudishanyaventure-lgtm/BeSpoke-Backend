@@ -10,6 +10,7 @@ import com.BeSpoke.exception.ForbiddenException;
 import com.BeSpoke.exception.NotFoundException;
 import com.BeSpoke.repository.ChatMessageRepository;
 import com.BeSpoke.repository.ChatThreadRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,13 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatThreadDto> myThreads(User user) {
         return chatThreadRepository.findByCustomerIdOrDesignerIdOrderByCreatedAtDesc(user.getId(), user.getId())
+                .stream().map(ChatThreadDto::from).toList();
+    }
+
+    /** Admin oversight: every chat thread on the platform, newest first. */
+    @Transactional(readOnly = true)
+    public List<ChatThreadDto> allThreads() {
+        return chatThreadRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream().map(ChatThreadDto::from).toList();
     }
 

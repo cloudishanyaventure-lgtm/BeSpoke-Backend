@@ -14,10 +14,17 @@ public record DesignerDto(
         String city,
         Double rating,
         BigDecimal startingPrice,
-        List<String> portfolioImageUrls
+        List<String> portfolioImageUrls,
+        String avatarUrl,
+        long viewCount,
+        long reviewCount
 ) {
 
-    public static DesignerDto from(DesignerProfile profile) {
+    /**
+     * @param liveAvgRating live average of reviews, or null when the designer has no reviews
+     *                      (falls back to the stored rating).
+     */
+    public static DesignerDto from(DesignerProfile profile, long reviewCount, Double liveAvgRating) {
         return new DesignerDto(
                 profile.getId(),
                 profile.getUser().getId(),
@@ -25,9 +32,12 @@ public record DesignerDto(
                 profile.getBio(),
                 profile.getSpecialties(),
                 profile.getCity(),
-                profile.getRating(),
+                liveAvgRating != null ? liveAvgRating : profile.getRating(),
                 profile.getStartingPrice(),
-                List.copyOf(profile.getPortfolioImageUrls())
+                List.copyOf(profile.getPortfolioImageUrls()),
+                profile.getUser().getAvatarUrl(),
+                profile.getViewCount(),
+                reviewCount
         );
     }
 }

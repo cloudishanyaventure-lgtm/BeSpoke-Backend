@@ -40,6 +40,9 @@ public class DesignerProfile {
 
     private BigDecimal startingPrice;
 
+    @Column(nullable = false)
+    private long viewCount = 0L;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "designer_portfolio_images", joinColumns = @JoinColumn(name = "profile_id"))
     @Column(name = "image_url", length = 1000)
@@ -102,6 +105,14 @@ public class DesignerProfile {
 
     public void setStartingPrice(BigDecimal startingPrice) {
         this.startingPrice = startingPrice;
+    }
+
+    public long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(long viewCount) {
+        this.viewCount = viewCount;
     }
 
     public List<String> getPortfolioImageUrls() {

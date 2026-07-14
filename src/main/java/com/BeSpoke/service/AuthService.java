@@ -57,11 +57,15 @@ public class AuthService {
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new BadCredentialsException("Invalid email or password");
         }
+        if (!user.isActive()) {
+            throw new BadCredentialsException("Account is deactivated");
+        }
         return toAuthResponse(user);
     }
 
     private AuthResponse toAuthResponse(User user) {
         String token = jwtService.generateToken(user);
-        return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(), user.getRole().name());
+        return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(),
+                user.getRole().name(), user.getAvatarUrl());
     }
 }

@@ -11,6 +11,10 @@ spring:
     baseline-on-migrate: true    # safe if pointed at an already-created schema
     baseline-version: 0
     validate-on-migrate: false   # tolerate whitespace/checksum edits to applied migrations (seed is idempotent)
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   jpa:
     hibernate:
       # Flyway owns the schema (V1). Hibernate reconciles as a no-op safety net.
