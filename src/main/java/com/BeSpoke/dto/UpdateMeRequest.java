@@ -6,8 +6,6 @@ import jakarta.validation.constraints.Size;
 public record UpdateMeRequest(
         @Size(max = 255) String name,
         @Size(max = 30) String phone,
-        @Size(max = 120) String city,
-        @Size(max = 1000) String avatarUrl,
-        @Size(min = 6, max = 100) String password
+        @Size(max = 120) String city
 ) {
 }

@@ -3,11 +3,17 @@ package com.BeSpoke.service;
 import com.BeSpoke.dto.AuthResponse;
 import com.BeSpoke.dto.LoginRequest;
 import com.BeSpoke.dto.RegisterRequest;
-import com.BeSpoke.entity.DesignerProfile;
+import com.BeSpoke.dto.UserDto;
+import com.BeSpoke.entity.ActivityType;
+import com.BeSpoke.entity.Lead;
+import com.BeSpoke.entity.LeadActivity;
+import com.BeSpoke.entity.LeadSource;
+import com.BeSpoke.entity.LeadStatus;
 import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
-import com.BeSpoke.repository.DesignerProfileRepository;
+import com.BeSpoke.repository.LeadActivityRepository;
+import com.BeSpoke.repository.LeadRepository;
 import com.BeSpoke.repository.UserRepository;
 import com.BeSpoke.security.JwtService;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,36 +25,56 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final DesignerProfileRepository designerProfileRepository;
+    private final LeadRepository leadRepository;
+    private final LeadActivityRepository leadActivityRepository;
+    private final ScoreService scoreService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     public AuthService(UserRepository userRepository,
-                       DesignerProfileRepository designerProfileRepository,
+                       LeadRepository leadRepository,
+                       LeadActivityRepository leadActivityRepository,
+                       ScoreService scoreService,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService) {
         this.userRepository = userRepository;
-        this.designerProfileRepository = designerProfileRepository;
+        this.leadRepository = leadRepository;
+        this.leadActivityRepository = leadActivityRepository;
+        this.scoreService = scoreService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
 
+    /** Signing up IS the lead: User(CUSTOMER) + Lead(NEW_INQUIRY, WEBSITE) in one transaction. */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         String email = request.email().toLowerCase().trim();
         if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("An account with this email already exists");
         }
-        Role role = Role.valueOf(request.role()); // validated as CUSTOMER|DESIGNER by the DTO
-        User user = new User(request.name().trim(), email, passwordEncoder.encode(request.password()), role);
+        User user = new User(request.name().trim(), email,
+                passwordEncoder.encode(request.password()), Role.CUSTOMER);
+        user.setPhone(request.phone().trim());
+        user.setCity(request.city().trim());
         user = userRepository.save(user);
 
-        if (role == Role.DESIGNER) {
-            DesignerProfile profile = new DesignerProfile();
-            profile.setUser(user);
-            designerProfileRepository.save(profile);
-        }
-        return toAuthResponse(user);
+        Lead lead = new Lead();
+        lead.setCustomer(user);
+        lead.setContactName(user.getName());
+        lead.setContactEmail(user.getEmail());
+        lead.setContactPhone(user.getPhone());
+        lead.setCity(user.getCity());
+        lead.setPropertyType(request.propertyType());
+        lead.setBudgetBand(request.budgetBand());
+        lead.setSource(LeadSource.WEBSITE);
+        lead.setStatus(LeadStatus.NEW_INQUIRY);
+        scoreService.rescore(lead, null);
+        lead = leadRepository.save(lead);
+
+        leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.SYSTEM,
+                "Lead created from website signup"));
+
+        return new AuthResponse(jwtService.generateToken(user), UserDto.from(user), lead.getId());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -60,12 +86,6 @@ public class AuthService {
         if (!user.isActive()) {
             throw new BadCredentialsException("Account is deactivated");
         }
-        return toAuthResponse(user);
-    }
-
-    private AuthResponse toAuthResponse(User user) {
-        String token = jwtService.generateToken(user);
-        return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(),
-                user.getRole().name(), user.getAvatarUrl());
+        return new AuthResponse(jwtService.generateToken(user), UserDto.from(user), null);
     }
 }

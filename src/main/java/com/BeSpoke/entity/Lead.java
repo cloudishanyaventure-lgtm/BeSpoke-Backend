@@ -9,14 +9,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 /**
- * A lead / project. Created either from a paid order (routing rules 1 & 2)
- * or from a free enquiry form (rule 3).
+ * A sales lead in the DesignConnect funnel. Created atomically at customer
+ * signup (source WEBSITE), or manually by admins / the public enquiry form
+ * for walk-in-style leads that have no user account yet.
  */
 @Entity
 @Table(name = "leads")
@@ -26,35 +27,45 @@ public class Lead {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Registered customer - nullable for anonymous enquiries. */
+    /** Registered customer - nullable for walk-in / enquiry leads. */
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private User customer;
 
-    /** Assigned designer - nullable until assigned. */
-    @ManyToOne
-    @JoinColumn(name = "designer_id")
-    private User designer;
+    @Column(nullable = false)
+    private String contactName;
 
-    /** Backing order - nullable for free enquiries. */
-    @OneToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @Column(nullable = false)
+    private String contactEmail;
+
+    @Column(nullable = false)
+    private String contactPhone;
+
+    @Column(nullable = false)
+    private String city;
+
+    private String propertyType;
+
+    private String budgetBand;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private LeadSource source;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LeadStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private ServiceCategory category;
+    @Column(nullable = false)
+    private int score;
 
-    // Contact details captured from the enquiry form (also useful for anonymous leads).
-    private String contactName;
-    private String contactEmail;
-    private String contactPhone;
+    @ManyToOne
+    @JoinColumn(name = "assigned_designer_id")
+    private User assignedDesigner;
 
-    @Column(length = 3000)
-    private String message;
+    private LocalDate followUpAt;
+
+    private Instant wonAt;
 
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
@@ -78,39 +89,6 @@ public class Lead {
 
     public void setCustomer(User customer) {
         this.customer = customer;
-    }
-
-    public User getDesigner() {
-        return designer;
-    }
-
-    public void setDesigner(User designer) {
-        this.designer = designer;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public LeadStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(LeadStatus status) {
-        this.status = status;
-        this.updatedAt = Instant.now();
-    }
-
-    public ServiceCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(ServiceCategory category) {
-        this.category = category;
     }
 
     public String getContactName() {
@@ -137,12 +115,77 @@ public class Lead {
         this.contactPhone = contactPhone;
     }
 
-    public String getMessage() {
-        return message;
+    public String getCity() {
+        return city;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
+    }
+
+    public String getBudgetBand() {
+        return budgetBand;
+    }
+
+    public void setBudgetBand(String budgetBand) {
+        this.budgetBand = budgetBand;
+    }
+
+    public LeadSource getSource() {
+        return source;
+    }
+
+    public void setSource(LeadSource source) {
+        this.source = source;
+    }
+
+    public LeadStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LeadStatus status) {
+        this.status = status;
+        this.updatedAt = Instant.now();
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public User getAssignedDesigner() {
+        return assignedDesigner;
+    }
+
+    public void setAssignedDesigner(User assignedDesigner) {
+        this.assignedDesigner = assignedDesigner;
+    }
+
+    public LocalDate getFollowUpAt() {
+        return followUpAt;
+    }
+
+    public void setFollowUpAt(LocalDate followUpAt) {
+        this.followUpAt = followUpAt;
+    }
+
+    public Instant getWonAt() {
+        return wonAt;
+    }
+
+    public void setWonAt(Instant wonAt) {
+        this.wonAt = wonAt;
     }
 
     public Instant getCreatedAt() {

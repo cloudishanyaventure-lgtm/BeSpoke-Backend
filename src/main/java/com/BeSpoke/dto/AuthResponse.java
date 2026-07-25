@@ -1,11 +1,8 @@
 package com.BeSpoke.dto;
 
-public record AuthResponse(
-        String token,
-        Long userId,
-        String name,
-        String email,
-        String role,
-        String avatarUrl
-) {
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+/** Auth result. leadId is present only on registration (the lead created by signup). */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public record AuthResponse(String token, UserDto user, Long leadId) {
 }

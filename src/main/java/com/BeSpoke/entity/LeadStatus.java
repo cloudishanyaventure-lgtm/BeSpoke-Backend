@@ -1,16 +1,12 @@
 package com.BeSpoke.entity;
 
+/** Livspace-style lead funnel stages, in pipeline order. */
 public enum LeadStatus {
-    /** Free enquiry (no payment) waiting for admin triage. */
-    ENQUIRY,
-    /** Paid order with no designer chosen - waiting for admin assignment. */
-    UNASSIGNED_PAID,
-    /** Assigned to a designer - waiting for designer approval. */
-    ASSIGNED,
-    /** Designer approved - chat thread is open. */
-    APPROVED,
-    IN_PROGRESS,
-    COMPLETED,
-    /** Designer rejected the assignment - goes back to admin queue. */
-    REJECTED
+    NEW_INQUIRY,
+    CONTACTED,
+    SITE_VISIT,
+    PROPOSAL_SENT,
+    NEGOTIATION,
+    WON,
+    LOST
 }

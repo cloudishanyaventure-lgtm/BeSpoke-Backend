@@ -2,13 +2,16 @@ package com.BeSpoke.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/** Signing up IS the lead: registration always creates a CUSTOMER plus a NEW_INQUIRY lead. */
 public record RegisterRequest(
-        @NotBlank String name,
+        @NotBlank @Size(max = 255) String name,
         @NotBlank @Email String email,
+        @NotBlank @Size(min = 7, max = 30) String phone,
         @NotBlank @Size(min = 6, max = 100) String password,
-        @NotBlank @Pattern(regexp = "CUSTOMER|DESIGNER", message = "role must be CUSTOMER or DESIGNER") String role
+        @NotBlank @Size(max = 120) String city,
+        @Size(max = 60) String propertyType,
+        @Size(max = 60) String budgetBand
 ) {
 }

@@ -47,21 +47,25 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public: auth, enquiry form, catalog, marketing cards, uploads, health.
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/designers/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/designers/*/view").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/enquiries").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/designer/**").hasRole("DESIGNER")
-                        .requestMatchers("/api/me/designer-profile").hasRole("DESIGNER")
-                        .requestMatchers(HttpMethod.POST, "/api/reviews").hasRole("CUSTOMER")
-                        .requestMatchers("/api/cart/**", "/api/checkout", "/api/my/**").hasRole("CUSTOMER")
-                        .requestMatchers("/api/chat/**").authenticated()
+                        // Customer portal.
+                        .requestMatchers("/api/my/**").hasRole("CUSTOMER")
+                        // Financials are admin-only in their entirety.
+                        .requestMatchers("/api/quotes/**", "/api/invoices/**").hasRole("ADMIN")
+                        // Team: directory readable by staff, management admin-only.
+                        .requestMatchers(HttpMethod.GET, "/api/team").hasAnyRole("ADMIN", "DESIGNER")
+                        .requestMatchers("/api/team/**").hasRole("ADMIN")
+                        // Staff workspace (designer scoping enforced in the service layer;
+                        // POST /api/leads and /assign are additionally admin-only via @PreAuthorize).
+                        .requestMatchers("/api/leads/**", "/api/projects/**", "/api/clients/**",
+                                "/api/messages/**", "/api/dashboard").hasAnyRole("ADMIN", "DESIGNER")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

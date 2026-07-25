@@ -1,90 +1,39 @@
 package com.BeSpoke.service;
 
-import com.BeSpoke.dto.DesignerDto;
-import com.BeSpoke.dto.ServiceDto;
-import com.BeSpoke.entity.DesignerProfile;
-import com.BeSpoke.entity.ServiceCategory;
-import com.BeSpoke.exception.BadRequestException;
-import com.BeSpoke.exception.NotFoundException;
-import com.BeSpoke.repository.DesignServiceRepository;
-import com.BeSpoke.repository.DesignerProfileRepository;
-import com.BeSpoke.repository.ReviewRepository;
+import com.BeSpoke.dto.CatalogSpaceTypeDto;
+import com.BeSpoke.entity.RoomCatalogItem;
+import com.BeSpoke.repository.RoomCatalogItemRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CatalogService {
 
-    private final DesignServiceRepository designServiceRepository;
-    private final DesignerProfileRepository designerProfileRepository;
-    private final ReviewRepository reviewRepository;
+    private final RoomCatalogItemRepository roomCatalogItemRepository;
 
-    public CatalogService(DesignServiceRepository designServiceRepository,
-                          DesignerProfileRepository designerProfileRepository,
-                          ReviewRepository reviewRepository) {
-        this.designServiceRepository = designServiceRepository;
-        this.designerProfileRepository = designerProfileRepository;
-        this.reviewRepository = reviewRepository;
+    public CatalogService(RoomCatalogItemRepository roomCatalogItemRepository) {
+        this.roomCatalogItemRepository = roomCatalogItemRepository;
     }
 
-    @Transactional(readOnly = true)
-    public List<ServiceDto> listServices(String category) {
-        if (category == null || category.isBlank()) {
-            return designServiceRepository.findAll().stream().map(ServiceDto::from).toList();
+    /** Groups the seeded catalog rows as [{spaceType, categories:[{category, items:[...]}]}]. */
+    public List<CatalogSpaceTypeDto> roomItems() {
+        Map<String, Map<String, List<String>>> grouped = new LinkedHashMap<>();
+        for (RoomCatalogItem item : roomCatalogItemRepository.findAllByOrderBySortOrderAsc()) {
+            grouped.computeIfAbsent(item.getSpaceType(), k -> new LinkedHashMap<>())
+                    .computeIfAbsent(item.getCategory(), k -> new ArrayList<>())
+                    .add(item.getItem());
         }
-        ServiceCategory cat;
-        try {
-            cat = ServiceCategory.valueOf(category.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException("Unknown category: " + category);
-        }
-        return designServiceRepository.findByCategory(cat).stream().map(ServiceDto::from).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public ServiceDto getService(Long id) {
-        return designServiceRepository.findById(id)
-                .map(ServiceDto::from)
-                .orElseThrow(() -> new NotFoundException("Service not found: " + id));
-    }
-
-    @Transactional(readOnly = true)
-    public List<DesignerDto> listDesigners() {
-        return designerProfileRepository.findAll().stream()
-                .filter(profile -> profile.getUser().isActive())
-                .map(this::toDesignerDto)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public DesignerDto getDesigner(Long id) {
-        // Resolve by USER id first (what the frontend, views and reviews all
-        // key on), falling back to profile id for backward compatibility.
-        DesignerProfile profile = designerProfileRepository.findByUserId(id)
-                .or(() -> designerProfileRepository.findById(id))
-                .filter(p -> p.getUser().isActive())
-                .orElseThrow(() -> new NotFoundException("Designer not found: " + id));
-        return toDesignerDto(profile);
-    }
-
-    /** Atomically bumps the profile view counter for a designer (by user id); returns the new count. */
-    @Transactional
-    public long incrementDesignerViews(Long userId) {
-        int updated = designerProfileRepository.incrementViewCountByUserId(userId);
-        if (updated == 0) {
-            throw new NotFoundException("Designer not found: " + userId);
-        }
-        return designerProfileRepository.findByUserId(userId)
-                .map(DesignerProfile::getViewCount)
-                .orElseThrow(() -> new NotFoundException("Designer not found: " + userId));
-    }
-
-    private DesignerDto toDesignerDto(DesignerProfile profile) {
-        Long userId = profile.getUser().getId();
-        return DesignerDto.from(profile,
-                reviewRepository.countByDesignerId(userId),
-                reviewRepository.averageRatingForDesigner(userId));
+        List<CatalogSpaceTypeDto> result = new ArrayList<>();
+        grouped.forEach((spaceType, categories) -> {
+            List<CatalogSpaceTypeDto.CatalogCategoryDto> categoryDtos = new ArrayList<>();
+            categories.forEach((category, items) ->
+                    categoryDtos.add(new CatalogSpaceTypeDto.CatalogCategoryDto(category, items)));
+            result.add(new CatalogSpaceTypeDto(spaceType, categoryDtos));
+        });
+        return result;
     }
 }

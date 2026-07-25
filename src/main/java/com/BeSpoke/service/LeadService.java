@@ -1,258 +1,287 @@
 package com.BeSpoke.service;
 
-import com.BeSpoke.dto.AdminOverviewDto;
-import com.BeSpoke.dto.DesignerStatsDto;
+import com.BeSpoke.dto.ActivityDto;
+import com.BeSpoke.dto.CreateActivityRequest;
+import com.BeSpoke.dto.CreateLeadRequest;
 import com.BeSpoke.dto.EnquiryRequest;
-import com.BeSpoke.dto.LeadDto;
-import com.BeSpoke.entity.ChatThread;
+import com.BeSpoke.dto.LeadDetailDto;
+import com.BeSpoke.dto.LeadSummaryDto;
+import com.BeSpoke.dto.QuoteDto;
+import com.BeSpoke.dto.StageChangeRequest;
+import com.BeSpoke.entity.ActivityType;
 import com.BeSpoke.entity.Lead;
+import com.BeSpoke.entity.LeadActivity;
+import com.BeSpoke.entity.LeadSource;
 import com.BeSpoke.entity.LeadStatus;
+import com.BeSpoke.entity.Project;
+import com.BeSpoke.entity.ProjectMilestone;
+import com.BeSpoke.entity.ProjectStage;
+import com.BeSpoke.entity.RequirementForm;
 import com.BeSpoke.entity.Role;
-import com.BeSpoke.entity.ServiceCategory;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
 import com.BeSpoke.exception.ForbiddenException;
 import com.BeSpoke.exception.NotFoundException;
-import com.BeSpoke.repository.ChatThreadRepository;
-import com.BeSpoke.repository.DesignServiceRepository;
-import com.BeSpoke.repository.DesignerProfileRepository;
+import com.BeSpoke.repository.LeadActivityRepository;
 import com.BeSpoke.repository.LeadRepository;
-import com.BeSpoke.repository.OrderRepository;
-import com.BeSpoke.repository.PaymentRepository;
-import com.BeSpoke.repository.ReviewRepository;
+import com.BeSpoke.repository.ProjectMilestoneRepository;
+import com.BeSpoke.repository.ProjectRepository;
+import com.BeSpoke.repository.QuoteRepository;
+import com.BeSpoke.repository.RequirementFormRepository;
 import com.BeSpoke.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
+import java.util.Set;
 
 @Service
+@Transactional(readOnly = true)
 public class LeadService {
 
+    /** Stages a DESIGNER may move an assigned lead between. WON/LOST are admin-only. */
+    private static final Set<LeadStatus> DESIGNER_STAGES = EnumSet.of(
+            LeadStatus.CONTACTED, LeadStatus.SITE_VISIT, LeadStatus.PROPOSAL_SENT, LeadStatus.NEGOTIATION);
+
     private final LeadRepository leadRepository;
+    private final LeadActivityRepository leadActivityRepository;
+    private final RequirementFormRepository requirementFormRepository;
+    private final QuoteRepository quoteRepository;
+    private final ProjectRepository projectRepository;
+    private final ProjectMilestoneRepository projectMilestoneRepository;
     private final UserRepository userRepository;
-    private final ChatThreadRepository chatThreadRepository;
-    private final PaymentRepository paymentRepository;
-    private final OrderRepository orderRepository;
-    private final DesignServiceRepository designServiceRepository;
-    private final DesignerProfileRepository designerProfileRepository;
-    private final ReviewRepository reviewRepository;
+    private final ScoreService scoreService;
+    private final ProjectService projectService;
 
     public LeadService(LeadRepository leadRepository,
+                       LeadActivityRepository leadActivityRepository,
+                       RequirementFormRepository requirementFormRepository,
+                       QuoteRepository quoteRepository,
+                       ProjectRepository projectRepository,
+                       ProjectMilestoneRepository projectMilestoneRepository,
                        UserRepository userRepository,
-                       ChatThreadRepository chatThreadRepository,
-                       PaymentRepository paymentRepository,
-                       OrderRepository orderRepository,
-                       DesignServiceRepository designServiceRepository,
-                       DesignerProfileRepository designerProfileRepository,
-                       ReviewRepository reviewRepository) {
+                       ScoreService scoreService,
+                       ProjectService projectService) {
         this.leadRepository = leadRepository;
+        this.leadActivityRepository = leadActivityRepository;
+        this.requirementFormRepository = requirementFormRepository;
+        this.quoteRepository = quoteRepository;
+        this.projectRepository = projectRepository;
+        this.projectMilestoneRepository = projectMilestoneRepository;
         this.userRepository = userRepository;
-        this.chatThreadRepository = chatThreadRepository;
-        this.paymentRepository = paymentRepository;
-        this.orderRepository = orderRepository;
-        this.designServiceRepository = designServiceRepository;
-        this.designerProfileRepository = designerProfileRepository;
-        this.reviewRepository = reviewRepository;
+        this.scoreService = scoreService;
+        this.projectService = projectService;
     }
 
-    /** Rule 3: free enquiry -> admin queue (status ENQUIRY). Anonymous allowed. */
+    /** Loads a lead the current staff user may see. Designers get 404 for leads not assigned to them. */
+    public Lead scopedLead(User current, Long leadId) {
+        Lead lead = leadRepository.findById(leadId)
+                .orElseThrow(() -> new NotFoundException("Lead not found"));
+        if (current.getRole() == Role.DESIGNER
+                && (lead.getAssignedDesigner() == null
+                    || !lead.getAssignedDesigner().getId().equals(current.getId()))) {
+            throw new NotFoundException("Lead not found");
+        }
+        return lead;
+    }
+
+    public List<LeadSummaryDto> list(User current, String stage, String q, Long assignedId) {
+        List<Lead> leads = current.getRole() == Role.DESIGNER
+                ? leadRepository.findByAssignedDesignerOrderByCreatedAtDesc(current)
+                : leadRepository.findAllByOrderByCreatedAtDesc();
+        LeadStatus stageFilter = stage == null || stage.isBlank() ? null : parseStatus(stage);
+        String query = q == null || q.isBlank() ? null : q.trim().toLowerCase(Locale.ROOT);
+        return leads.stream()
+                .filter(l -> stageFilter == null || l.getStatus() == stageFilter)
+                .filter(l -> assignedId == null
+                        || (l.getAssignedDesigner() != null && l.getAssignedDesigner().getId().equals(assignedId)))
+                .filter(l -> query == null
+                        || l.getContactName().toLowerCase(Locale.ROOT).contains(query)
+                        || l.getContactEmail().toLowerCase(Locale.ROOT).contains(query)
+                        || l.getContactPhone().toLowerCase(Locale.ROOT).contains(query)
+                        || l.getCity().toLowerCase(Locale.ROOT).contains(query))
+                .map(this::toSummary)
+                .toList();
+    }
+
+    public LeadDetailDto detail(User current, Long leadId) {
+        Lead lead = scopedLead(current, leadId);
+        RequirementForm form = requirementFormRepository.findByLead(lead).orElse(null);
+        List<ActivityDto> activities = leadActivityRepository.findByLeadOrderByCreatedAtAsc(lead)
+                .stream().map(ActivityDto::from).toList();
+        List<QuoteDto> quotes = quoteRepository.findByLeadOrderByVersionDesc(lead)
+                .stream().map(QuoteDto::from).toList();
+        boolean admin = current.getRole() == Role.ADMIN;
+        com.BeSpoke.dto.ProjectDto project = projectRepository.findByLead(lead)
+                .map(p -> projectService.toDto(p, admin, false))
+                .orElse(null);
+        return new LeadDetailDto(
+                toSummary(lead),
+                form != null ? com.BeSpoke.dto.RequirementFormDto.from(form) : null,
+                activities,
+                quotes,
+                project);
+    }
+
     @Transactional
-    public LeadDto createEnquiry(EnquiryRequest request, User customerOrNull) {
-        Lead lead = new Lead();
-        lead.setCustomer(customerOrNull);
-        lead.setStatus(LeadStatus.ENQUIRY);
-        lead.setContactName(request.name());
-        lead.setContactEmail(request.email());
-        lead.setContactPhone(request.phone());
-        lead.setMessage(request.message());
-        if (request.category() != null && !request.category().isBlank()) {
-            try {
-                lead.setCategory(ServiceCategory.valueOf(request.category().toUpperCase()));
-            } catch (IllegalArgumentException ex) {
-                throw new BadRequestException("Unknown category: " + request.category());
+    public ActivityDto addActivity(User current, Long leadId, CreateActivityRequest request) {
+        Lead lead = scopedLead(current, leadId);
+        LeadActivity activity = leadActivityRepository.save(new LeadActivity(
+                lead, current, ActivityType.valueOf(request.type()), request.body().trim()));
+        return ActivityDto.from(activity);
+    }
+
+    @Transactional
+    public LeadSummaryDto changeStage(User current, Long leadId, StageChangeRequest request) {
+        Lead lead = scopedLead(current, leadId);
+        LeadStatus target = parseStatus(request.stage());
+        LeadStatus from = lead.getStatus();
+        if (target == from) {
+            throw new BadRequestException("Lead is already in stage " + target.name());
+        }
+        if (from == LeadStatus.WON || from == LeadStatus.LOST) {
+            throw new BadRequestException("A " + from.name() + " lead cannot change stage");
+        }
+        if (current.getRole() == Role.DESIGNER && !DESIGNER_STAGES.contains(target)) {
+            throw new ForbiddenException("Designers may only move leads between CONTACTED and NEGOTIATION");
+        }
+        if (target == LeadStatus.WON) {
+            if (lead.getAssignedDesigner() == null) {
+                throw new BadRequestException("Assign a designer before marking this lead as won");
             }
-        }
-        return LeadDto.from(leadRepository.save(lead));
-    }
-
-    // ---- Customer ----
-
-    @Transactional(readOnly = true)
-    public List<LeadDto> myProjects(User customer) {
-        return leadRepository.findByCustomerIdOrderByCreatedAtDesc(customer.getId())
-                .stream().map(LeadDto::from).toList();
-    }
-
-    // ---- Designer ----
-
-    @Transactional(readOnly = true)
-    public List<LeadDto> designerPendingLeads(User designer) {
-        return leadRepository.findByDesignerIdAndStatusOrderByCreatedAtDesc(designer.getId(), LeadStatus.ASSIGNED)
-                .stream().map(LeadDto::from).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<LeadDto> designerProjects(User designer) {
-        return leadRepository.findByDesignerIdAndStatusInOrderByCreatedAtDesc(
-                        designer.getId(),
-                        EnumSet.of(LeadStatus.APPROVED, LeadStatus.IN_PROGRESS, LeadStatus.COMPLETED))
-                .stream().map(LeadDto::from).toList();
-    }
-
-    /** Designer approves an assigned lead: status APPROVED + chat thread opens. */
-    @Transactional
-    public LeadDto approveLead(User designer, Long leadId) {
-        Lead lead = requireLead(leadId);
-        requireAssignedTo(lead, designer);
-        if (lead.getStatus() != LeadStatus.ASSIGNED) {
-            throw new BadRequestException("Only leads in ASSIGNED state can be approved (current: "
-                    + lead.getStatus() + ")");
-        }
-        lead.setStatus(LeadStatus.APPROVED);
-
-        // Open the customer <-> designer chat thread
-        if (lead.getCustomer() != null && chatThreadRepository.findByLeadId(lead.getId()).isEmpty()) {
-            chatThreadRepository.save(new ChatThread(lead, lead.getCustomer(), designer));
-        }
-        return LeadDto.from(leadRepository.save(lead));
-    }
-
-    /** Designer rejects an assigned lead: it goes back to the admin queue. */
-    @Transactional
-    public LeadDto rejectLead(User designer, Long leadId) {
-        Lead lead = requireLead(leadId);
-        requireAssignedTo(lead, designer);
-        if (lead.getStatus() != LeadStatus.ASSIGNED) {
-            throw new BadRequestException("Only leads in ASSIGNED state can be rejected (current: "
-                    + lead.getStatus() + ")");
-        }
-        lead.setDesigner(null);
-        lead.setStatus(LeadStatus.REJECTED);
-        return LeadDto.from(leadRepository.save(lead));
-    }
-
-    /** Designer moves an approved project forward: APPROVED -> IN_PROGRESS -> COMPLETED. */
-    @Transactional
-    public LeadDto updateDesignerLeadStatus(User designer, Long leadId, String status) {
-        LeadStatus target;
-        try {
-            target = LeadStatus.valueOf(status.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException("Unknown lead status: " + status);
-        }
-        if (target != LeadStatus.IN_PROGRESS && target != LeadStatus.COMPLETED) {
-            throw new BadRequestException("Designers can only move leads to IN_PROGRESS or COMPLETED");
-        }
-        Lead lead = requireLead(leadId);
-        requireAssignedTo(lead, designer);
-        boolean allowed = (target == LeadStatus.IN_PROGRESS && lead.getStatus() == LeadStatus.APPROVED)
-                || (target == LeadStatus.COMPLETED && lead.getStatus() == LeadStatus.IN_PROGRESS);
-        if (!allowed) {
-            throw new BadRequestException("Cannot move lead from " + lead.getStatus() + " to " + target);
+            lead.setWonAt(Instant.now());
         }
         lead.setStatus(target);
-        return LeadDto.from(leadRepository.save(lead));
+        leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, current, ActivityType.STAGE,
+                "Stage: " + from.name() + " → " + target.name()));
+        if (target == LeadStatus.LOST && request.reason() != null && !request.reason().isBlank()) {
+            leadActivityRepository.save(new LeadActivity(lead, current, ActivityType.NOTE,
+                    "Lost reason: " + request.reason().trim()));
+        }
+        if (target == LeadStatus.WON && projectRepository.findByLead(lead).isEmpty()) {
+            createProjectForWonLead(lead);
+        }
+        return toSummary(lead);
     }
 
-    @Transactional(readOnly = true)
-    public DesignerStatsDto designerStats(User designer) {
-        long profileViews = designerProfileRepository.findByUserId(designer.getId())
-                .map(profile -> profile.getViewCount())
-                .orElse(0L);
-        EnumSet<LeadStatus> earningStatuses =
-                EnumSet.of(LeadStatus.APPROVED, LeadStatus.IN_PROGRESS, LeadStatus.COMPLETED);
-        BigDecimal totalEarnings = leadRepository.sumOrderTotalsForDesigner(designer.getId(), earningStatuses);
-        Double avgRating = reviewRepository.averageRatingForDesigner(designer.getId());
-        if (avgRating == null) {
-            avgRating = designerProfileRepository.findByUserId(designer.getId())
-                    .map(profile -> profile.getRating())
-                    .orElse(null);
+    /** APARTMENT → "Apartment", BUILDER_FLOOR → "Builder floor"; null → "Home". */
+    private static String humanizePropertyType(String propertyType) {
+        if (propertyType == null || propertyType.isBlank()) {
+            return "Home";
         }
-        return new DesignerStatsDto(
-                profileViews,
-                leadRepository.countByDesignerIdAndStatus(designer.getId(), LeadStatus.ASSIGNED),
-                leadRepository.countByDesignerIdAndStatusIn(designer.getId(),
-                        EnumSet.of(LeadStatus.APPROVED, LeadStatus.IN_PROGRESS)),
-                leadRepository.countByDesignerIdAndStatus(designer.getId(), LeadStatus.COMPLETED),
-                totalEarnings != null ? totalEarnings : BigDecimal.ZERO,
-                avgRating,
-                reviewRepository.countByDesignerId(designer.getId())
-        );
+        String lower = propertyType.replace('_', ' ').toLowerCase(Locale.ROOT);
+        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }
 
-    // ---- Admin ----
-
-    @Transactional(readOnly = true)
-    public List<LeadDto> adminLeads(String status) {
-        if (status == null || status.isBlank()) {
-            return leadRepository.findAllByOrderByCreatedAtDesc().stream().map(LeadDto::from).toList();
+    private void createProjectForWonLead(Lead lead) {
+        Project project = new Project();
+        project.setLead(lead);
+        project.setClient(lead.getCustomer());
+        project.setDesigner(lead.getAssignedDesigner());
+        project.setName(lead.getContactName() + " — " + humanizePropertyType(lead.getPropertyType()));
+        project.setStage(ProjectStage.DESIGN_BRIEF);
+        project.setHealth(com.BeSpoke.entity.ProjectHealth.ON_TRACK);
+        project = projectRepository.save(project);
+        int order = 0;
+        for (ProjectStage stage : ProjectStage.values()) {
+            projectMilestoneRepository.save(new ProjectMilestone(project, stage.getDisplayName(), null, order++));
         }
-        LeadStatus leadStatus;
-        try {
-            leadStatus = LeadStatus.valueOf(status.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException("Unknown lead status: " + status);
-        }
-        return leadRepository.findByStatusOrderByCreatedAtDesc(leadStatus).stream().map(LeadDto::from).toList();
+        leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.SYSTEM,
+                "Project \"" + project.getName() + "\" created"));
     }
 
-    /** Admin assigns a designer to a lead (ENQUIRY / UNASSIGNED_PAID / REJECTED). */
     @Transactional
-    public LeadDto assignDesigner(Long leadId, Long designerId) {
-        Lead lead = requireLead(leadId);
-        if (lead.getStatus() != LeadStatus.ENQUIRY
-                && lead.getStatus() != LeadStatus.UNASSIGNED_PAID
-                && lead.getStatus() != LeadStatus.REJECTED) {
-            throw new BadRequestException("Lead cannot be assigned in state " + lead.getStatus());
-        }
+    public LeadSummaryDto setFollowUp(User current, Long leadId, LocalDate at) {
+        Lead lead = scopedLead(current, leadId);
+        lead.setFollowUpAt(at);
+        lead.setUpdatedAt(Instant.now());
+        leadRepository.save(lead);
+        return toSummary(lead);
+    }
+
+    @Transactional
+    public LeadSummaryDto assign(User admin, Long leadId, Long designerId) {
+        Lead lead = leadRepository.findById(leadId)
+                .orElseThrow(() -> new NotFoundException("Lead not found"));
         User designer = userRepository.findById(designerId)
-                .orElseThrow(() -> new NotFoundException("Designer not found: " + designerId));
+                .orElseThrow(() -> new NotFoundException("Designer not found"));
         if (designer.getRole() != Role.DESIGNER) {
-            throw new BadRequestException("User " + designerId + " is not a designer");
+            throw new BadRequestException("Selected user is not a designer");
         }
-        lead.setDesigner(designer);
-        lead.setStatus(LeadStatus.ASSIGNED);
-
-        // Route the pending payout to the newly assigned designer, if the lead is backed by a paid order.
-        if (lead.getOrder() != null) {
-            paymentRepository.findByOrderId(lead.getOrder().getId()).ifPresent(payment -> {
-                payment.setPayeeDesigner(designer);
-                paymentRepository.save(payment);
-            });
+        if (!designer.isActive()) {
+            throw new BadRequestException("Selected designer is deactivated");
         }
-        return LeadDto.from(leadRepository.save(lead));
+        lead.setAssignedDesigner(designer);
+        lead.setUpdatedAt(Instant.now());
+        leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, admin, ActivityType.SYSTEM,
+                "Assigned to " + designer.getName()));
+        return toSummary(lead);
     }
 
-    @Transactional(readOnly = true)
-    public AdminOverviewDto overview() {
-        Map<String, Long> leadsByStatus = new LinkedHashMap<>();
-        for (LeadStatus status : LeadStatus.values()) {
-            leadsByStatus.put(status.name(), leadRepository.countByStatus(status));
+    /** Admin manual lead capture (walk-in / phone / referral) - no user account. */
+    @Transactional
+    public LeadSummaryDto createManual(User admin, CreateLeadRequest request) {
+        LeadSource source;
+        try {
+            source = LeadSource.valueOf(request.source().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequestException("Unknown lead source: " + request.source());
         }
-        return new AdminOverviewDto(
-                userRepository.countByRole(Role.CUSTOMER),
-                userRepository.countByRole(Role.DESIGNER),
-                designServiceRepository.count(),
-                orderRepository.count(),
-                leadsByStatus
-        );
+        Lead lead = new Lead();
+        lead.setContactName(request.name().trim());
+        lead.setContactEmail(request.email().toLowerCase().trim());
+        lead.setContactPhone(request.phone().trim());
+        lead.setCity(request.city().trim());
+        lead.setPropertyType(request.propertyType());
+        lead.setBudgetBand(request.budgetBand());
+        lead.setSource(source);
+        lead.setStatus(LeadStatus.NEW_INQUIRY);
+        scoreService.rescore(lead, null);
+        lead = leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, admin, ActivityType.SYSTEM,
+                "Lead captured manually (" + source.name() + ")"));
+        return toSummary(lead);
     }
 
-    // ---- helpers ----
-
-    private Lead requireLead(Long leadId) {
-        return leadRepository.findById(leadId)
-                .orElseThrow(() -> new NotFoundException("Lead not found: " + leadId));
+    /** Public enquiry form - creates a lead without a user account. */
+    @Transactional
+    public Long createEnquiry(EnquiryRequest request) {
+        Lead lead = new Lead();
+        lead.setContactName(request.name().trim());
+        lead.setContactEmail(request.email().toLowerCase().trim());
+        lead.setContactPhone(request.phone().trim());
+        lead.setCity(request.city().trim());
+        lead.setPropertyType(request.propertyType());
+        lead.setBudgetBand(request.budgetBand());
+        lead.setSource(LeadSource.ENQUIRY);
+        lead.setStatus(LeadStatus.NEW_INQUIRY);
+        scoreService.rescore(lead, null);
+        lead = leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.SYSTEM, "Enquiry received"));
+        if (request.message() != null && !request.message().isBlank()) {
+            leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.NOTE,
+                    "Enquiry message: " + request.message().trim()));
+        }
+        return lead.getId();
     }
 
-    private void requireAssignedTo(Lead lead, User designer) {
-        if (lead.getDesigner() == null || !lead.getDesigner().getId().equals(designer.getId())) {
-            throw new ForbiddenException("This lead is not assigned to you");
+    public LeadSummaryDto toSummary(Lead lead) {
+        String formStatus = requirementFormRepository.findByLead(lead)
+                .map(f -> f.getStatus().name()).orElse(null);
+        return LeadSummaryDto.from(lead, formStatus);
+    }
+
+    private LeadStatus parseStatus(String value) {
+        try {
+            return LeadStatus.valueOf(value.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequestException("Unknown lead stage: " + value);
         }
     }
 }

@@ -1,11 +1,10 @@
 package com.BeSpoke.controller;
 
-import com.BeSpoke.dto.MeDto;
-import com.BeSpoke.dto.UpdateDesignerProfileRequest;
 import com.BeSpoke.dto.UpdateMeRequest;
+import com.BeSpoke.dto.UserDto;
 import com.BeSpoke.entity.User;
+import com.BeSpoke.repository.UserRepository;
 import com.BeSpoke.service.CurrentUserService;
-import com.BeSpoke.service.ProfileService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,32 +17,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/me")
 public class MeController {
 
-    private final ProfileService profileService;
     private final CurrentUserService currentUserService;
+    private final UserRepository userRepository;
 
-    public MeController(ProfileService profileService, CurrentUserService currentUserService) {
-        this.profileService = profileService;
+    public MeController(CurrentUserService currentUserService, UserRepository userRepository) {
         this.currentUserService = currentUserService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
-    public MeDto me(Authentication authentication) {
-        User user = currentUserService.requireByEmail(authentication.getName());
-        return profileService.me(user);
+    public UserDto me(Authentication authentication) {
+        return UserDto.from(currentUserService.requireByEmail(authentication.getName()));
     }
 
     @PutMapping
-    public MeDto updateMe(Authentication authentication,
-                          @Valid @RequestBody UpdateMeRequest request) {
+    public UserDto updateMe(Authentication authentication, @Valid @RequestBody UpdateMeRequest request) {
         User user = currentUserService.requireByEmail(authentication.getName());
-        return profileService.updateMe(user, request);
-    }
-
-    /** DESIGNER only (enforced in SecurityConfig). */
-    @PutMapping("/designer-profile")
-    public MeDto updateDesignerProfile(Authentication authentication,
-                                       @Valid @RequestBody UpdateDesignerProfileRequest request) {
-        User user = currentUserService.requireByEmail(authentication.getName());
-        return profileService.updateMyDesignerProfile(user, request);
+        if (request.name() != null && !request.name().isBlank()) {
+            user.setName(request.name().trim());
+        }
+        if (request.phone() != null && !request.phone().isBlank()) {
+            user.setPhone(request.phone().trim());
+        }
+        if (request.city() != null && !request.city().isBlank()) {
+            user.setCity(request.city().trim());
+        }
+        return UserDto.from(userRepository.save(user));
     }
 }

@@ -1,175 +1,115 @@
-# BeSpoke Backend
+# DesignConnect Backend
 
-Spring Boot 3.3.x (Java 17, Gradle) backend for **BeSpoke**, an interior-design marketplace connecting customers with interior designers.
-
-## Prerequisites
-
-- Java 17 (JDK)
-- Gradle 8+ (or use `gradle wrapper` to generate a wrapper)
-- PostgreSQL 14+ running on `localhost:5432` with user `postgres` / password `postgres`
-
-## Database setup
-
-Create the database once (JPA `ddl-auto=update` creates the tables automatically):
-
-```bash
-createdb -U postgres BeSpoke
-# or: psql -U postgres -c "CREATE DATABASE BeSpoke;"
-```
-
-Connection settings live in `src/main/resources/application.yml` (`localhost:5432/BeSpoke`, `postgres`/`postgres`). If you want environment-specific overrides, create an `application-dev.yml` next to it and run with `--spring.profiles.active=dev`.
+Spring Boot 3.3.x (Java 17, Gradle) backend for **DesignConnect** — an interior-design CRM
+with a Livspace-style lead funnel: public site → signup-as-lead → requirement wizard →
+quotes → won projects → invoices & payments.
 
 ## Run
 
 ```bash
-gradle bootRun
+createdb designconnect_crm        # once; JPA ddl-auto=update creates the tables
+./gradlew bootRun                 # http://localhost:8080
 ```
 
-The API starts on `http://localhost:8080`. CORS is open for `http://localhost:3000` (the Next.js frontend).
+Defaults (override via `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` env vars):
+`jdbc:postgresql://localhost:5432/designconnect_crm`, username = current OS user, no password.
+Production config in `application-prod.yml` requires `JWT_SECRET`.
 
-### Database migrations & seed data (Flyway)
+> Gradle 8.14 needs a JDK ≤ 21 to launch. If your default `java` is newer:
+> `JAVA_HOME=$(/usr/libexec/java_home -v 17) ./gradlew bootRun`
 
-Schema and seed data are managed by **Flyway** — versioned SQL in
-`src/main/resources/db/migration`, applied automatically on every startup:
+## Seed accounts
 
-- `V1__baseline_schema.sql` — the full schema (runs once on a fresh database).
-- `V2__seed_data.sql` — accounts, designers + profiles + portfolio, the 18-item
-  catalogue, and enquiry leads. Idempotent, so it is safe to re-run.
+Seeding is idempotent (only when the users table is empty). No dummy leads/quotes/projects —
+empty states are intentional. The room-item catalog (291 items, 6 space types) seeds from
+`src/main/resources/room-catalog.json` when its table is empty.
 
-A fresh run is completely hands-off: create the empty DB, start the app, and
-Flyway builds the schema and seeds everything. Emails are stored **lowercase**
-(the login normalises input with `toLowerCase()`), so sign in with lowercase.
+| Role     | Name          | Email                   | Password    |
+|----------|---------------|-------------------------|-------------|
+| ADMIN    | Prachi Khanna | admin@designconnect.in  | admin123    |
+| DESIGNER | Aarti Sharma  | aarti@designconnect.in  | designer123 |
+| DESIGNER | Rohan Verma   | rohan@designconnect.in  | designer123 |
+| DESIGNER | Priya Nair    | priya@designconnect.in  | designer123 |
 
-| Role     | Email                | Password    |
-|----------|----------------------|-------------|
-| ADMIN    | admin@bespoke.in     | admin123    |
-| DESIGNER | aarti@bespoke.in     | designer123 |
-| DESIGNER | maya@bespoke.in      | designer123 |
-| CUSTOMER | riya@example.com     | test1234    |
+## Auth
 
-Seeded accounts: 1 admin, 8 designers (`designer123`), 5 customers (`test1234`),
-18 catalogue packages, 3 enquiry leads. To reseed from scratch:
-`dropdb BeSpoke && createdb -O postgres BeSpoke` then restart.
+JWT Bearer (HS256, 24h). `POST /api/auth/register` always creates a CUSTOMER **and** its
+lead atomically (signing up IS the lead) and returns `{token, user, leadId}`.
 
-## Lead routing (core business logic)
+## API
 
-Every purchase or enquiry produces a **Lead** (a.k.a. project). Routing rules:
+### Public (no auth)
 
-1. **Paid order WITH a designer selected** → lead is auto-assigned to that designer with status `ASSIGNED`, pending the designer's approval.
-2. **Paid order WITHOUT a designer** → lead lands in the admin queue with status `UNASSIGNED_PAID`; an admin assigns a designer (`POST /api/admin/leads/{id}/assign/{designerId}`), moving it to `ASSIGNED`.
-3. **Free enquiry** (no payment, `POST /api/enquiries`, anonymous allowed) → admin queue with status `ENQUIRY` for triage/assignment.
-
-When the designer **approves** an `ASSIGNED` lead it becomes `APPROVED` and a **chat thread opens** between customer and designer. If the designer **rejects**, the lead returns to the admin queue as `REJECTED` and can be re-assigned.
-
-Lead status flow: `ENQUIRY | UNASSIGNED_PAID → ASSIGNED → APPROVED → IN_PROGRESS → COMPLETED`, with `REJECTED` as the designer-decline branch.
-
-### Payments
-
-Payments go **directly to the designer**: each paid order creates a `Payment` with `payeeType=DESIGNER` and `payoutStatus=PENDING` (released to the designer out-of-band). Payments are processed through the `PaymentService` interface; the bundled `MockPaymentProvider` always succeeds and issues a `mock_pay_*` reference. **Razorpay** is the intended real provider — implement `PaymentService` against Razorpay Orders/Route and swap the bean.
-
-## Endpoints
-
-### Auth (public)
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/api/auth/register` | `{name, email, password, role: CUSTOMER\|DESIGNER}` → JWT + role |
-| POST | `/api/auth/login` | `{email, password}` → JWT + role |
+| POST | `/api/auth/register` | `{name,email,phone,password,city,propertyType?,budgetBand?}` → `{token,user,leadId}` |
+| POST | `/api/auth/login` | → `{token,user}` |
+| POST | `/api/enquiries` | `{name,phone,email,city,propertyType?,budgetBand?,message?}` → creates ENQUIRY lead |
+| GET  | `/api/catalog/room-items` | Room checklist catalog: `[{spaceType, categories:[{category, items}]}]` |
+| GET  | `/api/public/designers` | Active designer cards `{id,name,title,city}` |
+| GET  | `/actuator/health` | Liveness/readiness |
 
-### Catalog (public)
-| Method | Path |
-|---|---|
-| GET | `/api/services` (optional `?category=KITCHEN`) |
-| GET | `/api/services/{id}` |
-| GET | `/api/designers` |
-| GET | `/api/designers/{id}` |
+### Authenticated (any role)
 
-### Enquiry (public, anonymous allowed)
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/api/enquiries` | `{name, email, phone, message, category?}` → Lead `ENQUIRY` |
+| GET/PUT | `/api/me` | Own profile; PUT `{name?,phone?,city?}` |
+| POST | `/api/uploads` | Multipart image ≤ 5MB → `{url}` |
 
-### Customer (role CUSTOMER)
+### Customer (`/api/my/**`, role CUSTOMER, always scoped to own lead)
+
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/api/cart` | current cart |
-| POST | `/api/cart` | `{serviceId, quantity}` |
-| DELETE | `/api/cart/{itemId}` | remove one item |
-| DELETE | `/api/cart` | clear cart |
-| POST | `/api/checkout` | `{items:[{serviceId, quantity}], designerId?, address}` → Order + mock Payment + routed Lead |
-| GET | `/api/my/orders` | my orders |
-| GET | `/api/my/projects` | my leads/projects |
+| GET | `/api/my/journey` | Stage history, designer card, project + milestones, counts |
+| GET | `/api/my/requirement-form` | 404 until started |
+| PUT | `/api/my/requirement-form` | Upsert draft scalars; **409 once a quote is SENT/APPROVED** |
+| PUT | `/api/my/requirement-form/rooms` | Replaces all rooms + selected items |
+| POST | `/api/my/requirement-form/submit` | → SUBMITTED, rescores the lead |
+| GET | `/api/my/quotes` | SENT/APPROVED/CHANGES_REQUESTED only |
+| POST | `/api/my/quotes/{id}/decision` | `{decision: APPROVED\|CHANGES_REQUESTED, comment?}` (quote must be SENT) |
+| GET | `/api/my/invoices` | Invoices + payments (drafts hidden) |
+| GET/POST | `/api/my/messages` | Thread with the studio; GET marks staff messages read |
 
-### Designer (role DESIGNER)
+### Staff (ADMIN sees all; DESIGNER only their assigned leads/projects — others 404)
+
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/api/designer/leads` | assigned to me, pending approval |
-| POST | `/api/designer/leads/{id}/approve` | → `APPROVED`, opens chat thread |
-| POST | `/api/designer/leads/{id}/reject` | → `REJECTED`, back to admin queue |
-| GET | `/api/designer/projects` | approved / in-progress / completed |
+| GET | `/api/leads?stage=&q=&assigned=` | Funnel list with score + formStatus |
+| GET | `/api/leads/{id}` | `{lead, form, activities, quotes}` |
+| POST | `/api/leads/{id}/activities` | `{type: NOTE\|CALL\|MEETING, body}` |
+| PUT | `/api/leads/{id}/stage` | `{stage, reason?}`. Designers: CONTACTED..NEGOTIATION only. WON needs an assigned designer and auto-creates the project + 6 milestones; LOST logs the reason |
+| PUT | `/api/leads/{id}/follow-up` | `{at}` (null clears) |
+| GET | `/api/projects` | Flat summaries `{id,leadId,name,stage,health,clientName,designerName,budget(admin),startDate,targetDate,completionPct}` |
+| GET | `/api/projects/{id}` | `{project, milestones, leadId, invoices(admin only)}` |
+| PUT | `/api/projects/{id}` | `{stage?,health?,budget?(admin),startDate?,targetDate?}` → same detail shape |
+| PUT | `/api/projects/{id}/milestones` | Upsert list; missing ids are deleted → same detail shape |
+| GET | `/api/clients` / `/api/clients/{id}` | Designers: own clients only, no financials |
+| GET | `/api/messages/threads` | Leads with messages or still open (scoped) |
+| GET/POST | `/api/messages/{leadId}` | GET marks the other side read |
+| GET | `/api/dashboard` | Admin: revenue/outstanding/pipeline/funnel/team load. Designer: own queue |
+| GET | `/api/team` | Directory (workload counts admin-only) |
 
-### Admin (role ADMIN)
+### Admin only
+
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/api/admin/leads?status=` | filter by lead status (omit for all) |
-| POST | `/api/admin/leads/{id}/assign/{designerId}` | assign designer → `ASSIGNED` |
-| GET | `/api/admin/overview` | counts (users, orders, leads by status) |
+| POST | `/api/leads` | Manual capture `{name,phone,email,city,propertyType?,budgetBand?,source}` |
+| PUT | `/api/leads/{id}/assign` | `{designerId}` |
+| POST | `/api/quotes` | `{leadId,title,validUntil?,items[{category,description,qty,rate,gstPct}]}` → DRAFT |
+| PUT | `/api/quotes/{id}` | DRAFT only |
+| POST | `/api/quotes/{id}/send` · `/api/quotes/{id}/revise` | Send to customer · copy to DRAFT v+1 |
+| GET | `/api/quotes?status=` / `/api/quotes/{id}` | |
+| POST | `/api/invoices` | `{projectId,milestoneId?,title,amount,gstPct,dueDate?}` → number `INV-000N` |
+| POST | `/api/invoices/{id}/send` | DRAFT → SENT |
+| POST | `/api/invoices/{id}/payments` | `{amount,mode: UPI\|NEFT\|RTGS\|CHEQUE\|CASH,reference?,paidAt?}`; full payment → PAID |
+| GET | `/api/invoices?status=` | Accepts derived states PARTIALLY_PAID / OVERDUE too |
+| POST | `/api/team` | Create DESIGNER/ADMIN `{name,email,phone?,city?,role,title,dept,password}` |
+| PUT | `/api/team/{userId}` | `{title?,dept?,active?}`; last active admin cannot be deactivated |
 
-### Chat (any authenticated participant)
-| Method | Path |
-|---|---|
-| GET | `/api/chat/threads` |
-| GET | `/api/chat/threads/{id}/messages` |
-| POST | `/api/chat/threads/{id}/messages` (`{content}`) |
+## Domain notes
 
-**WebSocket:** STOMP endpoint at `/ws` (SockJS supported). Subscribe to `/topic/threads/{id}` to receive new `ChatMessageDto`s; optionally send to `/app/threads/{id}/send`. Messages posted over REST are broadcast to the same topic.
-
-## Sample curl
-
-Register a customer:
-
-```bash
-curl -X POST http://localhost:8080/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Neha Gupta","email":"neha@example.com","password":"secret123","role":"CUSTOMER"}'
-```
-
-Login (grab the `token` from the response):
-
-```bash
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"neha@example.com","password":"secret123"}'
-```
-
-Checkout with a chosen designer (routing rule 1 — `designerId` is the designer's **user id**; omit `designerId` for rule 2):
-
-```bash
-TOKEN="<jwt from login>"
-curl -X POST http://localhost:8080/api/checkout \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TOKEN" \
-  -d '{"items":[{"serviceId":1,"quantity":1}],"designerId":2,"address":"12 MG Road, Bengaluru 560001"}'
-```
-
-Free enquiry (no auth needed, routing rule 3):
-
-```bash
-curl -X POST http://localhost:8080/api/enquiries \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Amit","email":"amit@example.com","phone":"9876543210","message":"Need a kitchen quote","category":"KITCHEN"}'
-```
-
-## Package structure
-
-```
-com.BeSpoke
-├── config        SecurityConfig, WebSocketConfig, SeedDataRunner
-├── controller    Auth, Services, Designers, Cart, Checkout, Enquiry, Customer(my), DesignerLead, Admin, Chat (+ STOMP)
-├── dto           request/response records (validated; never expose password hashes)
-├── entity        User, DesignerProfile, DesignService, CartItem, Order(+Item), Lead, Payment, ChatThread, ChatMessage + enums
-├── exception     GlobalExceptionHandler + typed exceptions (JSON errors)
-├── repository    Spring Data JPA repositories
-├── security      JwtService (jjwt 0.12), JwtAuthFilter, AppUserDetailsService
-└── service       Auth, Catalog, Cart, Checkout, Lead, Chat, PaymentService + MockPaymentProvider
-```
-# BeSpoke-Backend
+- **Lead stages:** NEW_INQUIRY → CONTACTED → SITE_VISIT → PROPOSAL_SENT → NEGOTIATION → WON / LOST.
+- **Score:** base 20 + budget band (5–30) + property type (6–12) + form draft 10 / submitted 25, capped at 98.
+- **Project stages:** DESIGN_BRIEF, CONCEPT_DESIGN, DESIGN_APPROVAL, PROCUREMENT, EXECUTION, SNAG_HANDOVER (also the six default milestones on WON).
+- **Invoice status:** DRAFT/SENT/PAID persisted; PARTIALLY_PAID and OVERDUE derived from payments/dueDate.
+- **Messages:** one thread per lead; it carries into the project after WON.
