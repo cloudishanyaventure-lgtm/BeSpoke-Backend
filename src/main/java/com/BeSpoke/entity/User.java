@@ -7,7 +7,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 
@@ -32,10 +35,21 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    /** Studio this user works for. Null for CUSTOMERs and platform ADMINs. */
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    /** Explicit reporting line; null falls back to the role's default parent. */
+    @ManyToOne
+    @JoinColumn(name = "reports_to_id")
+    private User reportsTo;
+
     @Column(length = 1000)
     private String avatarUrl;
 
-    @Column(length = 30)
+    /** Unique when present; blanks are stored as null so several accounts may have none. */
+    @Column(length = 30, unique = true)
     private String phone;
 
     @Column(length = 120)
@@ -43,6 +57,17 @@ public class User {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    /** One-time email login code; cleared on use. */
+    @Column(length = 6)
+    private String otpCode;
+
+    private Instant otpExpiresAt;
+
+    /** Wrong guesses against the current code; the code is burned at 5. */
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private int otpAttempts = 0;
 
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
@@ -97,6 +122,22 @@ public class User {
         this.role = role;
     }
 
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public User getReportsTo() {
+        return reportsTo;
+    }
+
+    public void setReportsTo(User reportsTo) {
+        this.reportsTo = reportsTo;
+    }
+
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -127,6 +168,30 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getOtpCode() {
+        return otpCode;
+    }
+
+    public void setOtpCode(String otpCode) {
+        this.otpCode = otpCode;
+    }
+
+    public Instant getOtpExpiresAt() {
+        return otpExpiresAt;
+    }
+
+    public void setOtpExpiresAt(Instant otpExpiresAt) {
+        this.otpExpiresAt = otpExpiresAt;
+    }
+
+    public int getOtpAttempts() {
+        return otpAttempts;
+    }
+
+    public void setOtpAttempts(int otpAttempts) {
+        this.otpAttempts = otpAttempts;
     }
 
     public Instant getCreatedAt() {

@@ -15,14 +15,18 @@ public record MessageDto(
         Instant readAt
 ) {
 
-    public static MessageDto from(Message message) {
+    /**
+     * {@code body} is the decrypted plaintext — the stored column is AES-GCM ciphertext,
+     * and decryption stays in MessageService so the DTO needs no crypto dependency.
+     */
+    public static MessageDto from(Message message, String plainBody) {
         return new MessageDto(
                 message.getId(),
                 message.getLead().getId(),
                 message.getSender().getId(),
                 message.getSender().getName(),
                 message.getSender().getRole().name(),
-                message.getBody(),
+                plainBody,
                 message.getCreatedAt(),
                 message.getReadAt()
         );

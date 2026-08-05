@@ -10,6 +10,8 @@ import java.util.List;
 public record RoomRequest(
         @NotBlank @Size(max = 60) String roomType,
         @NotBlank @Size(max = 255) String label,
+        @Size(max = 60) String floor,
+        @Size(max = 120) String familyMember,
         @Size(max = 255) String primaryUse,
         @Size(max = 1000) String mustHaves,
         @Size(max = 500) String reuseFurniture,

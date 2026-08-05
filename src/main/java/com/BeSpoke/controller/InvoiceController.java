@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/** Invoicing and payment ledger - admin only. */
+/** Invoicing and payment ledger - platform admin and studio directors (company scoped). */
 @RestController
 @RequestMapping("/api/invoices")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','ACCOUNT_MANAGER')")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
@@ -40,8 +40,10 @@ public class InvoiceController {
     }
 
     @PostMapping
-    public ResponseEntity<InvoiceDto> create(@Valid @RequestBody CreateInvoiceRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.create(request));
+    public ResponseEntity<InvoiceDto> create(Authentication authentication,
+                                             @Valid @RequestBody CreateInvoiceRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(invoiceService.create(me(authentication), request));
     }
 
     @PostMapping("/{id}/send")
@@ -58,7 +60,8 @@ public class InvoiceController {
     }
 
     @GetMapping
-    public List<InvoiceDto> list(@RequestParam(required = false) String status) {
-        return invoiceService.list(status);
+    public List<InvoiceDto> list(Authentication authentication,
+                                 @RequestParam(required = false) String status) {
+        return invoiceService.list(me(authentication), status);
     }
 }

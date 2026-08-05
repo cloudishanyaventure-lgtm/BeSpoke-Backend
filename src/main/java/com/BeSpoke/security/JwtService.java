@@ -25,14 +25,17 @@ public class JwtService {
 
     public String generateToken(User user) {
         Date now = new Date();
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(user.getEmail())
                 .claim("uid", user.getId())
                 .claim("role", user.getRole().name())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expirationMs))
-                .signWith(key)
-                .compact();
+                .signWith(key);
+        if (user.getCompany() != null) {
+            builder.claim("companyId", user.getCompany().getId());
+        }
+        return builder.compact();
     }
 
     /** Returns the claims if the token is valid; throws JwtException otherwise. */

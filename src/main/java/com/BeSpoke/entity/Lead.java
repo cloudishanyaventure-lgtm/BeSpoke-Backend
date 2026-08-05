@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -31,6 +32,19 @@ public class Lead {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private User customer;
+
+    /** Studio working this lead. Null = unrouted; only the platform admin sees it. */
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    /**
+     * Studio the customer asked for at signup / enquiry. A preference only: every lead
+     * starts in the BeSpoke pool and the platform routes it (V3 §0).
+     */
+    @ManyToOne
+    @JoinColumn(name = "preferred_company_id")
+    private Company preferredCompany;
 
     @Column(nullable = false)
     private String contactName;
@@ -63,9 +77,35 @@ public class Lead {
     @JoinColumn(name = "assigned_designer_id")
     private User assignedDesigner;
 
+    /** Consultant / sales executive owning the customer relationship. */
+    @ManyToOne
+    @JoinColumn(name = "sales_owner_id")
+    private User salesOwner;
+
+    /** When BeSpoke transferred the lead to its current company. */
+    private Instant transferredAt;
+
+    /** When the company accepted the transferred lead. */
+    private Instant acceptedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "accepted_by_id")
+    private User acceptedBy;
+
     private LocalDate followUpAt;
 
     private Instant wonAt;
+
+    /** True while a designer/design-manager-captured lead awaits a senior's sign-off. */
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean approvalPending = false;
+
+    @Column(length = 120)
+    private String createdByName;
+
+    @Column(length = 40)
+    private String createdByRole;
 
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
@@ -89,6 +129,22 @@ public class Lead {
 
     public void setCustomer(User customer) {
         this.customer = customer;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public Company getPreferredCompany() {
+        return preferredCompany;
+    }
+
+    public void setPreferredCompany(Company preferredCompany) {
+        this.preferredCompany = preferredCompany;
     }
 
     public String getContactName() {
@@ -172,6 +228,38 @@ public class Lead {
         this.assignedDesigner = assignedDesigner;
     }
 
+    public User getSalesOwner() {
+        return salesOwner;
+    }
+
+    public void setSalesOwner(User salesOwner) {
+        this.salesOwner = salesOwner;
+    }
+
+    public Instant getTransferredAt() {
+        return transferredAt;
+    }
+
+    public void setTransferredAt(Instant transferredAt) {
+        this.transferredAt = transferredAt;
+    }
+
+    public Instant getAcceptedAt() {
+        return acceptedAt;
+    }
+
+    public void setAcceptedAt(Instant acceptedAt) {
+        this.acceptedAt = acceptedAt;
+    }
+
+    public User getAcceptedBy() {
+        return acceptedBy;
+    }
+
+    public void setAcceptedBy(User acceptedBy) {
+        this.acceptedBy = acceptedBy;
+    }
+
     public LocalDate getFollowUpAt() {
         return followUpAt;
     }
@@ -186,6 +274,30 @@ public class Lead {
 
     public void setWonAt(Instant wonAt) {
         this.wonAt = wonAt;
+    }
+
+    public boolean isApprovalPending() {
+        return approvalPending;
+    }
+
+    public void setApprovalPending(boolean approvalPending) {
+        this.approvalPending = approvalPending;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
+    }
+
+    public String getCreatedByRole() {
+        return createdByRole;
+    }
+
+    public void setCreatedByRole(String createdByRole) {
+        this.createdByRole = createdByRole;
     }
 
     public Instant getCreatedAt() {

@@ -18,6 +18,15 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  # SMTP. Uncomment and fill in to actually send mail locally (also set app.mail.enabled).
+  # mail:
+  #   host: smtp.gmail.com
+  #   port: 587
+  #   username: no-reply@bespoke.in
+  #   password: change-me
+  #   properties:
+  #     mail.smtp.auth: true
+  #     mail.smtp.starttls.enable: true
 
 server:
   port: 8080
@@ -47,3 +56,13 @@ app:
     # Patterns (see SecurityConfig). "http://localhost:*" allows any local dev port.
   cors:
     allowed-origins: "http://localhost:*,http://127.0.0.1:*"
+  mail:
+    # false = never send, log the whole message at INFO behind "[MAIL]" instead.
+    # That console line is where you read a customer's generated password locally.
+    enabled: false
+    from: "BeSpoke <no-reply@bespoke.in>"
+    app-url: "http://localhost:3000"
+  crypto:
+    # AES-256-GCM key for message bodies at rest (base64, exactly 32 bytes).
+    # Dev default - production supplies CRYPTO_KEY (see application-prod.yml).
+    key: "8Zq2mJ0xR7vT1cN5bK9wY3sD6fH4gL8pA2eU7iO0rQ4="

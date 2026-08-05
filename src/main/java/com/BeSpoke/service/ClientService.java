@@ -62,49 +62,65 @@ public class ClientService {
     }
 
     public List<ClientDto> list(User current) {
-        boolean admin = current.getRole() == Role.ADMIN;
-        List<User> clients = admin ? allCustomers() : designerClients(current);
-        return clients.stream().map(client -> toDto(client, admin)).toList();
+        boolean finance = current.getRole().seesFinance();
+        return visibleClients(current).stream().map(client -> toDto(client, finance)).toList();
     }
 
     public ClientDetailDto get(User current, Long clientId) {
-        boolean admin = current.getRole() == Role.ADMIN;
+        boolean finance = current.getRole().seesFinance();
         User client = userRepository.findById(clientId)
                 .filter(u -> u.getRole() == Role.CUSTOMER)
                 .orElseThrow(() -> new NotFoundException("Client not found"));
-        if (!admin && designerClients(current).stream().noneMatch(c -> c.getId().equals(client.getId()))) {
+        if (!current.getRole().isPlatform()
+                && visibleClients(current).stream().noneMatch(c -> c.getId().equals(client.getId()))) {
             throw new NotFoundException("Client not found");
         }
         List<Lead> clientLeads = leadRepository.findByCustomerOrderByCreatedAtDesc(client);
-        List<LeadSummaryDto> leads = clientLeads.stream()
-                .filter(lead -> admin || isAssignedTo(lead, current))
-                .map(leadService::toSummary)
+        List<Lead> scopedLeads = clientLeads.stream()
+                .filter(lead -> leadService.canSee(current, lead))
                 .toList();
-        List<ProjectDto> projects = projectRepository.findByClientOrderByCreatedAtDesc(client)
+        List<LeadSummaryDto> leads = scopedLeads.stream().map(leadService::toSummary).toList();
+        List<Project> scopedProjects = projectRepository.findByClientOrderByCreatedAtDesc(client)
                 .stream()
-                .filter(project -> admin
-                        || (project.getDesigner() != null && project.getDesigner().getId().equals(current.getId())))
-                .map(project -> projectService.toDto(project, admin, false))
+                .filter(project -> projectService.canSee(current, project))
+                .toList();
+        List<ProjectDto> projects = scopedProjects.stream()
+                .map(project -> projectService.toDto(project, finance, false))
                 .toList();
         List<QuoteDto> quotes = null;
         List<InvoiceDto> invoices = null;
-        if (admin) {
+        if (finance) {
             quotes = new ArrayList<>();
-            for (Lead lead : clientLeads) {
+            for (Lead lead : scopedLeads) {
                 quotes.addAll(quoteRepository.findByLeadOrderByVersionDesc(lead)
                         .stream().map(QuoteDto::from).toList());
             }
             invoices = new ArrayList<>();
-            for (Project project : projectRepository.findByClientOrderByCreatedAtDesc(client)) {
+            for (Project project : scopedProjects) {
                 invoices.addAll(invoiceService.forProject(project));
             }
         }
-        return new ClientDetailDto(toDto(client, admin), leads, projects, quotes, invoices);
+        return new ClientDetailDto(toDto(client, finance), leads, projects, quotes, invoices);
     }
 
-    private boolean isAssignedTo(Lead lead, User designer) {
-        return lead.getAssignedDesigner() != null
-                && lead.getAssignedDesigner().getId().equals(designer.getId());
+    /** Contact book scope: admin all, company-wide roles their studio's customers, designers their own. */
+    private List<User> visibleClients(User current) {
+        if (current.getRole().isPlatform()) {
+            return allCustomers();
+        }
+        if (current.getRole().seesWholeCompany()) {
+            if (current.getCompany() == null) {
+                return List.of();
+            }
+            Map<Long, User> clients = new LinkedHashMap<>();
+            for (Lead lead : leadRepository.findByCompanyOrderByCreatedAtDesc(current.getCompany())) {
+                if (lead.getCustomer() != null) {
+                    clients.putIfAbsent(lead.getCustomer().getId(), lead.getCustomer());
+                }
+            }
+            return new ArrayList<>(clients.values());
+        }
+        return designerClients(current);
     }
 
     private List<User> allCustomers() {
@@ -130,13 +146,13 @@ public class ClientService {
         return new ArrayList<>(clients.values());
     }
 
-    private ClientDto toDto(User client, boolean admin) {
+    private ClientDto toDto(User client, boolean finance) {
         List<Lead> clientLeads = leadRepository.findByCustomerOrderByCreatedAtDesc(client);
         String leadStatus = clientLeads.isEmpty() ? null : clientLeads.get(0).getStatus().name();
         List<Project> projects = projectRepository.findByClientOrderByCreatedAtDesc(client);
         BigDecimal lifetimeBilled = null;
         BigDecimal lifetimeCollected = null;
-        if (admin) {
+        if (finance) {
             lifetimeBilled = BigDecimal.ZERO;
             lifetimeCollected = BigDecimal.ZERO;
             for (Project project : projects) {

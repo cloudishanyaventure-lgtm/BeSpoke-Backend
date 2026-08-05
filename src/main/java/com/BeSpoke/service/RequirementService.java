@@ -34,17 +34,20 @@ public class RequirementService {
     private final QuoteRepository quoteRepository;
     private final LeadActivityRepository leadActivityRepository;
     private final ScoreService scoreService;
+    private final MailService mailService;
 
     public RequirementService(LeadRepository leadRepository,
                               RequirementFormRepository requirementFormRepository,
                               QuoteRepository quoteRepository,
                               LeadActivityRepository leadActivityRepository,
-                              ScoreService scoreService) {
+                              ScoreService scoreService,
+                              MailService mailService) {
         this.leadRepository = leadRepository;
         this.requirementFormRepository = requirementFormRepository;
         this.quoteRepository = quoteRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.scoreService = scoreService;
+        this.mailService = mailService;
     }
 
     public Lead myLead(User customer) {
@@ -81,12 +84,67 @@ public class RequirementService {
     public RequirementFormDto replaceRooms(User customer, List<RoomRequest> roomRequests) {
         Lead lead = myLead(customer);
         assertNotLocked(lead);
+        return applyRooms(lead, roomRequests);
+    }
+
+    /** Staff PRD edit — same wholesale replace, but skips the quote lock: staff own the PRD after handoff. */
+    @Transactional
+    public RequirementFormDto staffReplaceRooms(Lead lead, List<RoomRequest> roomRequests) {
+        return applyRooms(lead, roomRequests);
+    }
+
+    /**
+     * Staff filling in the brief the customer gave them — over a call, on site, anywhere.
+     * It is the same document either way, so this writes the same fields the customer's
+     * wizard writes and skips the quote lock like the rooms path does.
+     */
+    @Transactional
+    public RequirementFormDto staffUpsertForm(Lead lead, RequirementFormRequest request) {
+        RequirementForm form = requirementFormRepository.findByLead(lead).orElseGet(() -> {
+            RequirementForm created = new RequirementForm();
+            created.setLead(lead);
+            created.setStatus(RequirementFormStatus.DRAFT);
+            return created;
+        });
+        unfreezeIfApproved(lead, form);
+        applyScalars(form, request);
+        form.setUpdatedAt(Instant.now());
+        form = requirementFormRepository.save(form);
+        rescore(lead, form);
+        return RequirementFormDto.from(form);
+    }
+
+    /**
+     * Staff marking the brief complete on the customer's behalf. This is what stops the
+     * customer's portal nagging them to "complete your profile" for information they have
+     * already given — the studio captured it, so the brief is done.
+     */
+    @Transactional
+    public RequirementFormDto staffSubmit(Lead lead, User staff) {
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new BadRequestException("Capture the brief before marking it complete"));
+        if (form.getStatus() == RequirementFormStatus.SUBMITTED) {
+            return RequirementFormDto.from(form);
+        }
+        form.setStatus(RequirementFormStatus.SUBMITTED);
+        form.setApprovedAt(null);
+        form.setSubmittedAt(Instant.now());
+        form.setUpdatedAt(Instant.now());
+        form = requirementFormRepository.save(form);
+        leadActivityRepository.save(new LeadActivity(lead, staff, ActivityType.SYSTEM,
+                "Requirements captured by " + staff.getName() + " on the customer's behalf"));
+        rescore(lead, form);
+        return RequirementFormDto.from(form);
+    }
+
+    private RequirementFormDto applyRooms(Lead lead, List<RoomRequest> roomRequests) {
         RequirementForm form = requirementFormRepository.findByLead(lead).orElseGet(() -> {
             RequirementForm created = new RequirementForm();
             created.setLead(lead);
             created.setStatus(RequirementFormStatus.DRAFT);
             return requirementFormRepository.save(created);
         });
+        unfreezeIfApproved(lead, form);
         form.getRooms().clear();
         int order = 0;
         for (RoomRequest roomRequest : roomRequests) {
@@ -94,6 +152,8 @@ public class RequirementService {
             room.setForm(form);
             room.setRoomType(roomRequest.roomType().trim());
             room.setLabel(roomRequest.label().trim());
+            room.setFloor(roomRequest.floor());
+            room.setFamilyMember(roomRequest.familyMember());
             room.setPrimaryUse(roomRequest.primaryUse());
             room.setMustHaves(roomRequest.mustHaves());
             room.setReuseFurniture(roomRequest.reuseFurniture());
@@ -132,11 +192,46 @@ public class RequirementService {
         leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
                 "Requirements captured — customer submitted the requirement form"));
         rescore(lead, form);
+        // MailService swallows failures; the submit never breaks on a mail error.
+        mailService.briefSubmitted(customer);
         return RequirementFormDto.from(form);
     }
 
-    /** The form locks once a proposal is on (or past) the customer's table. */
+    /** Customer sign-off on the submitted brief — locks it for further customer edits. */
+    @Transactional
+    public RequirementFormDto approve(User customer) {
+        Lead lead = myLead(customer);
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new BadRequestException("Requirement form not started yet"));
+        if (form.getStatus() != RequirementFormStatus.SUBMITTED) {
+            throw new ConflictException("Only a submitted requirement form can be approved");
+        }
+        form.setStatus(RequirementFormStatus.APPROVED);
+        form.setApprovedAt(Instant.now());
+        form.setUpdatedAt(Instant.now());
+        form = requirementFormRepository.save(form);
+        leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
+                "Customer approved the requirement form"));
+        rescore(lead, form);
+        return RequirementFormDto.from(form);
+    }
+
+    /** A staff edit to a customer-approved scope drops it back to SUBMITTED for re-approval. */
+    private void unfreezeIfApproved(Lead lead, RequirementForm form) {
+        if (form.getStatus() == RequirementFormStatus.APPROVED) {
+            form.setStatus(RequirementFormStatus.SUBMITTED);
+            form.setApprovedAt(null);
+            leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.SYSTEM,
+                    "Project scope changed after customer approval — re-approval needed"));
+        }
+    }
+
+    /** The form locks once the customer approved it or a proposal is on (or past) their table. */
     private void assertNotLocked(Lead lead) {
+        if (requirementFormRepository.findByLead(lead)
+                .map(form -> form.getStatus() == RequirementFormStatus.APPROVED).orElse(false)) {
+            throw new ConflictException("Requirements can no longer be edited once you have approved them");
+        }
         if (quoteRepository.existsByLeadAndStatusIn(lead,
                 List.of(QuoteStatus.SENT, QuoteStatus.APPROVED))) {
             throw new ConflictException("Requirements can no longer be edited once a proposal has been sent");
@@ -159,6 +254,9 @@ public class RequirementService {
         form.setDesiredCompletionDate(r.desiredCompletionDate());
         form.setOccupancyStatus(r.occupancyStatus());
         form.setRenovationReason(r.renovationReason());
+        form.setTotalAdults(r.totalAdults());
+        form.setSeniorCitizens(r.seniorCitizens());
+        form.setKidsDetails(r.kidsDetails());
         form.setWfhMembers(r.wfhMembers());
         form.setGuestFrequency(r.guestFrequency());
         form.setAccessibilityNeeds(r.accessibilityNeeds());

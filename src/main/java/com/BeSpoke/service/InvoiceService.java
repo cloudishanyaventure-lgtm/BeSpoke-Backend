@@ -8,9 +8,11 @@ import com.BeSpoke.entity.Invoice;
 import com.BeSpoke.entity.InvoicePayment;
 import com.BeSpoke.entity.InvoiceStatus;
 import com.BeSpoke.entity.LeadActivity;
+import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.PaymentMode;
 import com.BeSpoke.entity.Project;
 import com.BeSpoke.entity.ProjectMilestone;
+import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
 import com.BeSpoke.exception.ConflictException;
@@ -48,10 +50,23 @@ public class InvoiceService {
         this.leadActivityRepository = leadActivityRepository;
     }
 
+    /** Studio scoping: directors touch only their own company's invoices; admins everything. */
+    private void checkScope(User actor, Project project) {
+        if (actor.getRole().isPlatform()) {
+            return;
+        }
+        Company owner = project.getLead().getCompany();
+        if (owner == null || actor.getCompany() == null
+                || !owner.getId().equals(actor.getCompany().getId())) {
+            throw new NotFoundException("Project not found");
+        }
+    }
+
     @Transactional
-    public InvoiceDto create(CreateInvoiceRequest request) {
+    public InvoiceDto create(User actor, CreateInvoiceRequest request) {
         Project project = projectRepository.findById(request.projectId())
                 .orElseThrow(() -> new NotFoundException("Project not found"));
+        checkScope(actor, project);
         Invoice invoice = new Invoice();
         invoice.setProject(project);
         if (request.milestoneId() != null) {
@@ -75,6 +90,7 @@ public class InvoiceService {
     @Transactional
     public InvoiceDto send(User admin, Long invoiceId) {
         Invoice invoice = requireInvoice(invoiceId);
+        checkScope(admin, invoice.getProject());
         if (invoice.getStatus() != InvoiceStatus.DRAFT) {
             throw new ConflictException("Only DRAFT invoices can be sent");
         }
@@ -88,6 +104,7 @@ public class InvoiceService {
     @Transactional
     public InvoiceDto recordPayment(User admin, Long invoiceId, RecordPaymentRequest request) {
         Invoice invoice = requireInvoice(invoiceId);
+        checkScope(admin, invoice.getProject());
         if (invoice.getStatus() == InvoiceStatus.DRAFT) {
             throw new ConflictException("Send the invoice before recording payments");
         }
@@ -117,9 +134,15 @@ public class InvoiceService {
     }
 
     /** status filter accepts derived states too (PARTIALLY_PAID, OVERDUE). */
-    public List<InvoiceDto> list(String status) {
-        List<InvoiceDto> dtos = invoiceRepository.findAllByOrderByCreatedAtDesc()
-                .stream().map(this::toDto).toList();
+    public List<InvoiceDto> list(User actor, String status) {
+        List<Invoice> invoices;
+        if (actor.getRole().isPlatform()) {
+            invoices = invoiceRepository.findAllByOrderByCreatedAtDesc();
+        } else {
+            invoices = actor.getCompany() == null ? List.of()
+                    : invoiceRepository.findByProject_Lead_CompanyOrderByCreatedAtDesc(actor.getCompany());
+        }
+        List<InvoiceDto> dtos = invoices.stream().map(this::toDto).toList();
         if (status == null || status.isBlank()) {
             return dtos;
         }

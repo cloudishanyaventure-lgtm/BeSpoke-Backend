@@ -6,6 +6,7 @@ import com.BeSpoke.dto.AdminDashboardDto;
 import com.BeSpoke.dto.DesignerDashboardDto;
 import com.BeSpoke.dto.LeadSummaryDto;
 import com.BeSpoke.dto.ProjectDto;
+import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.Invoice;
 import com.BeSpoke.entity.InvoicePayment;
 import com.BeSpoke.entity.InvoiceStatus;
@@ -78,13 +79,35 @@ public class DashboardService {
         this.projectService = projectService;
     }
 
-    public AdminDashboardDto adminDashboard() {
-        BigDecimal revenueCollected = invoicePaymentRepository.findAll().stream()
+    /** Command center. Platform admins see everything; studio roles see their company's book. */
+    public AdminDashboardDto adminDashboard(User current) {
+        boolean global = current.getRole().isPlatform();
+        Company company = current.getCompany();
+
+        List<Lead> allLeads = global
+                ? leadRepository.findAllByOrderByCreatedAtDesc()
+                : (company == null ? List.of()
+                        : leadRepository.findByCompanyOrderByCreatedAtDesc(company));
+        List<Project> allProjects = global
+                ? projectRepository.findAllByOrderByCreatedAtDesc()
+                : (company == null ? List.of()
+                        : projectRepository.findByLead_CompanyOrderByCreatedAtDesc(company));
+        List<Invoice> allInvoices = global
+                ? invoiceRepository.findAllByOrderByCreatedAtDesc()
+                : (company == null ? List.of()
+                        : invoiceRepository.findByProject_Lead_CompanyOrderByCreatedAtDesc(company));
+
+        List<InvoicePayment> payments = allInvoices.isEmpty() ? List.of()
+                : invoicePaymentRepository.findByInvoiceInOrderByPaidAtAsc(allInvoices);
+        BigDecimal revenueCollected = payments.stream()
                 .map(InvoicePayment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal outstanding = BigDecimal.ZERO;
-        for (Invoice invoice : invoiceRepository.findByStatusOrderByCreatedAtDesc(InvoiceStatus.SENT)) {
+        for (Invoice invoice : allInvoices) {
+            if (invoice.getStatus() != InvoiceStatus.SENT) {
+                continue;
+            }
             BigDecimal paid = invoicePaymentRepository.findByInvoiceOrderByPaidAtAsc(invoice).stream()
                     .map(InvoicePayment::getAmount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -93,8 +116,10 @@ public class DashboardService {
         }
 
         BigDecimal pipelineValue = BigDecimal.ZERO;
-        List<Lead> openLeads = leadRepository.findByStatusNotIn(CLOSED_STAGES);
-        for (Lead lead : openLeads) {
+        for (Lead lead : allLeads) {
+            if (CLOSED_STAGES.contains(lead.getStatus())) {
+                continue;
+            }
             Long midpoint = lead.getBudgetBand() != null
                     ? BUDGET_MIDPOINTS.get(lead.getBudgetBand()) : null;
             if (midpoint != null) {
@@ -102,22 +127,33 @@ public class DashboardService {
             }
         }
 
-        Map<String, Long> leadsByStage = stageCounts(leadRepository.findAllByOrderByCreatedAtDesc());
+        Map<String, Long> leadsByStage = stageCounts(allLeads);
 
-        List<LeadSummaryDto> followUpsDue = leadRepository
-                .findByFollowUpAtLessThanEqualAndStatusNotInOrderByFollowUpAtAsc(LocalDate.now(), CLOSED_STAGES)
-                .stream().map(leadService::toSummary).toList();
+        LocalDate today = LocalDate.now();
+        List<LeadSummaryDto> followUpsDue = allLeads.stream()
+                .filter(lead -> lead.getFollowUpAt() != null && !lead.getFollowUpAt().isAfter(today))
+                .filter(lead -> !CLOSED_STAGES.contains(lead.getStatus()))
+                .sorted(java.util.Comparator.comparing(Lead::getFollowUpAt))
+                .map(leadService::toSummary)
+                .toList();
 
         Map<String, Long> projectHealth = new LinkedHashMap<>();
-        for (Project project : projectRepository.findAllByOrderByCreatedAtDesc()) {
+        for (Project project : allProjects) {
             projectHealth.merge(project.getHealth().name(), 1L, Long::sum);
         }
 
-        List<ActivityDto> recentActivities = leadActivityRepository.findTop15ByOrderByCreatedAtDesc()
+        List<ActivityDto> recentActivities = (global
+                ? leadActivityRepository.findTop15ByOrderByCreatedAtDesc()
+                : (company == null ? List.<com.BeSpoke.entity.LeadActivity>of()
+                        : leadActivityRepository.findTop15ByLead_CompanyOrderByCreatedAtDesc(company)))
                 .stream().map(ActivityDto::from).toList();
 
+        List<User> designers = global
+                ? userRepository.findByRole(Role.DESIGNER)
+                : (company == null ? List.of()
+                        : userRepository.findByCompanyAndRole(company, Role.DESIGNER));
         List<AdminDashboardDto.TeamLoadDto> teamLoad = new ArrayList<>();
-        for (User designer : userRepository.findByRole(Role.DESIGNER)) {
+        for (User designer : designers) {
             if (!designer.isActive()) {
                 continue;
             }
@@ -128,11 +164,17 @@ public class DashboardService {
                     designer.getName(),
                     title,
                     leadRepository.countByAssignedDesignerAndStatusNotIn(designer, CLOSED_STAGES),
-                    projectRepository.countByDesigner(designer)));
+                    projectRepository.countActiveByDesigner(designer)));
         }
 
-        return new AdminDashboardDto(revenueCollected, outstanding, pipelineValue, leadsByStage,
-                followUpsDue, projectHealth, recentActivities, teamLoad);
+        // Design managers, architects and sales managers run the book but never see the
+        // money — null (not zero) so the UI hides the tiles instead of showing ₹0.
+        boolean finance = current.getRole().seesFinance();
+        return new AdminDashboardDto(
+                finance ? revenueCollected : null,
+                finance ? outstanding : null,
+                finance ? pipelineValue : null,
+                leadsByStage, followUpsDue, projectHealth, recentActivities, teamLoad);
     }
 
     public DesignerDashboardDto designerDashboard(User designer) {

@@ -93,6 +93,12 @@ public class MyController {
         return requirementService.submit(me(authentication));
     }
 
+    /** Customer sign-off on the submitted brief — locks it for further customer edits. */
+    @PostMapping("/requirement-form/approve")
+    public RequirementFormDto approveForm(Authentication authentication) {
+        return requirementService.approve(me(authentication));
+    }
+
     @GetMapping("/quotes")
     public List<QuoteDto> quotes(Authentication authentication) {
         User customer = me(authentication);

@@ -28,7 +28,11 @@ public class Message {
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
-    @Column(nullable = false, length = 4000)
+    /**
+     * AES-GCM ciphertext ("gcm:iv:ct"), not plaintext — see CryptoService. Sized for the
+     * worst case: a 4000-char body is up to 16 KB of UTF-8, ~21.4 KB once base64-encoded.
+     */
+    @Column(nullable = false, length = 21500)
     private String body;
 
     @Column(nullable = false)

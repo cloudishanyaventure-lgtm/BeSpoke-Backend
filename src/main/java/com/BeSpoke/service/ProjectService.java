@@ -6,6 +6,7 @@ import com.BeSpoke.dto.MilestoneRequest;
 import com.BeSpoke.dto.ProjectDetailDto;
 import com.BeSpoke.dto.ProjectDto;
 import com.BeSpoke.dto.UpdateProjectRequest;
+import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.Project;
 import com.BeSpoke.entity.ProjectHealth;
 import com.BeSpoke.entity.ProjectMilestone;
@@ -47,30 +48,53 @@ public class ProjectService {
     public Project scopedProject(User current, Long projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("Project not found"));
-        if (current.getRole() == Role.DESIGNER
-                && (project.getDesigner() == null
-                    || !project.getDesigner().getId().equals(current.getId()))) {
+        if (!canSee(current, project)) {
             throw new NotFoundException("Project not found");
         }
         return project;
     }
 
+    /** Mirrors LeadService.canSee: admin all, company-wide roles their studio's, designers their own. */
+    public boolean canSee(User current, Project project) {
+        if (current.getRole().isPlatform()) {
+            return true;
+        }
+        if (current.getRole().seesWholeCompany()) {
+            Company owner = project.getLead().getCompany();
+            return owner != null && current.getCompany() != null
+                    && owner.getId().equals(current.getCompany().getId());
+        }
+        if (project.getDesigner() != null && project.getDesigner().getId().equals(current.getId())) {
+            return true;
+        }
+        // Sales owners follow their own lead through delivery.
+        User salesOwner = project.getLead().getSalesOwner();
+        return salesOwner != null && salesOwner.getId().equals(current.getId());
+    }
+
     public List<ProjectDto> list(User current) {
-        boolean admin = current.getRole() == Role.ADMIN;
-        List<Project> projects = admin
-                ? projectRepository.findAllByOrderByCreatedAtDesc()
-                : projectRepository.findByDesignerOrderByCreatedAtDesc(current);
-        return projects.stream().map(p -> toDto(p, admin, false)).toList();
+        boolean finance = current.getRole().seesFinance();
+        List<Project> projects;
+        if (current.getRole().isPlatform()) {
+            projects = projectRepository.findAllByOrderByCreatedAtDesc();
+        } else if (current.getRole().seesWholeCompany()) {
+            projects = current.getCompany() == null ? List.of()
+                    : projectRepository.findByLead_CompanyOrderByCreatedAtDesc(current.getCompany());
+        } else {
+            projects = projectRepository.findByDesignerOrderByCreatedAtDesc(current);
+        }
+        return projects.stream().filter(p -> canSee(current, p))
+                .map(p -> toDto(p, finance, false)).toList();
     }
 
     public ProjectDetailDto get(User current, Long projectId) {
-        return toDetail(scopedProject(current, projectId), current.getRole() == Role.ADMIN);
+        return toDetail(scopedProject(current, projectId), current.getRole().seesFinance());
     }
 
     @Transactional
     public ProjectDetailDto update(User current, Long projectId, UpdateProjectRequest request) {
         Project project = scopedProject(current, projectId);
-        boolean admin = current.getRole() == Role.ADMIN;
+        boolean admin = current.getRole().seesFinance();
         if (request.stage() != null) {
             try {
                 project.setStage(ProjectStage.valueOf(request.stage().toUpperCase(Locale.ROOT)));
@@ -129,7 +153,7 @@ public class ProjectService {
             projectMilestoneRepository.save(milestone);
             order++;
         }
-        return toDetail(project, current.getRole() == Role.ADMIN);
+        return toDetail(project, current.getRole().seesFinance());
     }
 
     /**

@@ -15,6 +15,7 @@ public record TeamMemberDto(
         String dept,
         boolean active,
         Long openLeads,
-        Long activeProjects
+        Long activeProjects,
+        String company
 ) {
 }

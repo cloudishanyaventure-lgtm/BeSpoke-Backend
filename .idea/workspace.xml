@@ -4,7 +4,63 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="added changes reagrding the new design&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
+    <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="added changes">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SeedRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SeedRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/InvoiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/InvoiceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/LeadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/LeadController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/MeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/MeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/MyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/MyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/PublicController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/PublicController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/QuoteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/QuoteController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/TeamController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/TeamController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CreateTeamMemberRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CreateTeamMemberRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/EnquiryRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/EnquiryRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/JourneyDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/JourneyDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/LeadSummaryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/LeadSummaryDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/MessageDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/MessageDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RegisterRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RequirementFormDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RequirementFormDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RequirementFormRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RequirementFormRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RoomDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RoomDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RoomRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/RoomRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/TeamMemberDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/TeamMemberDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateTeamMemberRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateTeamMemberRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UserDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Lead.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Lead.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/RequirementForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/RequirementForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/RequirementFormStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/RequirementFormStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/RequirementRoom.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/RequirementRoom.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/InvoiceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/InvoiceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/LeadActivityRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/LeadActivityRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/LeadRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/LeadRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/ProjectRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/ProjectRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/security/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/security/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ClientService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ClientService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/CurrentUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/CurrentUserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/DashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/InvoiceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/InvoiceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/JourneyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/JourneyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/LeadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/LeadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MessageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ProjectService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ProjectService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/QuoteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/QuoteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/RequirementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/RequirementService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ScoreService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ScoreService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/TeamService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/TeamService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,11 +139,11 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/ritik/Documents/bespoke/BeSpoke-Backend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/apple/Documents/designconnect/backend&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
   }
 }</component>
-  <component name="RunManager" selected="Gradle.BeSpoke-Backend [build]">
+  <component name="RunManager" selected="Application.Unnamed">
     <configuration name="Unnamed (1)" type="Application" factoryName="Application" nameIsGenerated="true">
       <module name="BeSpoke-backend.main" />
       <method v="2">
@@ -96,7 +152,7 @@
     </configuration>
     <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.BeSpoke.BeSpokeApplication" />
-      <module name="BeSpoke-backend.main" />
+      <module name="designconnect-backend.main" />
       <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=dev" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -167,10 +223,20 @@
       <option name="presentableId" value="Default" />
       <updated>1783756687533</updated>
     </task>
+    <task id="LOCAL-00001" summary="added changes">
+      <option name="closed" value="true" />
+      <created>1784988322245</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1784988322245</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added changes reagrding the new design" />
-    <option name="LAST_COMMIT_MESSAGE" value="added changes reagrding the new design" />
+    <MESSAGE value="added changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="added changes" />
   </component>
 </project>

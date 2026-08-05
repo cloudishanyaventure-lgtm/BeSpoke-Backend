@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/** Team directory (staff-readable) and management (admin-only). */
+/** Team directory (staff-readable, company scoped) and management (admin / director). */
 @RestController
 @RequestMapping("/api/team")
 public class TeamController {
@@ -41,15 +41,19 @@ public class TeamController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TeamMemberDto> create(@Valid @RequestBody CreateTeamMemberRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(teamService.create(request));
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR')")
+    public ResponseEntity<TeamMemberDto> create(Authentication authentication,
+                                                @Valid @RequestBody CreateTeamMemberRequest request) {
+        User current = currentUserService.requireByEmail(authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(teamService.create(current, request));
     }
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public TeamMemberDto update(@PathVariable Long userId,
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR')")
+    public TeamMemberDto update(Authentication authentication,
+                                @PathVariable Long userId,
                                 @Valid @RequestBody UpdateTeamMemberRequest request) {
-        return teamService.update(userId, request);
+        User current = currentUserService.requireByEmail(authentication.getName());
+        return teamService.update(current, userId, request);
     }
 }

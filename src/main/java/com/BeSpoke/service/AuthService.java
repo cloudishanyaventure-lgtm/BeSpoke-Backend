@@ -5,6 +5,7 @@ import com.BeSpoke.dto.LoginRequest;
 import com.BeSpoke.dto.RegisterRequest;
 import com.BeSpoke.dto.UserDto;
 import com.BeSpoke.entity.ActivityType;
+import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.Lead;
 import com.BeSpoke.entity.LeadActivity;
 import com.BeSpoke.entity.LeadSource;
@@ -12,8 +13,10 @@ import com.BeSpoke.entity.LeadStatus;
 import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
+import com.BeSpoke.repository.CompanyRepository;
 import com.BeSpoke.repository.LeadActivityRepository;
 import com.BeSpoke.repository.LeadRepository;
+import com.BeSpoke.repository.StaffProfileRepository;
 import com.BeSpoke.repository.UserRepository;
 import com.BeSpoke.security.JwtService;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,40 +24,65 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.Instant;
+
 @Service
 public class AuthService {
+
+    /** Unambiguous alphabet: no I/l/1, no O/0, so a mailed password is readable. */
+    private static final char[] PASSWORD_ALPHABET =
+            "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789".toCharArray();
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final UserRepository userRepository;
     private final LeadRepository leadRepository;
     private final LeadActivityRepository leadActivityRepository;
+    private final CompanyRepository companyRepository;
     private final ScoreService scoreService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final StaffProfileRepository staffProfileRepository;
+    private final MailService mailService;
 
     public AuthService(UserRepository userRepository,
                        LeadRepository leadRepository,
                        LeadActivityRepository leadActivityRepository,
+                       CompanyRepository companyRepository,
                        ScoreService scoreService,
                        PasswordEncoder passwordEncoder,
-                       JwtService jwtService) {
+                       JwtService jwtService,
+                       StaffProfileRepository staffProfileRepository,
+                       MailService mailService) {
         this.userRepository = userRepository;
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
+        this.companyRepository = companyRepository;
         this.scoreService = scoreService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.staffProfileRepository = staffProfileRepository;
+        this.mailService = mailService;
     }
 
-    /** Signing up IS the lead: User(CUSTOMER) + Lead(NEW_INQUIRY, WEBSITE) in one transaction. */
+    /**
+     * Signing up IS the lead: User(CUSTOMER) + Lead(NEW_INQUIRY, WEBSITE) in one transaction.
+     * The lead stays in the BeSpoke pool — the picked studio is only a preference (V3 §0) —
+     * and the password is generated here and emailed, never chosen or returned (V3 §6).
+     */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         String email = request.email().toLowerCase().trim();
         if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("An account with this email already exists");
         }
+        String phone = userRepository.requireFreePhone(request.phone());
+        String password = generatePassword();
         User user = new User(request.name().trim(), email,
-                passwordEncoder.encode(request.password()), Role.CUSTOMER);
-        user.setPhone(request.phone().trim());
+                passwordEncoder.encode(password), Role.CUSTOMER);
+        user.setPhone(phone);
         user.setCity(request.city().trim());
         user = userRepository.save(user);
 
@@ -68,13 +96,33 @@ public class AuthService {
         lead.setBudgetBand(request.budgetBand());
         lead.setSource(LeadSource.WEBSITE);
         lead.setStatus(LeadStatus.NEW_INQUIRY);
+        if (request.companyId() != null) {
+            // A studio pick is a preference the platform honours when it routes; an id that
+            // isn't a live verified design studio is simply ignored. No company, no transfer.
+            companyRepository.findById(request.companyId())
+                    .filter(Company::canTakeLeads)
+                    .ifPresent(lead::setPreferredCompany);
+        }
         scoreService.rescore(lead, null);
         lead = leadRepository.save(lead);
 
         leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.SYSTEM,
-                "Lead created from website signup"));
+                lead.getPreferredCompany() != null
+                        ? "Lead created from website signup — prefers "
+                                + lead.getPreferredCompany().getName()
+                        : "Lead created from website signup"));
 
-        return new AuthResponse(jwtService.generateToken(user), UserDto.from(user), lead.getId());
+        mailService.customerSignedUp(user);
+        // No token: the customer signs in with the mailed password (V3 §6).
+        return new AuthResponse(null, UserDto.from(user), lead.getId());
+    }
+
+    private static String generatePassword() {
+        StringBuilder password = new StringBuilder(10);
+        for (int i = 0; i < 10; i++) {
+            password.append(PASSWORD_ALPHABET[RANDOM.nextInt(PASSWORD_ALPHABET.length)]);
+        }
+        return password.toString();
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -86,6 +134,58 @@ public class AuthService {
         if (!user.isActive()) {
             throw new BadCredentialsException("Account is deactivated");
         }
-        return new AuthResponse(jwtService.generateToken(user), UserDto.from(user), null);
+        // The sidebar shows the designation under the name (V3 §12); customers have no profile.
+        String title = staffProfileRepository.findByUser(user)
+                .map(com.BeSpoke.entity.StaffProfile::getTitle).orElse(null);
+        return new AuthResponse(jwtService.generateToken(user), UserDto.from(user, title), null);
+    }
+
+    private static final Duration OTP_TTL = Duration.ofMinutes(10);
+
+    /**
+     * Silently does nothing for unknown/inactive emails — the controller always answers
+     * with the same generic message, so the endpoint cannot be used to probe accounts.
+     */
+    @Transactional
+    public void requestOtp(String email) {
+        userRepository.findByEmail(email.toLowerCase().trim())
+                .filter(User::isActive)
+                .ifPresent(user -> {
+                    String code = String.format("%06d", RANDOM.nextInt(1_000_000));
+                    user.setOtpCode(code);
+                    user.setOtpExpiresAt(Instant.now().plus(OTP_TTL));
+                    user.setOtpAttempts(0);
+                    userRepository.save(user);
+                    mailService.loginOtp(user, code);
+                });
+    }
+
+    /**
+     * Single use: the code is cleared on success, and burned after 5 wrong guesses.
+     * Wrong, expired or burned code → one generic 400.
+     */
+    @Transactional
+    public AuthResponse verifyOtp(String email, String code) {
+        User user = userRepository.findByEmail(email.toLowerCase().trim())
+                .filter(User::isActive)
+                .filter(u -> u.getOtpCode() != null
+                        && u.getOtpExpiresAt() != null && u.getOtpExpiresAt().isAfter(Instant.now()))
+                .orElseThrow(() -> new BadRequestException("Invalid or expired code"));
+        if (!user.getOtpCode().equals(code.trim())) {
+            user.setOtpAttempts(user.getOtpAttempts() + 1);
+            if (user.getOtpAttempts() >= 5) {
+                user.setOtpCode(null);
+                user.setOtpExpiresAt(null);
+            }
+            userRepository.save(user);
+            throw new BadRequestException("Invalid or expired code");
+        }
+        user.setOtpCode(null);
+        user.setOtpExpiresAt(null);
+        user.setOtpAttempts(0);
+        userRepository.save(user);
+        String title = staffProfileRepository.findByUser(user)
+                .map(com.BeSpoke.entity.StaffProfile::getTitle).orElse(null);
+        return new AuthResponse(jwtService.generateToken(user), UserDto.from(user, title), null);
     }
 }

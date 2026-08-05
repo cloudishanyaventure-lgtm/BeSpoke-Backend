@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/** Quote builder - admin only. */
+/** Quote builder - platform admin and studio funnel roles; scoped to the studio in the service. */
 @RestController
 @RequestMapping("/api/quotes")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','ACCOUNT_MANAGER','DESIGN_MANAGER','SALES_MANAGER','CUSTOMER_CONSULTANT')")
 public class QuoteController {
 
     private final QuoteService quoteService;
@@ -48,8 +48,10 @@ public class QuoteController {
     }
 
     @PutMapping("/{id}")
-    public QuoteDto update(@PathVariable Long id, @Valid @RequestBody UpdateQuoteRequest request) {
-        return quoteService.update(id, request);
+    public QuoteDto update(Authentication authentication,
+                           @PathVariable Long id,
+                           @Valid @RequestBody UpdateQuoteRequest request) {
+        return quoteService.update(me(authentication), id, request);
     }
 
     @PostMapping("/{id}/send")
@@ -64,12 +66,13 @@ public class QuoteController {
     }
 
     @GetMapping
-    public List<QuoteDto> list(@RequestParam(required = false) String status) {
-        return quoteService.list(status);
+    public List<QuoteDto> list(Authentication authentication,
+                               @RequestParam(required = false) String status) {
+        return quoteService.list(me(authentication), status);
     }
 
     @GetMapping("/{id}")
-    public QuoteDto get(@PathVariable Long id) {
-        return quoteService.get(id);
+    public QuoteDto get(Authentication authentication, @PathVariable Long id) {
+        return quoteService.get(me(authentication), id);
     }
 }

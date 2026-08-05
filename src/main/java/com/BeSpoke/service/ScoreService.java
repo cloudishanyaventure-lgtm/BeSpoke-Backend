@@ -31,7 +31,8 @@ public class ScoreService {
                 default -> { /* unknown type: no bonus */ }
             }
         }
-        if (formStatus == RequirementFormStatus.SUBMITTED) {
+        if (formStatus == RequirementFormStatus.SUBMITTED
+                || formStatus == RequirementFormStatus.APPROVED) {
             score += 25;
         } else if (formStatus == RequirementFormStatus.DRAFT) {
             score += 10;

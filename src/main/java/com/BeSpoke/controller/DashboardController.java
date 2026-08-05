@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Role-shaped dashboard: admins get the command center, designers their own queue. */
+/** Role-shaped dashboard: admins and studio leadership get the command center, designers their own queue. */
 @RestController
 @RequestMapping("/api/dashboard")
 public class DashboardController {
@@ -25,8 +25,8 @@ public class DashboardController {
     @GetMapping
     public Object dashboard(Authentication authentication) {
         User current = currentUserService.requireByEmail(authentication.getName());
-        return current.getRole() == Role.ADMIN
-                ? dashboardService.adminDashboard()
+        return current.getRole().isPlatform() || current.getRole().seesWholeCompany()
+                ? dashboardService.adminDashboard(current)
                 : dashboardService.designerDashboard(current);
     }
 }

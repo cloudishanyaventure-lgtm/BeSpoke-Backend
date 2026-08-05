@@ -4,6 +4,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.BeSpoke.dto.JourneyDto;
 import com.BeSpoke.dto.ProjectDto;
 import com.BeSpoke.entity.ActivityType;
+import com.BeSpoke.entity.Drawing;
+import com.BeSpoke.entity.DrawingStatus;
 import com.BeSpoke.entity.Lead;
 import com.BeSpoke.entity.LeadActivity;
 import com.BeSpoke.entity.Project;
@@ -11,6 +13,7 @@ import com.BeSpoke.entity.QuoteStatus;
 import com.BeSpoke.entity.RequirementForm;
 import com.BeSpoke.entity.StaffProfile;
 import com.BeSpoke.entity.User;
+import com.BeSpoke.repository.DrawingRepository;
 import com.BeSpoke.repository.InvoiceRepository;
 import com.BeSpoke.repository.LeadActivityRepository;
 import com.BeSpoke.repository.MessageRepository;
@@ -40,6 +43,7 @@ public class JourneyService {
     private final InvoiceRepository invoiceRepository;
     private final MessageRepository messageRepository;
     private final StaffProfileRepository staffProfileRepository;
+    private final DrawingRepository drawingRepository;
 
     public JourneyService(RequirementService requirementService,
                           RequirementFormRepository requirementFormRepository,
@@ -49,7 +53,8 @@ public class JourneyService {
                           QuoteRepository quoteRepository,
                           InvoiceRepository invoiceRepository,
                           MessageRepository messageRepository,
-                          StaffProfileRepository staffProfileRepository) {
+                          StaffProfileRepository staffProfileRepository,
+                          DrawingRepository drawingRepository) {
         this.requirementService = requirementService;
         this.requirementFormRepository = requirementFormRepository;
         this.leadActivityRepository = leadActivityRepository;
@@ -59,6 +64,7 @@ public class JourneyService {
         this.invoiceRepository = invoiceRepository;
         this.messageRepository = messageRepository;
         this.staffProfileRepository = staffProfileRepository;
+        this.drawingRepository = drawingRepository;
     }
 
     public JourneyDto journey(User customer) {
@@ -101,6 +107,33 @@ public class JourneyService {
                 : 0;
         long unreadMessages = messageRepository.countByLeadAndSenderNotAndReadAtIsNull(lead, customer);
 
+        // Transfer state: POOL → TRANSFERRED (with a studio, unaccepted) → ACCEPTED.
+        JourneyDto.CompanyCardDto companyCard = null;
+        String transferState = "POOL";
+        if (lead.getCompany() != null) {
+            companyCard = new JourneyDto.CompanyCardDto(
+                    lead.getCompany().getName(), lead.getCompany().getLogoUrl(), lead.getCompany().getCity());
+            transferState = lead.getAcceptedAt() != null ? "ACCEPTED" : "TRANSFERRED";
+        }
+
+        // The same three states as a history, so the tracker stays visible after acceptance.
+        String companyName = lead.getCompany() != null ? lead.getCompany().getName() : null;
+        List<JourneyDto.RouteEventDto> routeHistory = new ArrayList<>();
+        routeHistory.add(new JourneyDto.RouteEventDto("POOL", lead.getCreatedAt(), null));
+        if (lead.getTransferredAt() != null) {
+            routeHistory.add(new JourneyDto.RouteEventDto("TRANSFERRED", lead.getTransferredAt(), companyName));
+        }
+        if (lead.getAcceptedAt() != null) {
+            routeHistory.add(new JourneyDto.RouteEventDto("ACCEPTED", lead.getAcceptedAt(), companyName));
+        }
+
+        List<Drawing> drawings = drawingRepository.findByLeadOrderByCreatedAtDesc(lead);
+        JourneyDto.DrawingCountsDto drawingCounts = new JourneyDto.DrawingCountsDto(
+                drawings.stream().filter(d -> d.getStatus() == DrawingStatus.WIP).count(),
+                drawings.stream().filter(d -> d.getStatus() == DrawingStatus.PENDING_APPROVAL).count(),
+                drawings.stream().filter(d -> d.getStatus() == DrawingStatus.APPROVED).count(),
+                drawings.stream().filter(d -> d.getStatus() == DrawingStatus.FINAL).count());
+
         return new JourneyDto(
                 new JourneyDto.LeadJourneyDto(
                         lead.getId(), lead.getStatus().name(), lead.getCreatedAt(), stageHistory),
@@ -111,6 +144,10 @@ public class JourneyService {
                 quoteCount,
                 pendingQuoteCount,
                 invoiceCount,
-                unreadMessages);
+                unreadMessages,
+                companyCard,
+                transferState,
+                routeHistory,
+                drawingCounts);
     }
 }

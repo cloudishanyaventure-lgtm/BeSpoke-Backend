@@ -36,6 +36,14 @@ public class RequirementRoom {
     @Column(nullable = false)
     private String label;
 
+    /** Which floor the room is on, e.g. "Ground floor". */
+    @Column(length = 60)
+    private String floor;
+
+    /** Family member the room is for, e.g. "Mrs. Sharma". */
+    @Column(length = 120)
+    private String familyMember;
+
     private String primaryUse;
 
     @Column(length = 1000)
@@ -95,6 +103,22 @@ public class RequirementRoom {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getFloor() {
+        return floor;
+    }
+
+    public void setFloor(String floor) {
+        this.floor = floor;
+    }
+
+    public String getFamilyMember() {
+        return familyMember;
+    }
+
+    public void setFamilyMember(String familyMember) {
+        this.familyMember = familyMember;
     }
 
     public String getPrimaryUse() {

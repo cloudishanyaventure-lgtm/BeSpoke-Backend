@@ -28,6 +28,19 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    /** Everyone with a workspace login: platform admins + all company staff roles. */
+    private static final String[] STAFF_ROLES = {
+            "SUPER_ADMIN", "ADMIN",
+            "DIRECTOR", "ACCOUNT_MANAGER", "PRINCIPAL_ARCHITECT", "DESIGN_MANAGER", "DESIGNER",
+            "PROJECT_MANAGER", "SALES_MANAGER", "CUSTOMER_CONSULTANT", "SALES_EXECUTIVE",
+            "PRODUCT_MANAGER", "PRODUCT_SME"};
+
+    /** Vendor workspace: vendor-company roles + platform. */
+    private static final String[] VENDOR_ROLES = {
+            "SUPER_ADMIN", "ADMIN",
+            "DIRECTOR", "ACCOUNT_MANAGER", "SALES_MANAGER", "CUSTOMER_CONSULTANT",
+            "PRODUCT_MANAGER", "PRODUCT_SME"};
+
     private final JwtAuthFilter jwtAuthFilter;
     private final AppUserDetailsService userDetailsService;
     private final String allowedOrigins;
@@ -47,25 +60,46 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public: auth, enquiry form, catalog, marketing cards, uploads, health.
+                        // Public: auth, enquiry form, catalog, marketing cards, shop, uploads, health.
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/enquiries").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/shop/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()
-                        // Customer portal.
+                        // Customer portal + shop checkout.
                         .requestMatchers("/api/my/**").hasRole("CUSTOMER")
-                        // Financials are admin-only in their entirety.
-                        .requestMatchers("/api/quotes/**", "/api/invoices/**").hasRole("ADMIN")
-                        // Team: directory readable by staff, management admin-only.
-                        .requestMatchers(HttpMethod.GET, "/api/team").hasAnyRole("ADMIN", "DESIGNER")
-                        .requestMatchers("/api/team/**").hasRole("ADMIN")
-                        // Staff workspace (designer scoping enforced in the service layer;
-                        // POST /api/leads and /assign are additionally admin-only via @PreAuthorize).
+                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("CUSTOMER")
+                        // Vendor workspace (service layer 404s non-vendor companies).
+                        .requestMatchers("/api/vendor/**").hasAnyRole(VENDOR_ROLES)
+                        // Financials: invoices for finance roles, quotes also for the funnel roles.
+                        .requestMatchers("/api/invoices/**")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN", "DIRECTOR", "ACCOUNT_MANAGER")
+                        .requestMatchers("/api/quotes/**")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN", "DIRECTOR", "ACCOUNT_MANAGER",
+                                "DESIGN_MANAGER", "SALES_MANAGER", "CUSTOMER_CONSULTANT")
+                        // Team: directory readable by all staff, management for platform/director.
+                        .requestMatchers(HttpMethod.GET, "/api/team").hasAnyRole(STAFF_ROLES)
+                        .requestMatchers("/api/team/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "DIRECTOR")
+                        // Internal team chat: any staff role; the service requires a company.
+                        .requestMatchers("/api/team-chat/**").hasAnyRole(STAFF_ROLES)
+                        // Companies: own profile/org readable by staff, onboarding + KYC platform-side.
+                        .requestMatchers(HttpMethod.GET, "/api/companies/mine").hasAnyRole(STAFF_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/companies/*/org").hasAnyRole(STAFF_ROLES)
+                        .requestMatchers(HttpMethod.PUT, "/api/companies/*/kyc-status")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/companies").hasAnyRole("SUPER_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/companies").hasAnyRole("SUPER_ADMIN", "ADMIN")
+                        .requestMatchers("/api/companies/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "DIRECTOR")
+                        // Platform org chart.
+                        .requestMatchers("/api/hierarchy").hasAnyRole("SUPER_ADMIN", "ADMIN")
+                        // Staff workspace (company/role scoping enforced in the service layer;
+                        // finer restrictions via @PreAuthorize).
                         .requestMatchers("/api/leads/**", "/api/projects/**", "/api/clients/**",
-                                "/api/messages/**", "/api/dashboard").hasAnyRole("ADMIN", "DESIGNER")
+                                "/api/messages/**", "/api/dashboard", "/api/audit")
+                        .hasAnyRole(STAFF_ROLES)
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

@@ -2,7 +2,9 @@ package com.BeSpoke.controller;
 
 import com.BeSpoke.dto.UpdateMeRequest;
 import com.BeSpoke.dto.UserDto;
+import com.BeSpoke.entity.StaffProfile;
 import com.BeSpoke.entity.User;
+import com.BeSpoke.repository.StaffProfileRepository;
 import com.BeSpoke.repository.UserRepository;
 import com.BeSpoke.service.CurrentUserService;
 import jakarta.validation.Valid;
@@ -19,15 +21,25 @@ public class MeController {
 
     private final CurrentUserService currentUserService;
     private final UserRepository userRepository;
+    private final StaffProfileRepository staffProfileRepository;
 
-    public MeController(CurrentUserService currentUserService, UserRepository userRepository) {
+    public MeController(CurrentUserService currentUserService,
+                        UserRepository userRepository,
+                        StaffProfileRepository staffProfileRepository) {
         this.currentUserService = currentUserService;
         this.userRepository = userRepository;
+        this.staffProfileRepository = staffProfileRepository;
+    }
+
+    /** The staff-profile designation, or null for customers who have no profile. */
+    private String titleOf(User user) {
+        return staffProfileRepository.findByUser(user).map(StaffProfile::getTitle).orElse(null);
     }
 
     @GetMapping
     public UserDto me(Authentication authentication) {
-        return UserDto.from(currentUserService.requireByEmail(authentication.getName()));
+        User user = currentUserService.requireByEmail(authentication.getName());
+        return UserDto.from(user, titleOf(user));
     }
 
     @PutMapping
@@ -42,6 +54,6 @@ public class MeController {
         if (request.city() != null && !request.city().isBlank()) {
             user.setCity(request.city().trim());
         }
-        return UserDto.from(userRepository.save(user));
+        return UserDto.from(userRepository.save(user), titleOf(user));
     }
 }

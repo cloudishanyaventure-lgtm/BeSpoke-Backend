@@ -12,6 +12,7 @@ public record EnquiryRequest(
         @NotBlank @Size(max = 120) String city,
         @Size(max = 60) String propertyType,
         @Size(max = 60) String budgetBand,
-        @Size(max = 2000) String message
+        @Size(max = 2000) String message,
+        Long companyId
 ) {
 }

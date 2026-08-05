@@ -6,9 +6,8 @@ import com.BeSpoke.dto.UserRefDto;
 import com.BeSpoke.entity.Lead;
 import com.BeSpoke.entity.LeadStatus;
 import com.BeSpoke.entity.Message;
-import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
-import com.BeSpoke.repository.LeadRepository;
+import com.BeSpoke.exception.ConflictException;
 import com.BeSpoke.repository.MessageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,37 +21,49 @@ import java.util.List;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final LeadRepository leadRepository;
+    private final LeadService leadService;
+    private final CryptoService cryptoService;
 
-    public MessageService(MessageRepository messageRepository, LeadRepository leadRepository) {
+    public MessageService(MessageRepository messageRepository,
+                          LeadService leadService,
+                          CryptoService cryptoService) {
         this.messageRepository = messageRepository;
-        this.leadRepository = leadRepository;
+        this.leadService = leadService;
+        this.cryptoService = cryptoService;
     }
 
     /** Returns the thread and marks the other side's messages as read for the current user. */
     @Transactional
     public List<MessageDto> messagesFor(Lead lead, User current) {
+        requireAccepted(lead);
         for (Message message : messageRepository.findByLeadAndSenderNotAndReadAtIsNull(lead, current)) {
             message.setReadAt(Instant.now());
             messageRepository.save(message);
         }
-        return messageRepository.findByLeadOrderByCreatedAtAsc(lead)
-                .stream().map(MessageDto::from).toList();
+        return messageRepository.findByLeadOrderByCreatedAtAsc(lead).stream()
+                .map(message -> MessageDto.from(message, cryptoService.decrypt(message.getBody())))
+                .toList();
     }
 
     @Transactional
     public MessageDto send(Lead lead, User sender, String body) {
-        Message message = messageRepository.save(new Message(lead, sender, body.trim()));
-        return MessageDto.from(message);
+        requireAccepted(lead);
+        String plain = body.trim();
+        Message message = messageRepository.save(new Message(lead, sender, cryptoService.encrypt(plain)));
+        return MessageDto.from(message, plain);
     }
 
-    /** Staff thread list: leads that have messages OR are still open (not LOST), scoped for designers. */
+    /**
+     * Staff thread list: accepted leads that have messages OR are still open (not LOST),
+     * company/role scoped. Unaccepted leads have no thread yet (§8a).
+     */
     public List<ThreadDto> threads(User current) {
-        List<Lead> leads = current.getRole() == Role.DESIGNER
-                ? leadRepository.findByAssignedDesignerOrderByCreatedAtDesc(current)
-                : leadRepository.findAllByOrderByCreatedAtDesc();
+        List<Lead> leads = leadService.visibleLeads(current);
         List<ThreadDto> threads = new ArrayList<>();
         for (Lead lead : leads) {
+            if (lead.getAcceptedAt() == null) {
+                continue;
+            }
             Message last = messageRepository.findFirstByLeadOrderByCreatedAtDesc(lead).orElse(null);
             if (last == null && lead.getStatus() == LeadStatus.LOST) {
                 continue;
@@ -62,7 +73,7 @@ public class MessageService {
                     lead.getContactName(),
                     lead.getStatus().name(),
                     UserRefDto.from(lead.getAssignedDesigner()),
-                    last != null ? last.getBody() : null,
+                    last != null ? cryptoService.decrypt(last.getBody()) : null,
                     last != null ? last.getSender().getName() : null,
                     last != null ? last.getCreatedAt() : null,
                     messageRepository.countByLeadAndSenderNotAndReadAtIsNull(lead, current)));
@@ -82,5 +93,15 @@ public class MessageService {
             return tb.compareTo(ta);
         });
         return threads;
+    }
+
+    /**
+     * One guard for every route — staff (MessageController) and the customer portal
+     * (MyController) both land here, so messaging cannot open before a studio accepts.
+     */
+    private void requireAccepted(Lead lead) {
+        if (lead.getAcceptedAt() == null) {
+            throw new ConflictException("Messaging opens once a studio accepts this project");
+        }
     }
 }

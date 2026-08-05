@@ -37,19 +37,21 @@ public class QuoteService {
     private final QuoteRepository quoteRepository;
     private final LeadRepository leadRepository;
     private final LeadActivityRepository leadActivityRepository;
+    private final LeadService leadService;
 
     public QuoteService(QuoteRepository quoteRepository,
                         LeadRepository leadRepository,
-                        LeadActivityRepository leadActivityRepository) {
+                        LeadActivityRepository leadActivityRepository,
+                        LeadService leadService) {
         this.quoteRepository = quoteRepository;
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
+        this.leadService = leadService;
     }
 
     @Transactional
-    public QuoteDto create(User admin, CreateQuoteRequest request) {
-        Lead lead = leadRepository.findById(request.leadId())
-                .orElseThrow(() -> new NotFoundException("Lead not found"));
+    public QuoteDto create(User actor, CreateQuoteRequest request) {
+        Lead lead = leadService.scopedLead(actor, request.leadId());
         int version = quoteRepository.findFirstByLeadOrderByVersionDesc(lead)
                 .map(q -> q.getVersion() + 1).orElse(1);
         Quote quote = new Quote();
@@ -64,8 +66,8 @@ public class QuoteService {
     }
 
     @Transactional
-    public QuoteDto update(Long quoteId, UpdateQuoteRequest request) {
-        Quote quote = requireQuote(quoteId);
+    public QuoteDto update(User actor, Long quoteId, UpdateQuoteRequest request) {
+        Quote quote = requireQuote(actor, quoteId);
         if (quote.getStatus() != QuoteStatus.DRAFT) {
             throw new ConflictException("Only DRAFT quotes can be edited — use revise to create a new version");
         }
@@ -77,7 +79,7 @@ public class QuoteService {
 
     @Transactional
     public QuoteDto send(User admin, Long quoteId) {
-        Quote quote = requireQuote(quoteId);
+        Quote quote = requireQuote(admin, quoteId);
         if (quote.getStatus() != QuoteStatus.DRAFT) {
             throw new ConflictException("Only DRAFT quotes can be sent");
         }
@@ -92,7 +94,7 @@ public class QuoteService {
     /** Copies the quote into a fresh DRAFT with version+1. */
     @Transactional
     public QuoteDto revise(User admin, Long quoteId) {
-        Quote source = requireQuote(quoteId);
+        Quote source = requireQuote(admin, quoteId);
         int version = quoteRepository.findFirstByLeadOrderByVersionDesc(source.getLead())
                 .map(q -> q.getVersion() + 1).orElse(source.getVersion() + 1);
         Quote copy = new Quote();
@@ -111,7 +113,7 @@ public class QuoteService {
         return QuoteDto.from(copy);
     }
 
-    public List<QuoteDto> list(String status) {
+    public List<QuoteDto> list(User actor, String status) {
         List<Quote> quotes;
         if (status == null || status.isBlank()) {
             quotes = quoteRepository.findAllByOrderByCreatedAtDesc();
@@ -124,11 +126,13 @@ public class QuoteService {
             }
             quotes = quoteRepository.findByStatusOrderByCreatedAtDesc(parsed);
         }
-        return quotes.stream().map(QuoteDto::from).toList();
+        return quotes.stream()
+                .filter(quote -> leadService.canSee(actor, quote.getLead()))
+                .map(QuoteDto::from).toList();
     }
 
-    public QuoteDto get(Long quoteId) {
-        return QuoteDto.from(requireQuote(quoteId));
+    public QuoteDto get(User actor, Long quoteId) {
+        return QuoteDto.from(requireQuote(actor, quoteId));
     }
 
     /** Customer view: quotes on their lead, drafts hidden. */
@@ -160,6 +164,16 @@ public class QuoteService {
                                ? ": " + request.comment().trim() : "")));
         }
         return QuoteDto.from(quoteRepository.save(quote));
+    }
+
+    /** Loads a quote the staff actor may see; other studios' quotes 404. */
+    private Quote requireQuote(User actor, Long quoteId) {
+        Quote quote = quoteRepository.findById(quoteId)
+                .orElseThrow(() -> new NotFoundException("Quote not found"));
+        if (!leadService.canSee(actor, quote.getLead())) {
+            throw new NotFoundException("Quote not found");
+        }
+        return quote;
     }
 
     private Quote requireQuote(Long quoteId) {

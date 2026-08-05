@@ -1,5 +1,6 @@
 package com.BeSpoke.repository;
 
+import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.Lead;
 import com.BeSpoke.entity.LeadStatus;
 import com.BeSpoke.entity.User;
@@ -20,6 +21,8 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
 
     List<Lead> findByAssignedDesignerOrderByCreatedAtDesc(User assignedDesigner);
 
+    List<Lead> findBySalesOwnerOrAssignedDesignerOrderByCreatedAtDesc(User salesOwner, User assignedDesigner);
+
     List<Lead> findByFollowUpAtLessThanEqualAndStatusNotInOrderByFollowUpAtAsc(
             LocalDate date, Collection<LeadStatus> excluded);
 
@@ -29,4 +32,8 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
     long countByAssignedDesignerAndStatusNotIn(User assignedDesigner, Collection<LeadStatus> excluded);
 
     List<Lead> findByStatusNotIn(Collection<LeadStatus> excluded);
+
+    List<Lead> findByCompanyOrderByCreatedAtDesc(Company company);
+
+    long countByCompanyAndStatusNotIn(Company company, Collection<LeadStatus> excluded);
 }

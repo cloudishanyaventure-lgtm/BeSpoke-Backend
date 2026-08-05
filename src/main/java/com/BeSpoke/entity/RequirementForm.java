@@ -38,6 +38,9 @@ public class RequirementForm {
 
     private Instant submittedAt;
 
+    /** When the customer approved the submitted brief. */
+    private Instant approvedAt;
+
     private Instant updatedAt = Instant.now();
 
     // Step 1 - Property & project
@@ -55,6 +58,11 @@ public class RequirementForm {
     private String renovationReason;
 
     // Step 2 - Household & lifestyle
+    private Integer totalAdults;
+    private Integer seniorCitizens;
+    /** Display string, e.g. "Boy, 7; Girl, 4". */
+    @Column(length = 500)
+    private String kidsDetails;
     private Integer wfhMembers;
     private String guestFrequency;
     @Column(length = 500)
@@ -143,6 +151,14 @@ public class RequirementForm {
         this.submittedAt = submittedAt;
     }
 
+    public Instant getApprovedAt() {
+        return approvedAt;
+    }
+
+    public void setApprovedAt(Instant approvedAt) {
+        this.approvedAt = approvedAt;
+    }
+
     public Instant getUpdatedAt() {
         return updatedAt;
     }
@@ -229,6 +245,30 @@ public class RequirementForm {
 
     public void setRenovationReason(String renovationReason) {
         this.renovationReason = renovationReason;
+    }
+
+    public Integer getTotalAdults() {
+        return totalAdults;
+    }
+
+    public void setTotalAdults(Integer totalAdults) {
+        this.totalAdults = totalAdults;
+    }
+
+    public Integer getSeniorCitizens() {
+        return seniorCitizens;
+    }
+
+    public void setSeniorCitizens(Integer seniorCitizens) {
+        this.seniorCitizens = seniorCitizens;
+    }
+
+    public String getKidsDetails() {
+        return kidsDetails;
+    }
+
+    public void setKidsDetails(String kidsDetails) {
+        this.kidsDetails = kidsDetails;
     }
 
     public Integer getWfhMembers() {
