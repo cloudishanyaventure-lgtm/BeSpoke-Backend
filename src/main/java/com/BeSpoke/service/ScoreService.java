@@ -32,7 +32,8 @@ public class ScoreService {
             }
         }
         if (formStatus == RequirementFormStatus.SUBMITTED
-                || formStatus == RequirementFormStatus.APPROVED) {
+                || formStatus == RequirementFormStatus.APPROVED
+                || formStatus == RequirementFormStatus.LOCKED) {
             score += 25;
         } else if (formStatus == RequirementFormStatus.DRAFT) {
             score += 10;

@@ -1,5 +1,6 @@
 package com.BeSpoke.service;
 
+import com.BeSpoke.dto.ActivityDto;
 import com.BeSpoke.dto.RequirementFormDto;
 import com.BeSpoke.dto.RequirementFormRequest;
 import com.BeSpoke.dto.RoomRequest;
@@ -106,6 +107,7 @@ public class RequirementService {
             created.setStatus(RequirementFormStatus.DRAFT);
             return created;
         });
+        assertNotStudioLocked(form);
         unfreezeIfApproved(lead, form);
         applyScalars(form, request);
         form.setUpdatedAt(Instant.now());
@@ -123,6 +125,7 @@ public class RequirementService {
     public RequirementFormDto staffSubmit(Lead lead, User staff) {
         RequirementForm form = requirementFormRepository.findByLead(lead)
                 .orElseThrow(() -> new BadRequestException("Capture the brief before marking it complete"));
+        assertNotStudioLocked(form);
         if (form.getStatus() == RequirementFormStatus.SUBMITTED) {
             return RequirementFormDto.from(form);
         }
@@ -144,6 +147,7 @@ public class RequirementService {
             created.setStatus(RequirementFormStatus.DRAFT);
             return requirementFormRepository.save(created);
         });
+        assertNotStudioLocked(form);
         unfreezeIfApproved(lead, form);
         form.getRooms().clear();
         int order = 0;
@@ -216,6 +220,34 @@ public class RequirementService {
         return RequirementFormDto.from(form);
     }
 
+    /** Studio's final sign-off — locks the brief for everyone, customer and studio alike. */
+    @Transactional
+    public RequirementFormDto studioApprove(Lead lead, User staff) {
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new BadRequestException("Capture the brief before approving it"));
+        if (form.getStatus() == RequirementFormStatus.DRAFT) {
+            throw new ConflictException("Submit the brief before it can be approved");
+        }
+        if (form.getStatus() == RequirementFormStatus.LOCKED) {
+            return RequirementFormDto.from(form);
+        }
+        form.setStatus(RequirementFormStatus.LOCKED);
+        form.setStudioApprovedAt(Instant.now());
+        form.setUpdatedAt(Instant.now());
+        form = requirementFormRepository.save(form);
+        leadActivityRepository.save(new LeadActivity(lead, staff, ActivityType.SYSTEM,
+                staff.getName() + " approved the brief — it is now locked and can no longer be edited"));
+        rescore(lead, form);
+        return RequirementFormDto.from(form);
+    }
+
+    /** Customer-visible brief history, oldest first — the same feed the studio side sees. */
+    @Transactional(readOnly = true)
+    public List<ActivityDto> myActivities(User customer) {
+        return leadActivityRepository.findByLeadOrderByCreatedAtAsc(myLead(customer))
+                .stream().map(ActivityDto::from).toList();
+    }
+
     /** A staff edit to a customer-approved scope drops it back to SUBMITTED for re-approval. */
     private void unfreezeIfApproved(Lead lead, RequirementForm form) {
         if (form.getStatus() == RequirementFormStatus.APPROVED) {
@@ -226,15 +258,26 @@ public class RequirementService {
         }
     }
 
-    /** The form locks once the customer approved it or a proposal is on (or past) their table. */
+    /** The form locks once the customer approved it, the studio locked it, or a proposal is on (or past) their table. */
     private void assertNotLocked(Lead lead) {
-        if (requirementFormRepository.findByLead(lead)
-                .map(form -> form.getStatus() == RequirementFormStatus.APPROVED).orElse(false)) {
+        RequirementFormStatus status = requirementFormRepository.findByLead(lead)
+                .map(RequirementForm::getStatus).orElse(null);
+        if (status == RequirementFormStatus.APPROVED) {
             throw new ConflictException("Requirements can no longer be edited once you have approved them");
+        }
+        if (status == RequirementFormStatus.LOCKED) {
+            throw new ConflictException("Requirements can no longer be edited once the studio has locked the brief");
         }
         if (quoteRepository.existsByLeadAndStatusIn(lead,
                 List.of(QuoteStatus.SENT, QuoteStatus.APPROVED))) {
             throw new ConflictException("Requirements can no longer be edited once a proposal has been sent");
+        }
+    }
+
+    /** Staff-side counterpart of assertNotLocked — a studio-locked brief is frozen for staff too. */
+    private void assertNotStudioLocked(RequirementForm form) {
+        if (form.getStatus() == RequirementFormStatus.LOCKED) {
+            throw new ConflictException("This brief has been locked and can no longer be edited");
         }
     }
 

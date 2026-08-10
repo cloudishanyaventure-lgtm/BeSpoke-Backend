@@ -12,6 +12,7 @@ public record RequirementFormDto(
         String status,
         Instant submittedAt,
         Instant approvedAt,
+        Instant studioApprovedAt,
         Instant updatedAt,
         // Property & project
         String projectSegment,
@@ -67,6 +68,7 @@ public record RequirementFormDto(
                 form.getStatus().name(),
                 form.getSubmittedAt(),
                 form.getApprovedAt(),
+                form.getStudioApprovedAt(),
                 form.getUpdatedAt(),
                 form.getProjectSegment(),
                 form.getSpaceType(),

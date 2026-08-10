@@ -1,5 +1,6 @@
 package com.BeSpoke.controller;
 
+import com.BeSpoke.dto.ActivityDto;
 import com.BeSpoke.dto.InvoiceDto;
 import com.BeSpoke.dto.JourneyDto;
 import com.BeSpoke.dto.MessageDto;
@@ -97,6 +98,11 @@ public class MyController {
     @PostMapping("/requirement-form/approve")
     public RequirementFormDto approveForm(Authentication authentication) {
         return requirementService.approve(me(authentication));
+    }
+
+    @GetMapping("/requirement-form/activities")
+    public List<ActivityDto> formActivities(Authentication authentication) {
+        return requirementService.myActivities(me(authentication));
     }
 
     @GetMapping("/quotes")

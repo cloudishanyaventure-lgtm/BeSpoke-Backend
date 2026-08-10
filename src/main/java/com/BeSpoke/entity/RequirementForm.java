@@ -41,6 +41,9 @@ public class RequirementForm {
     /** When the customer approved the submitted brief. */
     private Instant approvedAt;
 
+    /** When the studio gave final sign-off and locked the brief for everyone. */
+    private Instant studioApprovedAt;
+
     private Instant updatedAt = Instant.now();
 
     // Step 1 - Property & project
@@ -157,6 +160,14 @@ public class RequirementForm {
 
     public void setApprovedAt(Instant approvedAt) {
         this.approvedAt = approvedAt;
+    }
+
+    public Instant getStudioApprovedAt() {
+        return studioApprovedAt;
+    }
+
+    public void setStudioApprovedAt(Instant studioApprovedAt) {
+        this.studioApprovedAt = studioApprovedAt;
     }
 
     public Instant getUpdatedAt() {

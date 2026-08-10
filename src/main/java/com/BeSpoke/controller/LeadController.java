@@ -162,4 +162,11 @@ public class LeadController {
         User staff = me(authentication);
         return requirementService.staffSubmit(leadService.scopedLead(staff, id), staff);
     }
+
+    /** Studio's final sign-off on the brief — locks it for everyone. */
+    @PostMapping("/{id}/prd/approve")
+    public RequirementFormDto approvePrd(Authentication authentication, @PathVariable Long id) {
+        User staff = me(authentication);
+        return requirementService.studioApprove(leadService.scopedLead(staff, id), staff);
+    }
 }
