@@ -35,7 +35,7 @@ app:
     # Comma-separated list of allowed frontend origins, e.g. https://app.designconnect.in
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*}
   mail:
-    enabled: ${MAIL_ENABLED:true}
+    enabled: ${MAIL_ENABLED:false}
     from: ${MAIL_FROM:BeSpoke <no-reply@bespoke.in>}
     app-url: ${APP_URL:https://app.bespoke.in}
   crypto:
