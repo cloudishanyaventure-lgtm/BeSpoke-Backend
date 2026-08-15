@@ -1,0 +1,431 @@
+{
+ "BEDROOM": {
+  "Layout & Architecture": [
+   "Room dimensions and shape",
+   "Door/window placement and swing direction",
+   "Ceiling height and any beams/slopes",
+   "Electrical points (existing vs. required)",
+   "AC unit/vent placement and clearance",
+   "Structural constraints (load-bearing walls, columns)"
+  ],
+  "Furniture": [
+   "Bed size and placement (king/queen, headboard wall)",
+   "Bedside tables (pair or single, size)",
+   "Wardrobe/closet (built-in vs. freestanding, sliding vs. hinged)",
+   "Dresser/chest of drawers",
+   "Dressing table with mirror",
+   "Bench/ottoman at foot of bed",
+   "Seating area (chairs, chaise lounge) if space allows",
+   "Study/work desk (if WFH corner needed)",
+   "TV unit/console (if TV in bedroom)"
+  ],
+  "Storage": [
+   "Luggage rack",
+   "Wardrobe interior layout (hanging space, shelves, drawers, shoe rack)",
+   "Under-bed storage",
+   "Overhead lofts/cabinets",
+   "Jewelry/valuables storage (safe or dedicated drawer)",
+   "Linen storage"
+  ],
+  "Lighting": [
+   "Ambient/general lighting (ceiling fixture or cove lighting)",
+   "Task lighting (reading lights at bedside, desk lamp)",
+   "Accent lighting (wardrobe interior lights, headboard backlighting)",
+   "Natural light management (window placement, blackout needs)",
+   "Dimmer controls",
+   "Night light/pathway lighting (especially if ensuite is used at night)"
+  ],
+  "Electrical & Technology": [
+   "Switchboard placement (bedside, entry, near dresser)",
+   "Number of power outlets (charging points each side of bed, TV point, dresser)",
+   "USB charging ports built into furniture/walls",
+   "TV point and cable management",
+   "Smart home features (smart switches, curtains, thermostat)",
+   "Wi-Fi/network point if needed"
+  ],
+  "Flooring": [
+   "Material (wood, tile, carpet, vinyl)",
+   "Rug placement and size (especially beside/under bed)",
+   "Underfloor heating (if applicable, cooler climates)"
+  ],
+  "Walls & Ceiling": [
+   "Paint/wallpaper (accent wall behind headboard is common)",
+   "Wall paneling or wainscoting",
+   "Ceiling design (false ceiling, cove lighting, texture)",
+   "Wall-mounted decor/art placement"
+  ],
+  "Window Treatments": [
+   "Curtains vs. blinds vs. shutters",
+   "Blackout layer requirement",
+   "Sheer layer for daytime privacy/light",
+   "Motorized/smart curtain option"
+  ],
+  "Ensuite/Connected Spaces": [
+   "Walk-in closet (if part of master suite)",
+   "Connection/door to ensuite bathroom",
+   "Reading nook or balcony access"
+  ],
+  "Comfort & Wellness": [
+   "HVAC/AC vent placement and airflow",
+   "Sound insulation (especially if near shared walls)",
+   "Air purifier placement",
+   "Humidity control (especially for wood furniture)"
+  ],
+  "Decor & Accessories": [
+   "Headboard design/material",
+   "Bedding and cushion styling",
+   "Artwork/wall decor",
+   "Mirrors (full-length, decorative)",
+   "Plants/greenery",
+   "Scent (diffuser point) — sometimes included in design brief for ambiance"
+  ],
+  "Safety": [
+   "Smoke detector placement",
+   "Emergency exit/window accessibility",
+   "Fire-rated materials near electrical points",
+   "Childproofing (if applicable, per the \"Household & Lifestyle\" info you captured earlier)"
+  ]
+ },
+ "BATHROOM": {
+  "Layout & Architecture": [
+   "Room dimensions, dry/wet zone separation",
+   "Door placement and swing (inward/outward)",
+   "Ventilation (window or exhaust fan)",
+   "Floor slope and drainage point location",
+   "Waterproofing extent (walls up to what height)"
+  ],
+  "Fixtures": [
+   "WC (wall-hung vs. floor-mounted)",
+   "Wash basin (counter-top, under-counter, wall-mounted, pedestal)",
+   "Shower area (enclosed cubicle vs. open wet area)",
+   "Bathtub (if required, size and placement)",
+   "Bidet/health faucet",
+   "Urinal (if separate for master ensuite)"
+  ],
+  "Storage": [
+   "Vanity unit under basin",
+   "Mirror cabinet/medicine cabinet",
+   "Wall niches/shelves in shower area",
+   "Towel storage (rack, ladder, built-in)",
+   "Laundry hamper space (if applicable)"
+  ],
+  "Plumbing & Fittings": [
+   "Faucet/tap style and finish",
+   "Shower type (rain shower, handheld, mixer)",
+   "Hot water point (geyser/instant heater location)",
+   "Water pressure considerations",
+   "Pipe concealment"
+  ],
+  "Electrical": [
+   "Exhaust fan point",
+   "Light points (general + mirror/task lighting)",
+   "Power point for geyser",
+   "Power point for hairdryer/appliances (with safety cutoff near water)",
+   "Waterproof-rated fittings near wet zones"
+  ],
+  "Flooring & Walls": [
+   "Floor tile (anti-skid rating essential)",
+   "Wall tile height and pattern",
+   "Grout color and waterproofing",
+   "Accent tile/mosaic feature (if any)"
+  ],
+  "Lighting": [
+   "Ambient ceiling light",
+   "Mirror/vanity task lighting",
+   "Shower area waterproof lighting",
+   "Natural light (if window present)"
+  ],
+  "Ventilation & Comfort": [
+   "Exhaust fan capacity",
+   "Window operability",
+   "Anti-fungal/moisture-resistant finishes",
+   "Heated flooring (optional, cooler climates)"
+  ],
+  "Accessories & Decor": [
+   "Towel rings/rails",
+   "Robe hooks",
+   "Soap dispenser/holder",
+   "Toilet paper holder",
+   "Bath mat",
+   "Mirror style and size"
+  ],
+  "Safety": [
+   "Grab bars (especially if accessibility needed)",
+   "Non-slip flooring",
+   "Door lock (with emergency external release)",
+   "Electrical safety near wet areas (RCD/ELCB protection)"
+  ]
+ },
+ "KITCHEN": {
+  "Layout & Architecture": [
+   "Kitchen shape (L-shape, U-shape, parallel, island, straight)",
+   "Work triangle (sink–stove–fridge distance)",
+   "Door/window placement",
+   "Ventilation (window, exhaust point)",
+   "Ceiling height for overhead cabinets"
+  ],
+  "Cabinetry & Storage": [
+   "Base cabinets (layout, drawer vs. shelf mix)",
+   "Wall/overhead cabinets",
+   "Tall unit (pantry/larder)",
+   "Loft storage above overhead cabinets",
+   "Corner unit solutions (carousel, magic corner)",
+   "Cutlery/utensil organizers",
+   "Pull-out storage (spice rack, waste bins)"
+  ],
+  "Countertop & Backsplash": [
+   "Countertop material (granite, quartz, marble, laminate)",
+   "Countertop edge profile",
+   "Backsplash material and height",
+   "Cutout requirements (sink, hob)"
+  ],
+  "Appliances": [
+   "Hob/cooktop (gas vs. induction, burner count)",
+   "Chimney/exhaust hood",
+   "Oven (built-in vs. countertop) and microwave",
+   "Refrigerator placement and size",
+   "Dishwasher",
+   "Water purifier point",
+   "Small appliance zone (mixer, toaster, kettle)"
+  ],
+  "Sink & Plumbing": [
+   "Sink type (single/double bowl) and material",
+   "Faucet style (pull-down, sensor, standard)",
+   "Water filter/RO unit placement",
+   "Drainage and waste disposal (waste bin/grinder)"
+  ],
+  "Electrical": [
+   "Points for all appliances (hob, chimney, oven, fridge, dishwasher)",
+   "Above-counter outlets for small appliances",
+   "Under-cabinet lighting circuit",
+   "Exhaust fan/chimney point"
+  ],
+  "Lighting": [
+   "General ceiling lighting",
+   "Task lighting under wall cabinets (over countertop)",
+   "Accent lighting (open shelves, island)"
+  ],
+  "Flooring & Walls": [
+   "Flooring material (tile, vitrified — must be slip-resistant)",
+   "Wall finish (paint/tile beyond backsplash zone)"
+  ],
+  "Ventilation & Safety": [
+   "Exhaust/chimney ducting route",
+   "Gas pipeline/cylinder safety zone",
+   "Fire extinguisher placement",
+   "Smoke detector"
+  ],
+  "Dining Integration (if open kitchen)": [
+   "Breakfast counter/island seating",
+   "Sightline and openness to living/dining area"
+  ]
+ },
+ "LIVING_ROOM": {
+  "Layout & Architecture": [
+   "Room dimensions and traffic flow",
+   "Door/window placement",
+   "Focal point (TV wall, fireplace, view)",
+   "Ceiling height/false ceiling scope"
+  ],
+  "Furniture": [
+   "Sofa (size, configuration — L-shape, 3+2, sectional)",
+   "Center/coffee table",
+   "Side tables",
+   "TV unit/media console",
+   "Bookshelf/display unit",
+   "Accent chairs",
+   "Ottoman/pouffe",
+   "Console table (entry/behind-sofa)"
+  ],
+  "Storage": [
+   "TV unit storage (for set-top box, gaming console, etc.)",
+   "Display cabinet/showcase",
+   "Hidden storage (ottoman, coffee table with storage)"
+  ],
+  "Electrical & Technology": [
+   "TV point and cable management",
+   "Power outlets (behind TV unit, near seating for chargers)",
+   "Wi-Fi router placement",
+   "Home theatre/speaker points",
+   "Smart lighting/switches"
+  ],
+  "Lighting": [
+   "Ambient lighting (ceiling fixture, cove/false ceiling lights)",
+   "Task lighting (reading corner, floor lamp)",
+   "Accent lighting (artwork, display unit, TV backlighting)",
+   "Natural light and window treatment coordination"
+  ],
+  "Flooring": [
+   "Flooring material",
+   "Rug placement and size (anchoring seating area)"
+  ],
+  "Walls & Ceiling": [
+   "Accent/feature wall (behind TV or sofa)",
+   "Wall art/gallery wall placement",
+   "False ceiling design",
+   "Paint/wallpaper/paneling"
+  ],
+  "Window Treatments": [
+   "Curtain/blind style",
+   "Layering (sheer + blackout/heavy drape)",
+   "Motorization"
+  ],
+  "Décor & Accessories": [
+   "Cushions and throws",
+   "Wall art/mirrors",
+   "Plants/greenery",
+   "Clock",
+   "Decorative objects/vases"
+  ],
+  "Comfort & Ambience": [
+   "AC vent placement and airflow",
+   "Fan/ceiling fan if no AC",
+   "Acoustic considerations (especially open-plan homes)",
+   "Entertainment zone vs. conversation zone balance (if large room)"
+  ]
+ },
+ "TERRACE": {
+  "Layout & Architecture": [
+   "Terrace dimensions and shape",
+   "Orientation (sun path — morning/evening sun exposure)",
+   "Existing parapet/railing height and material",
+   "Floor level and drainage slope",
+   "Access point (door from living room/bedroom)",
+   "Overhead coverage (open sky, pergola, roof extension)",
+   "Structural load limits (for planters, water features, heavy furniture)"
+  ],
+  "Flooring": [
+   "Deck material (wood, composite decking, outdoor tiles, stone)",
+   "Weather-resistant/anti-skid finish",
+   "Drainage channels/slope to outlet",
+   "Raised decking (if leveling needed)"
+  ],
+  "Seating & Furniture": [
+   "Lounge seating (sofa set, daybed, swing chair)",
+   "Dining set (if alfresco dining planned)",
+   "Coffee/side tables (weatherproof material)",
+   "Sun loungers/hammock",
+   "Bar counter/stools (if entertaining focus)",
+   "Storage bench/deck box"
+  ],
+  "Garden & Planting": [
+   "Planter placement (built-in beds vs. movable pots)",
+   "Plant selection (sun/shade tolerant, climate-appropriate)",
+   "Vertical garden/green wall",
+   "Climbers/trellis support",
+   "Lawn/turf area (natural or artificial grass)",
+   "Herb/kitchen garden corner",
+   "Tree/large shrub placement (root spread consideration)"
+  ],
+  "Irrigation & Maintenance": [
+   "Drip irrigation/sprinkler system",
+   "Water tap/hose bib point",
+   "Drainage for excess water from planters",
+   "Garden maintenance access"
+  ],
+  "Shade & Weather Protection": [
+   "Pergola/gazebo structure",
+   "Retractable awning",
+   "Shade sails/umbrellas",
+   "Outdoor curtains/blinds",
+   "Windbreak (glass panels, screens) for high floors"
+  ],
+  "Lighting": [
+   "Ambient lighting (string lights, lanterns)",
+   "Task lighting (dining/reading areas)",
+   "Accent/landscape lighting (uplighting on plants, trees)",
+   "Pathway/step lighting",
+   "Weatherproof-rated fixtures and wiring"
+  ],
+  "Electrical & Water Points": [
+   "Weatherproof power outlets (for lights, speakers, appliances)",
+   "Outdoor speaker points",
+   "Water point/tap for irrigation and cleaning",
+   "Fan or misting system (for hot climates)"
+  ],
+  "Privacy & Screening": [
+   "Privacy screens/jaali walls",
+   "Tall planters as natural screening",
+   "Frosted glass/partition (for overlooking neighbors)"
+  ],
+  "Accessories & Extras": [
+   "Outdoor rug",
+   "Cushions/throws (weather-resistant fabric)",
+   "Fire pit/chiminea (if space and rules allow)",
+   "BBQ/grill station",
+   "Bird feeder/water feature",
+   "Pet-friendly zone (if applicable)"
+  ],
+  "Safety & Regulatory": [
+   "Railing height compliance (building code/safety norm)",
+   "Waterproofing of terrace floor (to protect floor below)",
+   "Weight load limits (society/structural approval)",
+   "Society/RWA approval for structural additions (pergola, planters)"
+  ]
+ },
+ "STUDY": {
+  "Layout & Architecture": [
+   "Room dimensions and window placement",
+   "Natural light direction (avoid glare on screen)",
+   "Door placement and swing",
+   "Acoustic isolation (from rest of house)"
+  ],
+  "Furniture": [
+   "Desk (size, L-shape vs. straight, standing-desk option)",
+   "Ergonomic chair",
+   "Guest/secondary seating (if used for meetings)",
+   "Bookshelf/shelving unit",
+   "Filing cabinet/storage drawers",
+   "Credenza/side storage unit"
+  ],
+  "Storage": [
+   "Book storage (open shelves vs. closed cabinets)",
+   "File/document storage",
+   "Stationery/drawer organizers",
+   "Display shelving (awards, decor)",
+   "Hidden cable/equipment storage"
+  ],
+  "Technology & Electrical": [
+   "Power outlets (desk-level, multiple for equipment)",
+   "USB/charging ports built into desk",
+   "Data/ethernet point",
+   "Wi-Fi router placement (if located here)",
+   "Monitor/screen mounting (wall arm vs. desk stand)",
+   "Printer/scanner nook",
+   "Cable management (under-desk trays, grommets)"
+  ],
+  "Lighting": [
+   "Ambient ceiling lighting",
+   "Task lighting (desk lamp, under-shelf lighting)",
+   "Natural light control (avoid screen glare — blinds/curtains)",
+   "Dimmer/adjustable color temperature for video calls"
+  ],
+  "Acoustics & Comfort": [
+   "Sound insulation (walls, door)",
+   "Acoustic panels (if video calls/recording)",
+   "Flooring (carpet/rug for noise dampening)",
+   "HVAC/AC vent placement (avoid direct blast on desk)"
+  ],
+  "Flooring & Walls": [
+   "Flooring material (wood, carpet tile)",
+   "Accent wall/whiteboard wall",
+   "Pinboard/corkboard for notes",
+   "Wall-mounted organizers"
+  ],
+  "Window Treatments": [
+   "Blinds/curtains (light control for screen work)",
+   "Privacy considerations (if used for calls)"
+  ],
+  "Décor & Accessories": [
+   "Wall art/motivational decor",
+   "Plants (low-maintenance, desk-friendly)",
+   "Personal display items (photos, awards)",
+   "Clock/calendar"
+  ],
+  "Video Call/Meeting Readiness (if used for WFH)": [
+   "Camera-facing background design",
+   "Consistent lighting for calls (ring light/key light)",
+   "Clutter-free zone within camera frame"
+  ]
+ }
+}

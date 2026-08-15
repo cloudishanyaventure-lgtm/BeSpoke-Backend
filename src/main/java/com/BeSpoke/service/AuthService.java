@@ -19,6 +19,8 @@ import com.BeSpoke.repository.LeadRepository;
 import com.BeSpoke.repository.StaffProfileRepository;
 import com.BeSpoke.repository.UserRepository;
 import com.BeSpoke.security.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Service
+
 public class AuthService {
 
     /** Unambiguous alphabet: no I/l/1, no O/0, so a mailed password is readable. */
@@ -36,6 +39,8 @@ public class AuthService {
             "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789".toCharArray();
 
     private static final SecureRandom RANDOM = new SecureRandom();
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
     private final LeadRepository leadRepository;
@@ -148,16 +153,24 @@ public class AuthService {
      */
     @Transactional
     public void requestOtp(String email) {
-        userRepository.findByEmail(email.toLowerCase().trim())
-                .filter(User::isActive)
-                .ifPresent(user -> {
-                    String code = String.format("%06d", RANDOM.nextInt(1_000_000));
-                    user.setOtpCode(code);
-                    user.setOtpExpiresAt(Instant.now().plus(OTP_TTL));
-                    user.setOtpAttempts(0);
-                    userRepository.save(user);
-                    mailService.loginOtp(user, code);
-                });
+        log.error("REQUEST RECEIVED");
+        try{
+            var found = userRepository.findByEmail(email.toLowerCase().trim());
+            log.error("OTP lookup for '{}': present={}, active={}", email,
+                    found.isPresent(), found.map(User::isActive).orElse(null));
+            found
+                    .filter(User::isActive)
+                    .ifPresent(user -> {
+                        String code = String.format("%06d", RANDOM.nextInt(1_000_000));
+                        user.setOtpCode(code);
+                        user.setOtpExpiresAt(Instant.now().plus(OTP_TTL));
+                        user.setOtpAttempts(0);
+                        userRepository.save(user);
+                        mailService.loginOtp(user, code);
+                    });
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }
     }
 
     /**

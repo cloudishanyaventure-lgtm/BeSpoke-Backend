@@ -39,6 +39,9 @@ public class MailService {
     }
 
     public void send(String to, String subject, String body) {
+        log.error("PRINTING TO %s %s".formatted(to, enabled));
+        log.error("[MAIL] disabled — would send to {}\n  from: {}\n  subject: {}\n  {}",
+                to, from, subject, body.replace("\n", "\n  "));
         if (to == null || to.isBlank()) {
             return;
         }

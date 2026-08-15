@@ -5,7 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/bin/main/application-prod.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/main/room-catalog.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.classpath" beforeDir="false" afterPath="$PROJECT_DIR$/.classpath" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.project" beforeDir="false" afterPath="$PROJECT_DIR$/.project" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/main/db/migration/V1__baseline_schema.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/main/db/migration/V2__seed_data.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Lead.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Lead.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MailService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-prod.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,16 +39,16 @@
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="BeSpoke-backend" type="f1a62948:ProjectNode" />
+                <item name="designconnect-backend" type="f1a62948:ProjectNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="BeSpoke-backend" type="f1a62948:ProjectNode" />
+                <item name="designconnect-backend" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="BeSpoke-backend" type="f1a62948:ProjectNode" />
+                <item name="designconnect-backend" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
               </path>
@@ -72,26 +82,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Unnamed.executor": "Debug",
-    "Gradle.BeSpoke-Backend [build].executor": "Run",
-    "Gradle.BeSpoke-Backend [clean].executor": "Run",
-    "Gradle.Build backend.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.backend [:com.BeSpoke.BeSpokeApplication.main()].executor": "Debug",
-    "Gradle.backend [:com.designconnect.DesignConnectApplication.main()].executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/apple/Documents/designconnect/backend",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Unnamed.executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.BeSpoke-Backend [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.BeSpoke-Backend [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build backend.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend [:com.BeSpoke.BeSpokeApplication.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.backend [:com.designconnect.DesignConnectApplication.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/apple/Documents/designconnect/backend&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="Application.Unnamed">
+}</component>
+  <component name="RunManager" selected="JUnit.Whole project">
     <configuration name="Unnamed (1)" type="Application" factoryName="Application" nameIsGenerated="true">
       <module name="BeSpoke-backend.main" />
       <method v="2">
@@ -150,16 +160,39 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="Whole project" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="wholeProject" />
+      </option>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="BeSpoke-backend" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="BeSpoke-backend" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Application.Unnamed (1)" />
       <item itemvalue="Application.Unnamed" />
       <item itemvalue="Gradle.BeSpoke-Backend [build]" />
       <item itemvalue="Gradle.BeSpoke-Backend [clean]" />
+      <item itemvalue="JUnit.Whole project" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.BeSpoke-Backend [build]" />
+        <item itemvalue="JUnit.Whole project" />
         <item itemvalue="Gradle.BeSpoke-Backend [clean]" />
+        <item itemvalue="Gradle.BeSpoke-Backend [build]" />
       </list>
     </recent_temporary>
   </component>
@@ -181,6 +214,29 @@
     </task>
     <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added changes reagrding the new design" />

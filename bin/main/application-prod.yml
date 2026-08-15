@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/be_spoke}
-    username: ${DB_USERNAME:bespokeuser}
-    password: ${DB_PASSWORD:Ritikrox@18}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/designconnect_crm}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
       # Keep the pool small so we fit in a low-memory VM alongside Postgres.
@@ -29,7 +29,7 @@ server:
 app:
   jwt:
     # MUST be provided in production via the JWT_SECRET env var (>= 32 bytes).
-    secret: ${JWT_SECRET:n5SmGiI.-!dx/Ek5FR][ib&r5t-X&FoeX1Z*%ud%Kim}
+    secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
     # Comma-separated list of allowed frontend origins, e.g. https://app.designconnect.in
@@ -41,4 +41,4 @@ app:
   crypto:
     # MUST be provided via CRYPTO_KEY: base64 of 32 random bytes.
     # Rotating it makes every previously stored message body unreadable.
-    key: ${CRYPTO_KEY:8Zq2mJ0xR7vT1cN5bK9wY3sD6fH4gL8pA2eU7iO0rQ4=}
+    key: ${CRYPTO_KEY}

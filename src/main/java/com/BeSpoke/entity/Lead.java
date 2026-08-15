@@ -56,6 +56,7 @@ public class Lead {
     private String contactPhone;
 
     @Column(nullable = false)
+    @ColumnDefault("''")
     private String city;
 
     private String propertyType;
@@ -64,6 +65,7 @@ public class Lead {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @ColumnDefault("'WEBSITE'")
     private LeadSource source;
 
     @Enumerated(EnumType.STRING)
@@ -71,6 +73,7 @@ public class Lead {
     private LeadStatus status;
 
     @Column(nullable = false)
+    @ColumnDefault("0")
     private int score;
 
     @ManyToOne
