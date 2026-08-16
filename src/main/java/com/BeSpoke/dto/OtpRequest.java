@@ -3,5 +3,6 @@ package com.BeSpoke.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record OtpRequest(@NotBlank @Email String email) {
+/** {@code partner} = the request came from the partner sign-in, not the homeowner one. */
+public record OtpRequest(@NotBlank @Email String email, boolean partner) {
 }

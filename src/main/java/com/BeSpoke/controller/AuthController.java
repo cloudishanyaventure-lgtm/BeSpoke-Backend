@@ -39,12 +39,13 @@ public class AuthController {
     /** Always the same 200 — never reveals whether the email has an account. */
     @PostMapping("/otp/request")
     public ResponseEntity<Map<String, String>> requestOtp(@Valid @RequestBody OtpRequest request) {
-        authService.requestOtp(request.email());
+        authService.requestOtp(request.email(), request.partner());
         return ResponseEntity.ok(Map.of("message", "If that email exists, we've sent a code."));
     }
 
     @PostMapping("/otp/verify")
     public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody OtpVerifyRequest request) {
-        return ResponseEntity.ok(authService.verifyOtp(request.email(), request.code()));
+        return ResponseEntity.ok(
+                authService.verifyOtp(request.email(), request.code(), request.partner()));
     }
 }
