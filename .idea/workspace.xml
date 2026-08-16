@@ -5,17 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/bin/main/application-prod.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/main/room-catalog.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.classpath" beforeDir="false" afterPath="$PROJECT_DIR$/.classpath" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.project" beforeDir="false" afterPath="$PROJECT_DIR$/.project" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/db/migration/V1__baseline_schema.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/db/migration/V2__seed_data.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Lead.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Lead.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MailService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-prod.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

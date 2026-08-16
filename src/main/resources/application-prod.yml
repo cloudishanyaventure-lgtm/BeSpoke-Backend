@@ -32,8 +32,10 @@ app:
     secret: ${JWT_SECRET:n5SmGiI.-!dx/Ek5FR][ib&r5t-X&FoeX1Z*%ud%Kim}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
-    # Comma-separated list of allowed frontend origins, e.g. https://app.designconnect.in
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*}
+    # Comma-separated list of allowed frontend origins. Browsers send Origin on every
+    # POST — including same-origin ones — so the live domains must be listed here or
+    # Spring answers 403 "Invalid CORS request".
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://bespokedesign.in,https://www.bespokedesign.in,https://crm.bespokedesign.in,http://localhost:*,http://127.0.0.1:*}
   mail:
     enabled: ${MAIL_ENABLED:false}
     from: ${MAIL_FROM:BeSpoke <no-reply@bespoke.in>}
