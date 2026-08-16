@@ -1,0 +1,139 @@
+{
+  "slug": "adhesives-sealants",
+  "name": "Adhesives, Sealants & Construction Chemicals",
+  "tagline": "The invisible products that decide whether the visible ones last",
+  "description": "Nobody photographs the tile adhesive, and nobody forgets it when the tiles come loose. This section covers the wet trades' chemistry — bonding, sealing, waterproofing and filling — with the substrate and cure requirements that make each one work.",
+  "image": "construction adhesive",
+  "brands": ["Fevicol / Pidilite", "Dr. Fixit", "Sika", "Fosroc", "Asian Paints", "Weber", "MYK Laticrete", "Ardex", "Mapei"],
+  "materials": [
+    {
+      "name": "Wood adhesive",
+      "blurb": "PVA white glue — the carpenter's everyday bond",
+      "description": "Water-based PVA for timber-to-timber joints, applied thinly to both faces and clamped. Choose a water-resistant grade for anything near a kitchen or bathroom.",
+      "specs": {"Type": "PVA / synthetic resin", "Open time": "10–15 min", "Clamp": "30–60 min", "Grades": "Interior / water resistant"},
+      "applications": ["Timber joints", "Board assembly", "Furniture"],
+      "tier": "BUDGET",
+      "priceMin": 180, "priceMax": 500, "priceUnit": "per kg",
+      "use": "Indoor",
+      "image": "wood glue"
+    },
+    {
+      "name": "Laminate adhesive",
+      "blurb": "Contact cement for bonding laminate to board",
+      "description": "Applied to both surfaces, left to tack off and then pressed — there is no repositioning once the two faces meet. Ventilation matters: solvent grades are strong and flammable.",
+      "specs": {"Type": "Contact / SR adhesive", "Method": "Both faces, tack off, press", "Repositioning": "None", "Ventilation": "Required for solvent grades"},
+      "applications": ["Laminate pressing", "Veneer bonding", "Edge banding"],
+      "tier": "BUDGET",
+      "priceMin": 220, "priceMax": 600, "priceUnit": "per kg",
+      "use": "Indoor",
+      "image": "contact adhesive"
+    },
+    {
+      "name": "Epoxy adhesive",
+      "blurb": "Two-part structural bond for stone, metal and repairs",
+      "description": "Mixed resin and hardener that cures to a rigid, gap-filling bond stronger than most substrates. Used for stone repairs, anchoring bolts and joining dissimilar materials.",
+      "specs": {"Type": "Two-part, mix by ratio", "Pot life": "5–60 min by grade", "Gap fill": "Yes", "Strength": "Structural"},
+      "applications": ["Stone repair", "Metal bonding", "Anchoring", "Countertop joints"],
+      "tier": "MID",
+      "priceMin": 400, "priceMax": 2500, "priceUnit": "per kg",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "epoxy adhesive"
+    },
+    {
+      "name": "Silicone sealant",
+      "blurb": "Flexible weatherproof seal for glass, sanitary and joints",
+      "description": "Neutral-cure for stone and metal, acetoxy for glass and ceramic, anti-fungal for wet areas. The wrong cure type will stain marble or fail to stick — read the label, not the colour.",
+      "specs": {"Cure": "Neutral / acetoxy", "Anti-fungal": "For wet areas", "Movement": "±25% joint movement", "Note": "Neutral cure for stone"},
+      "applications": ["Sanitary joints", "Glazing", "Kitchen counters", "Expansion joints"],
+      "tier": "BUDGET",
+      "priceMin": 250, "priceMax": 900, "priceUnit": "per cartridge",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "silicone sealant"
+    },
+    {
+      "name": "PU adhesive / sealant",
+      "blurb": "Polyurethane bond that stays flexible and paints over",
+      "description": "Tougher and more elastic than silicone, and unlike silicone it can be painted. The right choice for structural joints, façade seals and bonding panels that will move.",
+      "specs": {"Type": "1K / 2K polyurethane", "Paintable": "Yes", "Movement": "High elasticity", "Cure": "Moisture cure"},
+      "applications": ["Façade joints", "Panel bonding", "Structural seals", "Flooring joints"],
+      "tier": "MID",
+      "priceMin": 400, "priceMax": 1500, "priceUnit": "per cartridge",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "polyurethane sealant"
+    },
+    {
+      "name": "Tile adhesive",
+      "blurb": "Cement-based adhesive, graded by tile type and position",
+      "description": "The days of sand-cement dabs are over — large-format vitrified tiles need a graded adhesive with full-bed coverage. Match the grade to the tile size, substrate and whether it is a wall or a pool.",
+      "specs": {"Grades": "T1–T5 / C1–C2 by application", "Coverage": "Full bed for large format", "Standard": "IS 15477", "Open time": "20–30 min"},
+      "applications": ["Floor tiling", "Wall tiling", "Large-format slabs", "Pools"],
+      "standard": "IS 15477",
+      "tier": "BUDGET",
+      "priceMin": 450, "priceMax": 1800, "priceUnit": "per 20 kg bag",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "tile adhesive"
+    },
+    {
+      "name": "Tile grout",
+      "blurb": "Cement or epoxy joint filler — epoxy where stains matter",
+      "description": "Cement grout is cheap and absorbs everything; epoxy grout resists stains and chemicals completely and is what a kitchen backsplash or a bathroom floor deserves.",
+      "specs": {"Types": "Cementitious / epoxy", "Joint": "2–12 mm", "Epoxy": "Stain and chemical proof", "Colours": "Full range incl. metallics"},
+      "applications": ["All tiling", "Kitchen backsplash", "Bathroom floors", "Pools"],
+      "tier": "MID",
+      "priceMin": 300, "priceMax": 2500, "priceUnit": "per kg",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "tile grout"
+    },
+    {
+      "name": "Waterproofing membrane",
+      "blurb": "Liquid or sheet barrier under every wet floor",
+      "description": "Applied before tiling in bathrooms, balconies and terraces, turned up the wall and tested by ponding for 24–48 hours. The one item where cutting cost guarantees a callback.",
+      "specs": {"Type": "Cementitious / acrylic / PU liquid, or sheet", "Upstand": "150–300 mm up the wall", "Test": "24–48 hr ponding", "Coats": "2–3 cross-applied"},
+      "applications": ["Bathrooms", "Balconies", "Terraces", "Water tanks"],
+      "warranty": "5–10 years",
+      "tier": "MID",
+      "priceMin": 250, "priceMax": 900, "priceUnit": "per kg",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "waterproofing membrane"
+    },
+    {
+      "name": "Wood filler",
+      "blurb": "Putty that fills nail holes and grain before finishing",
+      "description": "Shade-matched filler pressed into holes and open grain, sanded flush before polishing. Choose the shade against the finished sample, not the raw timber — it darkens under polish.",
+      "specs": {"Type": "Solvent / water based", "Shades": "Match to finished sample", "Sanding": "After full dry", "Shrinkage": "Low-shrink grades preferred"},
+      "applications": ["Timber joinery", "Doors", "Flooring", "Furniture"],
+      "tier": "BUDGET",
+      "priceMin": 150, "priceMax": 700, "priceUnit": "per kg",
+      "use": "Indoor",
+      "image": "wood filler putty"
+    },
+    {
+      "name": "Wall putty",
+      "blurb": "White cement or acrylic skim that levels plaster",
+      "description": "Two coats sanded flat give paint a surface worth applying to. Acrylic putty is more flexible and better for interiors; white cement putty is cheaper and works on exteriors.",
+      "specs": {"Types": "White cement / acrylic", "Coats": "2 + sanding", "Coverage": "12–15 sq.ft/kg", "Then": "Primer + paint"},
+      "applications": ["All painted walls", "Ceilings"],
+      "tier": "BUDGET",
+      "priceMin": 25, "priceMax": 70, "priceUnit": "per kg",
+      "use": "Indoor & outdoor",
+      "image": "wall putty"
+    },
+    {
+      "name": "Construction sealant (acrylic)",
+      "blurb": "Paintable gap filler for internal joints and cracks",
+      "description": "Fills the junction between skirting and wall, architrave and plaster, and hairline cracks — then takes paint straight over. Not for wet areas or moving structural joints.",
+      "specs": {"Type": "Acrylic", "Paintable": "Yes", "Movement": "Low", "Not for": "Wet areas, structural joints"},
+      "applications": ["Skirting joints", "Architraves", "Hairline cracks", "Cornices"],
+      "tier": "BUDGET",
+      "priceMin": 150, "priceMax": 450, "priceUnit": "per cartridge",
+      "use": "Indoor",
+      "image": "acrylic sealant"
+    }
+  ]
+}

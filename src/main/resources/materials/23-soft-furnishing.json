@@ -1,0 +1,132 @@
+{
+  "slug": "soft-furnishing",
+  "name": "Soft Furnishing",
+  "tagline": "Curtains, blinds, upholstery and rugs — the layer that finishes a room",
+  "description": "Soft furnishing is the last 10% of the budget that does 40% of the work: it controls light, absorbs sound and adds the colour hard finishes cannot. Fabrics are specified by width, rub count and light behaviour, not just by pattern.",
+  "image": "curtains living room",
+  "brands": ["D'Decor", "Raymond", "Jaipur Rugs", "Obeetee", "Spaces", "Welspun", "Bombay Dyeing"],
+  "materials": [
+    {
+      "name": "Curtains",
+      "blurb": "Sheer, dim-out or blackout drapery on track or rod",
+      "description": "Fullness is what makes curtains look expensive — 2 to 2.5 times the track width, always. Layer a sheer with a dim-out so the room works at noon and at midnight.",
+      "specs": {"Fullness": "2–2.5× track width", "Widths": "Fabric 48\" or 54\"", "Types": "Sheer / dim-out / blackout", "Heading": "Pinch pleat, eyelet, wave"},
+      "applications": ["Living rooms", "Bedrooms", "Dining rooms"],
+      "tier": "MID",
+      "priceMin": 350, "priceMax": 4000, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "curtains window"
+    },
+    {
+      "name": "Roller blind",
+      "blurb": "Single fabric roll — the tidiest window covering there is",
+      "description": "Minimal stack, minimal cost, minimal fuss. Choose the openness factor deliberately: 1% blocks the view and the glare, 5% keeps the view and lets some glare through.",
+      "specs": {"Openness": "0% blackout to 10% screen", "Control": "Chain / motorised", "Stack": "Minimal", "Width": "Up to ~2.4 m per blind"},
+      "applications": ["Studies", "Offices", "Kitchens", "Bedrooms"],
+      "tier": "BUDGET",
+      "priceMin": 120, "priceMax": 600, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "roller blind window"
+    },
+    {
+      "name": "Roman blind",
+      "blurb": "Fabric that folds into soft horizontal pleats",
+      "description": "Gives the softness of a curtain with the tidiness of a blind — good where a full drape would crowd the room. Needs a lining and enough headroom for the stack.",
+      "specs": {"Stack": "150–250 mm at head", "Lining": "Required for body", "Control": "Cord / motorised", "Fold": "200–300 mm"},
+      "applications": ["Bedrooms", "Studies", "Bay windows", "Kitchens"],
+      "tier": "MID",
+      "priceMin": 250, "priceMax": 900, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "roman blind"
+    },
+    {
+      "name": "Wooden blind",
+      "blurb": "Timber or faux-wood slats that shape the light",
+      "description": "Tilting slats give precise control over light and privacy at the same time, and the timber warms a room. Use faux-wood in bathrooms and kitchens where real timber would warp.",
+      "specs": {"Slat": "25 / 50 mm", "Material": "Basswood / faux wood", "Control": "Tilt + lift", "Wet areas": "Faux wood only"},
+      "applications": ["Studies", "Living rooms", "Kitchens", "Bathrooms"],
+      "tier": "MID",
+      "priceMin": 200, "priceMax": 800, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "wooden blinds window"
+    },
+    {
+      "name": "Zebra / dual-shade blind",
+      "blurb": "Alternating sheer and solid bands that align or offset",
+      "description": "Sliding the bands into alignment lets light through; offsetting them blocks it. A single blind that does two jobs, which suits living rooms that face the street.",
+      "specs": {"Bands": "Sheer + solid alternating", "Control": "Chain / motorised", "Effect": "Variable light and privacy"},
+      "applications": ["Living rooms", "Street-facing windows", "Offices"],
+      "tier": "MID",
+      "priceMin": 150, "priceMax": 550, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "zebra blind window"
+    },
+    {
+      "name": "Upholstery fabric",
+      "blurb": "Specified by rub count — the number that predicts wear",
+      "description": "Martindale rub count is the specification that matters: 15,000+ for domestic use, 30,000+ for commercial. Pattern is a preference; rub count is a performance requirement.",
+      "specs": {"Rub count": "15,000 domestic / 30,000+ commercial", "Width": "54\" typical", "Types": "Chenille, velvet, linen, boucle", "Treatment": "Stain-guard available"},
+      "applications": ["Sofas", "Chairs", "Headboards", "Ottomans"],
+      "tier": "MID",
+      "priceMin": 450, "priceMax": 6000, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "upholstery fabric"
+    },
+    {
+      "name": "Sofa fabric",
+      "blurb": "Heavy-duty weaves built for daily sitting",
+      "description": "The upholstery grade that takes the most punishment. Performance weaves now handle pets, children and food without looking technical — worth the premium on a family sofa.",
+      "specs": {"Rub count": "25,000+", "Cleaning": "Check W / S / WS code", "Performance": "Stain and pet resistant grades", "Pilling": "Grade 4+"},
+      "applications": ["Sofas", "Sectionals", "Family rooms"],
+      "tier": "MID",
+      "priceMin": 600, "priceMax": 8000, "priceUnit": "per metre",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "sofa fabric texture"
+    },
+    {
+      "name": "Cushions",
+      "blurb": "The cheapest way to change a room's palette",
+      "description": "Mix sizes and textures rather than matching a set — 60 cm at the back, 45 cm in front, one lumbar. Feather inserts sit properly; foam ones look stiff in photographs and in life.",
+      "specs": {"Sizes": "40, 45, 50, 60 cm", "Insert": "Feather preferred, 5 cm oversize", "Mix": "Vary size and texture"},
+      "applications": ["Sofas", "Beds", "Window seats", "Outdoor furniture"],
+      "tier": "BUDGET",
+      "priceMin": 500, "priceMax": 6000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cushions sofa"
+    },
+    {
+      "name": "Rugs",
+      "blurb": "Hand-knotted, tufted or flat-weave — sized to the furniture",
+      "description": "The rug should be large enough for at least the front legs of every seat to sit on it; anything smaller makes the room look mean. Hand-knotted lasts generations, tufted lasts years.",
+      "specs": {"Construction": "Hand-knotted / tufted / flat weave", "Sizing": "Front legs of all seating on rug", "Material": "Wool, silk, viscose, jute", "Pad": "Anti-slip underlay"},
+      "applications": ["Living rooms", "Bedrooms", "Dining rooms", "Studies"],
+      "tier": "PREMIUM",
+      "priceMin": 150, "priceMax": 5000, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "area rug living room"
+    },
+    {
+      "name": "Carpets (wall to wall)",
+      "blurb": "Full-floor carpet for warmth and quiet",
+      "description": "Still the best acoustic floor available and the softest underfoot. Specify the pile weight and an anti-microbial treatment, and be honest with the client about cleaning in Indian dust.",
+      "specs": {"Pile": "Cut / loop, 800–1600 g/m²", "Underlay": "Foam / rubber", "Cleaning": "Professional periodically", "Fitting": "Gripper perimeter"},
+      "applications": ["Bedrooms", "Home theatres", "Hotels", "Offices"],
+      "tier": "MID",
+      "priceMin": 90, "priceMax": 700, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "wall to wall carpet"
+    },
+    {
+      "name": "Bed linen",
+      "blurb": "Sheets, duvets and covers — specified by thread count and weave",
+      "description": "Percale for a crisp, cool hand and sateen for a silky one; 300–500 thread count in long-staple cotton is the sweet spot. Above that, the number is usually marketing.",
+      "specs": {"Thread count": "300–500 optimal", "Weave": "Percale (crisp) / sateen (silky)", "Fibre": "Long-staple cotton, linen", "Sizes": "Single to super king"},
+      "applications": ["Bedrooms", "Hotels", "Guest rooms"],
+      "tier": "MID",
+      "priceMin": 2500, "priceMax": 30000, "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "bed linen bedroom"
+    }
+  ]
+}

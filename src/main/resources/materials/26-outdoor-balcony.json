@@ -1,0 +1,133 @@
+{
+  "slug": "outdoor-balcony",
+  "name": "Outdoor & Balcony Materials",
+  "tagline": "Everything that has to survive sun, monsoon and neglect",
+  "description": "Balconies and terraces are the most abused surfaces in an Indian home: forty degrees in May, standing water in July, and nobody maintains them. Everything specified here is chosen for UV stability, drainage and the ability to be left alone for a year.",
+  "image": "balcony terrace garden",
+  "brands": [],
+  "materials": [
+    {
+      "name": "Outdoor tile",
+      "blurb": "UV-stable, frost-proof tile with a grip-rated face",
+      "description": "Thick porcelain bodies with an R10–R12 face, laid to a fall so water leaves the slab. 20 mm pavers can be dry-laid on pedestals, which keeps the waterproofing below untouched.",
+      "specs": {"Slip": "R10–R12", "Thickness": "9–20 mm", "Laying": "To 1:100 fall, or on pedestals", "UV": "Stable"},
+      "applications": ["Balconies", "Terraces", "Pathways", "Pool decks"],
+      "tier": "MID",
+      "priceMin": 65, "priceMax": 180, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "outdoor tile terrace"
+    },
+    {
+      "name": "Wooden decking",
+      "blurb": "Hardwood boards on joists — warm underfoot, needs oiling",
+      "description": "Ipe, teak or merbau laid on treated joists with a 5 mm gap for drainage. Oil it annually or accept the silver-grey weathered look, which many clients actually prefer.",
+      "specs": {"Species": "Ipe / teak / merbau", "Gap": "5 mm between boards", "Sub-frame": "Treated joists / pedestals", "Maintenance": "Oil annually"},
+      "applications": ["Balconies", "Terraces", "Pool surrounds", "Gardens"],
+      "tier": "PREMIUM",
+      "priceMin": 350, "priceMax": 1200, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "wooden deck terrace"
+    },
+    {
+      "name": "WPC decking",
+      "blurb": "Composite boards that never need oiling",
+      "description": "Wood-plastic composite planks with a co-extruded cap for UV and stain resistance. It will fade a little in the first season and then stay put for a decade with only a wash.",
+      "specs": {"Material": "Co-extruded WPC", "Maintenance": "Wash only", "Fade": "Slight in first season", "Fixing": "Hidden clip on joists"},
+      "applications": ["Balconies", "Terraces", "Pool decks", "Podiums"],
+      "warranty": "10–25 years",
+      "tier": "MID",
+      "priceMin": 250, "priceMax": 700, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "wpc decking balcony"
+    },
+    {
+      "name": "Artificial grass",
+      "blurb": "UV-stable turf with a drainage backing",
+      "description": "35–40 mm pile with a perforated backing over a screed laid to fall. Good turf has mixed blade colours and a thatch layer; cheap turf looks like a doormat within a year.",
+      "specs": {"Pile": "25–45 mm", "Backing": "Perforated, drains through", "UV": "8–10 year stability", "Base": "Screed to fall"},
+      "applications": ["Balconies", "Terraces", "Kids' play areas", "Pet areas"],
+      "tier": "BUDGET",
+      "priceMin": 90, "priceMax": 300, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "artificial grass balcony"
+    },
+    {
+      "name": "Pergola",
+      "blurb": "Overhead frame in timber, aluminium or steel with a shade infill",
+      "description": "Turns an unusable sunlit terrace into a room. Aluminium louvred systems adjust to the sun and shed rain; timber looks better and needs maintenance. Check the parapet fixing and wind load.",
+      "specs": {"Frame": "Aluminium / timber / MS", "Infill": "Louvre, fabric, polycarbonate", "Wind": "Check fixing and load", "Drainage": "Integral gutters on louvred systems"},
+      "applications": ["Terraces", "Balconies", "Gardens", "Courtyards"],
+      "tier": "PREMIUM",
+      "priceMin": 600, "priceMax": 3500, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "pergola terrace"
+    },
+    {
+      "name": "Outdoor lighting",
+      "blurb": "IP65+ fittings sized for rain, dust and coastal air",
+      "description": "Wall washers, bollards and step lights, all IP65 or better, with surge protection on the circuit. Near the sea, specify SS 316 or marine-grade coated bodies or expect rust within a year.",
+      "specs": {"IP": "IP65 minimum", "Body": "Die-cast aluminium / SS 316 coastal", "Surge": "Protection recommended", "CCT": "2700–3000 K"},
+      "applications": ["Balconies", "Terraces", "Gardens", "Façades"],
+      "tier": "MID",
+      "priceMin": 900, "priceMax": 15000, "priceUnit": "per piece",
+      "water": true,
+      "use": "Outdoor",
+      "image": "outdoor garden lighting"
+    },
+    {
+      "name": "Stone cladding (exterior)",
+      "blurb": "Weather-fast natural stone for façades and compound walls",
+      "description": "Sandstone, slate and granite strips fixed with adhesive plus mechanical anchors — adhesive alone will eventually let a panel go. Seal it if efflorescence is a risk.",
+      "specs": {"Fixing": "Adhesive + mechanical anchor", "Stones": "Sandstone, slate, granite", "Sealing": "Against efflorescence", "Joint": "Pointed or open"},
+      "applications": ["Façades", "Compound walls", "Balcony walls", "Landscape"],
+      "tier": "MID",
+      "priceMin": 90, "priceMax": 400, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "stone cladding facade"
+    },
+    {
+      "name": "Exterior paint",
+      "blurb": "Weatherproof emulsion with a warranted life",
+      "description": "Acrylic or silicone-modified exteriors carrying a 5–10 year warranty, over an exterior primer on a properly cured surface. Most exterior paint failures are surface preparation, not paint.",
+      "specs": {"Base": "Acrylic / silicone modified", "Warranty": "5–10 years", "Coats": "2 over exterior primer", "Surface": "Fully cured and clean"},
+      "applications": ["Façades", "Balcony walls", "Compound walls", "Terraces"],
+      "warranty": "5–10 years",
+      "tier": "MID",
+      "priceMin": 25, "priceMax": 70, "priceUnit": "per sq.ft applied",
+      "water": true,
+      "use": "Outdoor",
+      "image": "exterior wall paint"
+    },
+    {
+      "name": "Terrace waterproofing",
+      "blurb": "The membrane and screed system that keeps the slab dry",
+      "description": "Liquid-applied PU or APP membrane, protected by a screed laid to fall, with upstands at every parapet and drain. Pond-test before anything is laid over it — after that it is too late.",
+      "specs": {"System": "PU liquid / APP sheet membrane", "Upstand": "300 mm at parapets", "Fall": "1:100 to drains", "Test": "48 hr ponding before finishes"},
+      "applications": ["Terraces", "Podiums", "Balconies", "Roofs"],
+      "warranty": "5–10 years",
+      "tier": "MID",
+      "priceMin": 80, "priceMax": 350, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "terrace waterproofing"
+    },
+    {
+      "name": "Outdoor furniture (weatherproof)",
+      "blurb": "Aluminium, teak or synthetic rattan built to be left out",
+      "description": "Powder-coated aluminium or teak frames with solution-dyed acrylic cushions. Anything with mild steel or standard foam will not survive one Indian monsoon on an open terrace.",
+      "specs": {"Frame": "Aluminium / teak / synthetic rattan", "Cushion": "Solution-dyed acrylic + quick-dry foam", "Avoid": "Mild steel, standard foam", "Storage": "Cover or store in monsoon"},
+      "applications": ["Balconies", "Terraces", "Gardens", "Poolsides"],
+      "tier": "PREMIUM",
+      "priceMin": 15000, "priceMax": 300000, "priceUnit": "per set",
+      "water": true,
+      "use": "Outdoor",
+      "image": "outdoor furniture terrace"
+    }
+  ]
+}

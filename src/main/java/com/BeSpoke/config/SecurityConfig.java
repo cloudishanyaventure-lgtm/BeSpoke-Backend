@@ -66,6 +66,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/shop/**").permitAll()
+                        // Material library: the website browses it, only platform admins
+                        // curate it (@PreAuthorize on the write methods).
+                        .requestMatchers(HttpMethod.GET, "/api/materials/**").permitAll()
+                        .requestMatchers("/api/materials/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()

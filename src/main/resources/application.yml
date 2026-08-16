@@ -60,8 +60,11 @@ app:
     # false = never send, log the whole message at INFO behind "[MAIL]" instead.
     # That console line is where you read a customer's generated password locally.
     enabled: false
-    from: "BeSpoke <no-reply@bespoke.in>"
+    from: "BeSpoke <noreply@bespokedesign.in>"
     app-url: "http://localhost:3000"
+  google:
+    # Dev: set GOOGLE_CLIENT_ID to try Google sign-in locally. Blank = hidden.
+    client-id: ${GOOGLE_CLIENT_ID:}
   crypto:
     # AES-256-GCM key for message bodies at rest (base64, exactly 32 bytes).
     # Dev default - production supplies CRYPTO_KEY (see application-prod.yml).

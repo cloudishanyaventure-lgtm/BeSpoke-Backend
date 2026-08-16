@@ -1,0 +1,168 @@
+{
+  "slug": "decorative-materials",
+  "name": "Decorative Materials",
+  "tagline": "Metal, jaali, mouldings and profiles — the detail layer",
+  "description": "These are the elements that turn a competent interior into a considered one: a brass reveal at a shadow gap, a CNC jaali filtering light, a profile that finishes a junction cleanly. Small quantities, high visual return.",
+  "image": "decorative metal screen",
+  "brands": [],
+  "materials": [
+    {
+      "name": "Brass panel / sheet",
+      "blurb": "Real brass sheet for inlays, reveals and feature cladding",
+      "description": "Genuine brass in antique, satin or mirror finish, laid as a strip inlay or a full clad panel. Specify lacquered brass unless the client actively wants it to patina.",
+      "specs": {"Thickness": "0.5–2 mm sheet", "Finish": "Antique / satin / mirror", "Lacquer": "Specify to prevent patina", "Fixing": "Adhesive on board substrate"},
+      "applications": ["Inlays", "Reveals", "Bar fronts", "Feature cladding"],
+      "tier": "PREMIUM",
+      "priceMin": 450, "priceMax": 2500, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "brass sheet panel"
+    },
+    {
+      "name": "Metal sheet (SS / MS)",
+      "blurb": "Stainless or mild steel sheet for cladding and fabrication",
+      "description": "SS 304 in brushed, mirror or PVD-coloured finishes for interior cladding; MS for painted or powder-coated fabricated elements. Both need a board backing to stay flat over large areas.",
+      "specs": {"Grades": "SS 304 / MS", "Finish": "Brushed, mirror, PVD colour", "Thickness": "0.8–2 mm", "Backing": "Board substrate for flatness"},
+      "applications": ["Cladding", "Counters", "Fabricated elements", "Skirting"],
+      "tier": "PREMIUM",
+      "priceMin": 250, "priceMax": 1400, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "stainless steel sheet"
+    },
+    {
+      "name": "Copper sheet",
+      "blurb": "Warm reddish metal that develops a living patina",
+      "description": "Copper ages from bright pink-orange through brown to green if left unlacquered. Beautiful in bar backs and feature panels — as long as the client understands the surface will change.",
+      "specs": {"Finish": "Mill / antiqued / lacquered", "Patina": "Develops unless lacquered", "Thickness": "0.5–1.5 mm"},
+      "applications": ["Bar backs", "Feature panels", "Hoods", "Inlays"],
+      "tier": "PREMIUM",
+      "priceMin": 500, "priceMax": 2800, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "copper metal sheet"
+    },
+    {
+      "name": "Fluted decorative panel",
+      "blurb": "Ribbed panels in MDF, WPC, PVC or metal",
+      "description": "The rib is the point: it catches light, hides a wall's imperfections and gives verticality to a low room. Available in every substrate, so it can go from a bedroom to a balcony.",
+      "specs": {"Materials": "MDF / WPC / PVC / metal", "Rib pitch": "20–60 mm", "Length": "2400 / 2900 mm", "Finish": "Veneer, laminate, paint, PVD"},
+      "applications": ["Feature walls", "Reception", "Bedbacks", "Column cladding"],
+      "texture": "Fluted",
+      "tier": "MID",
+      "priceMin": 150, "priceMax": 600, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "fluted panel wall"
+    },
+    {
+      "name": "CNC-cut panel",
+      "blurb": "Custom-routed pattern in MDF, WPC or metal",
+      "description": "Any pattern that can be drawn can be cut. Used for screens, partitions and pooja unit backdrops, and it works hardest when lit from behind so the cut-out throws a shadow pattern.",
+      "specs": {"Materials": "MDF / WPC / acrylic / metal", "File": "DXF required", "Thickness": "6–18 mm", "Finish": "Paint / laminate after cutting"},
+      "applications": ["Screens", "Partitions", "Pooja units", "Ceiling features"],
+      "tier": "MID",
+      "priceMin": 200, "priceMax": 900, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "cnc cut panel"
+    },
+    {
+      "name": "Jaali",
+      "blurb": "Perforated screen in the Indian tradition — light, air, privacy",
+      "description": "The jaali does three jobs at once: it shades, it ventilates and it patterns the light. Stone, timber, GRC and metal versions all work; the geometry matters more than the material.",
+      "specs": {"Materials": "Stone / timber / GRC / metal", "Open area": "30–60%", "Function": "Shade, ventilate, screen"},
+      "applications": ["Façades", "Balconies", "Partitions", "Pooja units", "Staircases"],
+      "tier": "MID",
+      "priceMin": 250, "priceMax": 1500, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "jaali screen"
+    },
+    {
+      "name": "Decorative screen / divider",
+      "blurb": "Freestanding or fixed screen that zones without walling off",
+      "description": "Separates a dining area from a living area, or an entry from a room, while keeping light and sightlines. Fixed screens read as architecture; freestanding ones stay flexible.",
+      "specs": {"Type": "Fixed / freestanding", "Materials": "Timber, metal, rattan, glass", "Height": "1800–2400 mm"},
+      "applications": ["Entry foyers", "Open-plan zoning", "Dining areas"],
+      "tier": "MID",
+      "priceMin": 8000, "priceMax": 80000, "priceUnit": "per screen",
+      "use": "Indoor",
+      "image": "room divider screen"
+    },
+    {
+      "name": "Mirror panel (decorative)",
+      "blurb": "Bevelled, grooved or antiqued mirror as a wall treatment",
+      "description": "Mirror used as pattern rather than function — bevelled tiles, grooved sheets, smoked panels. Keep it away from direct sightlines to seating unless the client wants to watch themselves eat.",
+      "specs": {"Types": "Bevelled tile / grooved / antique", "Backing": "Safety film required", "Fixing": "Adhesive + mechanical clip"},
+      "applications": ["Feature walls", "Dining rooms", "Bar backs", "Ceilings"],
+      "tier": "PREMIUM",
+      "priceMin": 250, "priceMax": 900, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "mirror wall panel"
+    },
+    {
+      "name": "3D decorative panel",
+      "blurb": "Relief panels in gypsum, PVC, MDF or stone",
+      "description": "Moulded or carved relief that reads as texture from across the room. Light it from a grazing angle — front-lit, the relief disappears entirely.",
+      "specs": {"Materials": "Gypsum / PVC / MDF / stone", "Module": "300–600 mm", "Lighting": "Graze from above", "Finish": "Paint after fixing"},
+      "applications": ["Feature walls", "TV walls", "Reception", "Headboards"],
+      "tier": "MID",
+      "priceMin": 150, "priceMax": 600, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "3d relief wall panel"
+    },
+    {
+      "name": "Artificial plants & green wall",
+      "blurb": "Maintenance-free greenery for dark or inaccessible spots",
+      "description": "Where daylight or access rules out real planting, good artificial foliage does the job — as long as it is UV-stable outdoors and dusted indoors. Mix leaf types; a single species reads as fake.",
+      "specs": {"Type": "Panel / individual plants", "UV": "Stable grades for outdoor", "Maintenance": "Dust every 2–3 months", "Realism": "Mix 3+ leaf types"},
+      "applications": ["Feature walls", "Balconies", "Dark corners", "Restaurants"],
+      "tier": "MID",
+      "priceMin": 250, "priceMax": 900, "priceUnit": "per sq.ft",
+      "use": "Indoor & outdoor",
+      "image": "green wall plants"
+    },
+    {
+      "name": "Decorative moulding",
+      "blurb": "PU, gypsum or timber mouldings for classical detailing",
+      "description": "Panel mouldings, dado rails and picture frames that give a plain wall proportion and shadow. PU mouldings are light, waterproof and paint exactly like timber.",
+      "specs": {"Materials": "PU / gypsum / timber", "Profiles": "Panel, dado, picture rail", "Fixing": "Adhesive + pin", "Finish": "Paint after filling joints"},
+      "applications": ["Classical interiors", "Panelled walls", "Wainscoting"],
+      "tier": "MID",
+      "priceMin": 90, "priceMax": 600, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "wall moulding panelling"
+    },
+    {
+      "name": "Cornice",
+      "blurb": "The moulded junction between wall and ceiling",
+      "description": "Softens the wall-to-ceiling line and hides the crack that always appears there. Gypsum cornices are traditional; PU versions install faster and survive humidity better.",
+      "specs": {"Materials": "Gypsum / POP / PU", "Size": "75–300 mm", "Fixing": "Adhesive on prepared surface", "Finish": "Paint after jointing"},
+      "applications": ["Living rooms", "Bedrooms", "Classical interiors", "Hotels"],
+      "tier": "BUDGET",
+      "priceMin": 80, "priceMax": 500, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "ceiling cornice"
+    },
+    {
+      "name": "Skirting",
+      "blurb": "Protects the wall base and finishes the floor junction",
+      "description": "Wood, PVC, aluminium or stone at 75–150 mm — the taller the ceiling, the taller the skirting should be. Shadow-gap aluminium skirting is the current detail of choice in minimal schemes.",
+      "specs": {"Height": "75–150 mm", "Materials": "Timber / PVC / aluminium / stone", "Detail": "Flush, proud or shadow gap", "Fixing": "Adhesive / pin"},
+      "applications": ["All rooms"],
+      "tier": "BUDGET",
+      "priceMin": 60, "priceMax": 500, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "skirting board floor"
+    },
+    {
+      "name": "Aluminium profile / trim",
+      "blurb": "Edge trims, shadow gaps and tile profiles that finish a junction",
+      "description": "The small extrusions that make details look deliberate: tile edge trims, shadow-gap sections, T-profiles between materials. Cheap, and the absence of them is instantly visible.",
+      "specs": {"Types": "Edge, corner, T, shadow gap", "Finish": "Anodised / PVD / powder coat", "Length": "2.5–3 m", "Sizes": "6–15 mm to suit material"},
+      "applications": ["Tile edges", "Material junctions", "Shadow gaps", "Skirting"],
+      "tier": "BUDGET",
+      "priceMin": 80, "priceMax": 600, "priceUnit": "per metre",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "aluminium trim profile"
+    }
+  ]
+}

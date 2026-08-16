@@ -1,0 +1,162 @@
+{
+  "slug": "ceiling-partition",
+  "name": "Ceiling & Partition",
+  "tagline": "The fifth wall, and the walls that are not structural",
+  "description": "False ceilings hide the services and carry the lighting design; partitions divide space without touching the structure. Both are specified by system — board, framing, fixing and access — not just by finish.",
+  "image": "false ceiling interior",
+  "brands": ["Saint-Gobain Gyproc", "Armstrong", "USG Boral", "Knauf", "Hunter Douglas", "Rockfon"],
+  "materials": [
+    {
+      "name": "Gypsum board",
+      "blurb": "The standard 12.5 mm board for ceilings and drywall",
+      "description": "Plaster core in a paper facing, screwed to a GI framework and jointed with tape and compound. Fast, flat and paint-ready — and easily damaged by a roof leak, so keep it out of wet zones.",
+      "specs": {"Thickness": "9, 12.5, 15 mm", "Board": "Regular / moisture / fire resistant", "Frame": "GI channel at 450–600 mm", "Standard": "IS 2095"},
+      "applications": ["False ceilings", "Drywall partitions", "Cove details"],
+      "standard": "IS 2095",
+      "tier": "BUDGET",
+      "priceMin": 80, "priceMax": 160, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "gypsum ceiling"
+    },
+    {
+      "name": "Moisture-resistant gypsum",
+      "blurb": "Green board for bathrooms, kitchens and balcony soffits",
+      "description": "Silicone-treated core and water-repellent facing let gypsum survive humid rooms. It is moisture-resistant, not waterproof — a dripping pipe will still finish it.",
+      "specs": {"Core": "Silicone treated", "Facing": "Water repellent", "Identifier": "Green paper"},
+      "applications": ["Bathroom ceilings", "Kitchen ceilings", "Balcony soffits"],
+      "standard": "IS 2095",
+      "tier": "MID",
+      "priceMin": 100, "priceMax": 190, "priceUnit": "per sq.ft installed",
+      "water": true,
+      "use": "Indoor",
+      "image": "bathroom ceiling"
+    },
+    {
+      "name": "False ceiling (plain gypsum)",
+      "blurb": "Flat suspended ceiling with concealed services and cove lighting",
+      "description": "The workhorse residential ceiling: a level plane at 200–450 mm below slab, hiding ducts and wiring and carrying the lighting layout. Always plan access panels for valves and dampers.",
+      "specs": {"Drop": "150–450 mm typical", "Frame": "GI perimeter + intermediate channels", "Access": "Provide hatches at valves", "Finish": "Putty + emulsion"},
+      "applications": ["Living rooms", "Bedrooms", "Offices", "Corridors"],
+      "tier": "MID",
+      "priceMin": 90, "priceMax": 180, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "living room false ceiling"
+    },
+    {
+      "name": "Metal ceiling",
+      "blurb": "Powder-coated steel or aluminium panels — demountable and tough",
+      "description": "Plank, tile or clip-in metal ceilings that hose down and lift out for service access. Standard in airports, hospitals and commercial washrooms.",
+      "specs": {"Material": "Aluminium / GI, powder coated", "Type": "Clip-in / lay-in / plank", "Access": "Demountable"},
+      "applications": ["Commercial", "Airports", "Hospitals", "Washrooms"],
+      "warranty": "10 years",
+      "tier": "PREMIUM",
+      "priceMin": 180, "priceMax": 500, "priceUnit": "per sq.ft installed",
+      "water": true,
+      "fire": true,
+      "use": "Indoor",
+      "image": "metal ceiling commercial"
+    },
+    {
+      "name": "Grid ceiling",
+      "blurb": "600×600 lay-in tiles on an exposed T-grid",
+      "description": "The cheapest fully accessible ceiling: mineral fibre tiles dropped into a visible grid, liftable anywhere for service work. Ubiquitous in offices for exactly that reason.",
+      "specs": {"Module": "600×600 / 600×1200 mm", "Grid": "Exposed T", "Access": "Full, anywhere", "Tile": "Mineral fibre / gypsum"},
+      "applications": ["Offices", "Retail", "Server rooms", "Classrooms"],
+      "tier": "BUDGET",
+      "priceMin": 60, "priceMax": 140, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "office grid ceiling"
+    },
+    {
+      "name": "Acoustic ceiling",
+      "blurb": "Perforated or mineral tiles that absorb reverberation",
+      "description": "Rated by NRC — how much sound the ceiling soaks up. Essential in open-plan offices, classrooms and restaurants where a hard ceiling turns conversation into noise.",
+      "specs": {"NRC": "0.5–0.9", "Type": "Mineral fibre / perforated gypsum / metal", "Backing": "Acoustic fleece"},
+      "applications": ["Offices", "Restaurants", "Classrooms", "Auditoria"],
+      "tier": "PREMIUM",
+      "priceMin": 150, "priceMax": 450, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "acoustic ceiling tiles"
+    },
+    {
+      "name": "PVC ceiling",
+      "blurb": "Interlocking plastic planks for wet and budget areas",
+      "description": "Waterproof, cheap and installed in a day over a light frame. Reads as plastic under any decent light, so it belongs in utility rooms rather than living spaces.",
+      "specs": {"Material": "PVC", "Width": "200–300 mm planks", "Water": "Waterproof", "Fixing": "Clip on batten"},
+      "applications": ["Bathrooms", "Utility", "Balconies", "Budget projects"],
+      "tier": "BUDGET",
+      "priceMin": 45, "priceMax": 120, "priceUnit": "per sq.ft installed",
+      "water": true,
+      "use": "Indoor",
+      "image": "pvc ceiling"
+    },
+    {
+      "name": "Wooden ceiling",
+      "blurb": "Timber planks or veneered panels overhead",
+      "description": "Real or veneered timber on the ceiling adds warmth nothing else matches — used over dining tables, in entrance lobbies and on balcony soffits. Watch the weight and the fire rating.",
+      "specs": {"Material": "Solid timber / veneered MDF", "Fixing": "Concealed clip on frame", "Fire": "Check FR treatment for commercial"},
+      "applications": ["Dining rooms", "Lobbies", "Balcony soffits", "Bedrooms"],
+      "tier": "PREMIUM",
+      "priceMin": 250, "priceMax": 800, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "wooden ceiling interior"
+    },
+    {
+      "name": "Baffle ceiling",
+      "blurb": "Vertical fins hung on edge — rhythm plus acoustics",
+      "description": "Timber, metal or felt baffles suspended at intervals let services stay visible while adding a strong linear rhythm and real absorption. A favourite in offices and restaurants.",
+      "specs": {"Spacing": "100–300 mm centres", "Material": "Timber / aluminium / PET felt", "Services": "Remain accessible above"},
+      "applications": ["Offices", "Restaurants", "Retail", "Lobbies"],
+      "tier": "PREMIUM",
+      "priceMin": 300, "priceMax": 900, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "baffle ceiling office"
+    },
+    {
+      "name": "Linear ceiling",
+      "blurb": "Continuous strip panels that stretch a space visually",
+      "description": "Long aluminium or timber strips with open or closed joints, drawing the eye down a corridor. Also a practical way to integrate linear lighting and slot diffusers.",
+      "specs": {"Panel": "84–300 mm wide strips", "Joint": "Open / closed", "Integration": "Linear lights, slot diffusers"},
+      "applications": ["Corridors", "Lobbies", "Façade soffits", "Retail"],
+      "tier": "PREMIUM",
+      "priceMin": 250, "priceMax": 700, "priceUnit": "per sq.ft installed",
+      "use": "Indoor & outdoor",
+      "image": "linear ceiling corridor"
+    },
+    {
+      "name": "Glass partition",
+      "blurb": "Framed or frameless glazed divider that keeps the light",
+      "description": "Splits a plan without darkening it — the standard for cabins, home offices and meeting rooms. Use toughened or laminated glass and add manifestation so nobody walks into it.",
+      "specs": {"Glass": "10–12 mm toughened", "Frame": "Aluminium / frameless", "Acoustic": "Double glazed options", "Safety": "Manifestation required"},
+      "applications": ["Offices", "Home offices", "Meeting rooms", "Bathrooms"],
+      "tier": "PREMIUM",
+      "priceMin": 350, "priceMax": 1200, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "glass office partition"
+    },
+    {
+      "name": "Gypsum partition",
+      "blurb": "Drywall stud wall — fast, light, service-friendly",
+      "description": "A GI stud frame boarded both sides, with insulation and services inside. A quarter the weight of blockwork and up there is a fire and acoustic rating for almost any requirement.",
+      "specs": {"Build": "GI studs + board both sides", "Thickness": "75–150 mm", "Acoustic": "Up to 55 dB with infill", "Fire": "Up to 120 min systems"},
+      "applications": ["Offices", "Apartments", "Hotels", "Retrofits"],
+      "warranty": "10 years",
+      "tier": "MID",
+      "priceMin": 120, "priceMax": 300, "priceUnit": "per sq.ft installed",
+      "fire": true,
+      "use": "Indoor",
+      "image": "drywall partition"
+    },
+    {
+      "name": "Aluminium partition",
+      "blurb": "Framed modular system for offices and cabins",
+      "description": "Powder-coated aluminium frames infilled with glass, board or louvres, assembled and dismantled without wet trades. The default when a tenant may reconfigure the floor later.",
+      "specs": {"Frame": "Powder-coated aluminium", "Infill": "Glass / board / louvre", "Reusable": "Demountable"},
+      "applications": ["Offices", "Cabins", "Showrooms"],
+      "tier": "MID",
+      "priceMin": 200, "priceMax": 600, "priceUnit": "per sq.ft installed",
+      "use": "Indoor",
+      "image": "aluminium partition office"
+    }
+  ]
+}

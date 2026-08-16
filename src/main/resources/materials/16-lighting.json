@@ -1,0 +1,190 @@
+{
+  "slug": "lighting",
+  "name": "Lighting",
+  "tagline": "Layers of light — ambient, task, accent and decorative",
+  "description": "Lighting is the finish that decides how every other finish looks. A good scheme layers ambient, task and accent light on separate circuits, keeps colour temperature consistent, and never relies on a single ceiling fixture. Each product here is specified by lumens, beam angle, CRI and colour temperature — not just wattage.",
+  "image": "interior lighting design",
+  "brands": ["Philips / Signify", "Havells", "Wipro", "Syska", "Jaquar", "Bajaj", "Crompton", "OPPLE", "FOS Lighting", "Arture", "Anemos"],
+  "materials": [
+    {
+      "name": "Downlight",
+      "blurb": "Recessed ceiling light — the base layer of most schemes",
+      "description": "Flush-mounted fixtures that provide general illumination without visual clutter. Space them at roughly the ceiling height apart, and specify 3000 K in homes — 6500 K daylight reads as an office.",
+      "specs": {"Output": "500–1200 lm", "Beam": "60–120°", "CCT": "2700–4000 K", "CRI": "80–95", "Cut-out": "65–150 mm"},
+      "applications": ["Living rooms", "Bedrooms", "Corridors", "Offices"],
+      "warranty": "2–5 years",
+      "tier": "MID",
+      "priceMin": 350, "priceMax": 2500, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "recessed ceiling light"
+    },
+    {
+      "name": "Spotlight",
+      "blurb": "Narrow-beam adjustable fitting that picks out one object",
+      "description": "Aimable fixtures with a tight beam for artwork, a plant or a texture wall. Accent lighting should sit at three to five times the ambient level to actually read as an accent.",
+      "specs": {"Beam": "15–36°", "Adjustable": "Tilt and rotate", "CRI": "90+ for artwork", "Output": "400–1000 lm"},
+      "applications": ["Artwork", "Feature walls", "Retail displays", "Sculpture"],
+      "tier": "MID",
+      "priceMin": 450, "priceMax": 3500, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "spotlight art wall"
+    },
+    {
+      "name": "COB light",
+      "blurb": "Chip-on-board LED with a crisp, controlled beam",
+      "description": "A single dense LED chip gives sharper shadows and better beam control than multi-chip fittings. The go-to for accent lighting in premium residential work.",
+      "specs": {"Source": "Chip-on-board LED", "Beam": "24–60°", "CRI": "90+", "Output": "700–2000 lm"},
+      "applications": ["Accent lighting", "Feature walls", "Retail", "Living rooms"],
+      "tier": "MID",
+      "priceMin": 500, "priceMax": 3000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cob led light"
+    },
+    {
+      "name": "Track light",
+      "blurb": "Fixtures that slide and aim anywhere along a powered rail",
+      "description": "One circuit, movable heads — ideal when the art will change or the furniture layout is not settled. Standard in galleries, showrooms and open-plan homes.",
+      "specs": {"Track": "1-phase / 3-phase", "Heads": "Movable, aimable", "Beam": "15–60°", "Dimming": "Triac / DALI options"},
+      "applications": ["Galleries", "Showrooms", "Open-plan homes", "Retail"],
+      "tier": "MID",
+      "priceMin": 900, "priceMax": 6000, "priceUnit": "per fixture",
+      "use": "Indoor",
+      "image": "track lighting"
+    },
+    {
+      "name": "Profile light",
+      "blurb": "Aluminium channel with a diffused LED line",
+      "description": "An extruded profile recessed into ceilings, walls or joinery, diffusing the strip into a clean line of light with no visible dots. The detail that makes modern ceilings look designed.",
+      "specs": {"Profile": "Recessed / surface / suspended", "Diffuser": "Opal PC", "Output": "8–20 W per metre", "Cut": "To length on site"},
+      "applications": ["Ceilings", "Joinery", "Wardrobes", "Corridors"],
+      "tier": "PREMIUM",
+      "priceMin": 400, "priceMax": 1500, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "linear profile light"
+    },
+    {
+      "name": "LED strip light",
+      "blurb": "Flexible tape for coves, niches and under-cabinet light",
+      "description": "The cheapest way to add a layer of light — but only good with the right driver and a diffuser. Specify IP65 in bathrooms and 24 V for runs over three metres to avoid voltage drop.",
+      "specs": {"Voltage": "12 V / 24 V", "Density": "60–240 LED/m", "IP": "IP20 dry, IP65 wet", "Driver": "Size at 80% load"},
+      "applications": ["Coves", "Niches", "Under-cabinet", "Wardrobe interiors"],
+      "tier": "BUDGET",
+      "priceMin": 120, "priceMax": 800, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "led strip cove"
+    },
+    {
+      "name": "Pendant light",
+      "blurb": "Suspended fixture over tables, counters and stairwells",
+      "description": "Both a light source and an object. Hang it 750–900 mm above a dining table, and keep the lamp shielded — a bare bulb at eye level ruins the room it decorates.",
+      "specs": {"Drop": "750–900 mm above table", "Shielding": "Avoid glare at seated eye level", "Dimming": "Recommended"},
+      "applications": ["Dining tables", "Kitchen islands", "Stairwells", "Bedsides"],
+      "tier": "MID",
+      "priceMin": 1500, "priceMax": 60000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "pendant light dining"
+    },
+    {
+      "name": "Chandelier",
+      "blurb": "The statement fixture — scale it to the room, not the budget",
+      "description": "A chandelier is architecture as much as lighting. Check the ceiling hook load, the cleaning access and whether the drop clears the door swing before it goes on the drawing.",
+      "specs": {"Fixing": "Structural hook — check load", "Access": "Plan cleaning route", "Dimming": "Essential", "Scale": "Diameter ≈ room diagonal in cm"},
+      "applications": ["Double-height living rooms", "Dining rooms", "Lobbies", "Stairwells"],
+      "tier": "PREMIUM",
+      "priceMin": 12000, "priceMax": 400000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "chandelier interior"
+    },
+    {
+      "name": "Wall light",
+      "blurb": "Sconces and up-down fittings that light the vertical plane",
+      "description": "Lighting walls makes a room feel larger than lighting the floor does. Sconces at 1500–1700 mm work beside beds and along corridors; up-down fittings graze texture beautifully.",
+      "specs": {"Height": "1500–1700 mm typical", "Type": "Sconce / up-down / picture", "Beam": "Wide or grazing"},
+      "applications": ["Corridors", "Bedsides", "Feature walls", "Staircases"],
+      "tier": "MID",
+      "priceMin": 800, "priceMax": 15000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "wall sconce light"
+    },
+    {
+      "name": "Table lamp",
+      "blurb": "Portable pool of light at eye level",
+      "description": "The layer that makes a living room feel lived in after dark. Needs a socket where the console or side table actually lands — a detail worth fixing at the furniture layout stage.",
+      "specs": {"Height": "400–700 mm", "Socket": "Plan at furniture layout", "Bulb": "Warm 2700 K, dimmable"},
+      "applications": ["Living rooms", "Bedsides", "Consoles", "Studies"],
+      "tier": "MID",
+      "priceMin": 1500, "priceMax": 40000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "table lamp interior"
+    },
+    {
+      "name": "Floor lamp",
+      "blurb": "Freestanding light for reading corners and dark corners",
+      "description": "The easiest fix for a room whose lighting was designed before the furniture was chosen. Arc and tripod forms both work; make sure the cable route is not across a walkway.",
+      "specs": {"Height": "1400–1800 mm", "Types": "Arc / tripod / torchiere", "Cable": "Plan the route"},
+      "applications": ["Reading corners", "Living rooms", "Behind sofas"],
+      "tier": "MID",
+      "priceMin": 3000, "priceMax": 60000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "floor lamp living room"
+    },
+    {
+      "name": "Under-cabinet light",
+      "blurb": "Task light on the kitchen worktop, where it is actually needed",
+      "description": "Mounted at the front edge of the wall unit so the light falls on the chopping board and not on the cook's back. The single most useful light in any kitchen.",
+      "specs": {"Mount": "Front edge of wall unit", "Output": "300–600 lm/m", "Switching": "Separate circuit or sensor", "IP": "IP44 near the sink"},
+      "applications": ["Kitchen worktops", "Study desks", "Wardrobe interiors"],
+      "tier": "MID",
+      "priceMin": 600, "priceMax": 3500, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "under cabinet kitchen light"
+    },
+    {
+      "name": "Cove light",
+      "blurb": "Hidden strip that washes the ceiling with indirect light",
+      "description": "Concealed in a false-ceiling pocket, bouncing light off the slab for a soft glow with no visible source. Keep the strip 100–150 mm from the ceiling or you will see scallops.",
+      "specs": {"Pocket": "150–250 mm wide", "Setback": "100–150 mm from ceiling", "Source": "Strip or profile", "Effect": "Indirect, soft"},
+      "applications": ["Living rooms", "Bedrooms", "Lobbies", "Corridors"],
+      "tier": "MID",
+      "priceMin": 150, "priceMax": 700, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "cove lighting ceiling"
+    },
+    {
+      "name": "Outdoor light",
+      "blurb": "IP-rated fittings for balconies, façades and entrances",
+      "description": "Everything outside needs an IP rating and a corrosion-appropriate body — IP65 minimum for rain, and marine-grade finishes near the coast. Warm colour temperatures flatter planting and stone.",
+      "specs": {"IP": "IP65 and above", "Body": "Die-cast aluminium / SS 316 coastal", "CCT": "2700–3000 K", "Surge": "Protection recommended"},
+      "applications": ["Balconies", "Façades", "Entrances", "Terraces"],
+      "warranty": "3–5 years",
+      "tier": "MID",
+      "priceMin": 900, "priceMax": 12000, "priceUnit": "per piece",
+      "water": true,
+      "use": "Outdoor",
+      "image": "outdoor wall light"
+    },
+    {
+      "name": "Garden light",
+      "blurb": "Bollards, spikes and uplighters for landscape lighting",
+      "description": "Low-level bollards for paths, spike uplights for trees, and buried fittings for façades. Use low voltage where children and pets are around, and shield every source from the sightline.",
+      "specs": {"IP": "IP65–IP67", "Voltage": "12 V / 24 V low voltage preferred", "Types": "Bollard, spike, in-ground"},
+      "applications": ["Gardens", "Pathways", "Landscape", "Pool surrounds"],
+      "tier": "MID",
+      "priceMin": 1200, "priceMax": 15000, "priceUnit": "per piece",
+      "water": true,
+      "use": "Outdoor",
+      "image": "garden path light"
+    },
+    {
+      "name": "Sensor light",
+      "blurb": "Fittings with built-in motion or daylight sensing",
+      "description": "Self-contained sensor fixtures for wardrobes, staircases, utility rooms and entrances — no separate sensor, no extra wiring. Rechargeable versions retrofit anywhere.",
+      "specs": {"Sensing": "PIR / microwave / daylight", "Power": "Wired or rechargeable", "Delay": "Adjustable 10 s–5 min"},
+      "applications": ["Wardrobes", "Staircases", "Utility", "Entrances"],
+      "tier": "BUDGET",
+      "priceMin": 500, "priceMax": 4000, "priceUnit": "per piece",
+      "use": "Indoor & outdoor",
+      "image": "sensor light wardrobe"
+    }
+  ]
+}

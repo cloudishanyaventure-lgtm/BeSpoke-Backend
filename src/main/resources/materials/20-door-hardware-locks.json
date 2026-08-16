@@ -1,0 +1,135 @@
+{
+  "slug": "door-hardware-locks",
+  "name": "Door Hardware & Locks",
+  "tagline": "Locks, closers and hinges — security you specify by grade",
+  "description": "Door hardware is bought on brand and judged on cycles. A main-door lock is a security decision, a closer is a safety one, and a floor spring is a structural one that must be set before the flooring goes down. Each entry lists the grade or rating that actually matters.",
+  "image": "door handle lock",
+  "brands": ["Godrej", "Yale", "Dorset", "Ozone", "Häfele", "Hettich", "Dormakaba", "GEZE", "ASSA ABLOY"],
+  "materials": [
+    {
+      "name": "Main door lock",
+      "blurb": "Multi-point or heavy mortise lock for the entrance",
+      "description": "The entrance deserves a different grade from every other door: hardened bolts, an anti-drill cylinder and ideally multi-point throw. Match the backset to the door stile before ordering.",
+      "specs": {"Type": "Mortise / multi-point", "Cylinder": "Anti-drill, anti-bump", "Bolts": "Hardened, 20 mm throw", "Backset": "Confirm against door stile"},
+      "applications": ["Main entrance", "Service entrance"],
+      "warranty": "3–10 years",
+      "tier": "PREMIUM",
+      "priceMin": 3500, "priceMax": 25000, "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "main door lock"
+    },
+    {
+      "name": "Mortise lock",
+      "blurb": "Lock body housed inside the door edge — the internal standard",
+      "description": "A steel body mortised into the leaf, with separate handle and cylinder. Needs a solid-core door; on a hollow-core leaf the lock will pull out within a couple of years.",
+      "specs": {"Body": "Mortised into leaf", "Door": "Solid core required", "Functions": "Key / bathroom / passage", "Backset": "45–60 mm"},
+      "applications": ["Bedrooms", "Bathrooms", "Studies", "Office cabins"],
+      "tier": "MID",
+      "priceMin": 1200, "priceMax": 9000, "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "mortise lock door"
+    },
+    {
+      "name": "Digital lock",
+      "blurb": "PIN, card and fingerprint entry with a mechanical override",
+      "description": "Keyless entry that suits families juggling keys and short-let apartments. Always confirm there is a mechanical key override and check the battery warning behaviour before specifying.",
+      "specs": {"Access": "PIN / RFID / fingerprint", "Override": "Mechanical key essential", "Power": "AA batteries, low warning", "Door": "Check thickness range"},
+      "applications": ["Main doors", "Short-let apartments", "Offices"],
+      "warranty": "1–3 years",
+      "tier": "PREMIUM",
+      "priceMin": 9000, "priceMax": 50000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "digital door lock"
+    },
+    {
+      "name": "Smart lock",
+      "blurb": "App-controlled entry with remote access and audit trail",
+      "description": "Adds Wi-Fi or Bluetooth to a digital lock: remote unlocking, temporary guest codes and a log of who entered when. Useful for rentals; check what happens when the internet drops.",
+      "specs": {"Connectivity": "Wi-Fi / Bluetooth / Zigbee", "Features": "Remote unlock, guest codes, audit log", "Offline": "Verify local operation", "Override": "Mechanical key"},
+      "applications": ["Rentals", "Holiday homes", "Offices", "Main doors"],
+      "tier": "PREMIUM",
+      "priceMin": 15000, "priceMax": 80000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "smart door lock"
+    },
+    {
+      "name": "Door handle",
+      "blurb": "Lever or pull handle on a rose or plate",
+      "description": "Levers are easier than knobs for children and older users, and they are required for accessible design. Match the finish across the whole floor — mixed finishes read as an afterthought.",
+      "specs": {"Type": "Lever on rose / plate, pull handle", "Material": "SS 304 / brass / zinc alloy", "Accessible": "Lever preferred over knob"},
+      "applications": ["All doors"],
+      "tier": "MID",
+      "priceMin": 600, "priceMax": 12000, "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "door lever handle"
+    },
+    {
+      "name": "Door closer",
+      "blurb": "Controlled self-closing for fire and main doors",
+      "description": "Overhead or concealed, with adjustable closing and latching speeds. Mandatory on fire doors, and worth having on any door that must not be left open — size it to the leaf width and weight.",
+      "specs": {"Size": "EN 1–6, match leaf width", "Type": "Overhead / concealed / cam action", "Adjust": "Closing + latching speed", "Fire": "Required on rated doors"},
+      "applications": ["Fire doors", "Main doors", "Offices", "Common areas"],
+      "standard": "EN 1154",
+      "tier": "MID",
+      "priceMin": 1500, "priceMax": 15000, "priceUnit": "per piece",
+      "fire": true,
+      "use": "Indoor",
+      "image": "door closer"
+    },
+    {
+      "name": "Floor spring",
+      "blurb": "Concealed pivot and closer set into the floor",
+      "description": "Carries the weight of a heavy glass or timber door and closes it, with nothing visible above the floor. The pocket has to be cast or cut before flooring — a late decision here is expensive.",
+      "specs": {"Load": "Match door weight (80–150 kg)", "Install": "Pocket before flooring", "Hold-open": "90° option", "Cover": "SS 304 plate"},
+      "applications": ["Glass entrance doors", "Showrooms", "Heavy timber doors"],
+      "tier": "PREMIUM",
+      "priceMin": 4000, "priceMax": 30000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "floor spring door"
+    },
+    {
+      "name": "Door stopper",
+      "blurb": "Floor, wall or magnetic stop that saves the wall",
+      "description": "Small, cheap and constantly forgotten until a handle punches a hole in the plaster. Magnetic catches also hold a door open, which helps in ventilated corridors.",
+      "specs": {"Types": "Floor / wall / magnetic", "Material": "SS / brass with rubber", "Fixing": "Into solid substrate"},
+      "applications": ["All swing doors"],
+      "tier": "BUDGET",
+      "priceMin": 150, "priceMax": 2500, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "door stopper"
+    },
+    {
+      "name": "Patch fitting",
+      "blurb": "Corner clamps that carry frameless glass doors",
+      "description": "Machined clamps at the top and bottom corners of a toughened glass leaf, working with a floor spring. All cut-outs must be made before the glass is toughened.",
+      "specs": {"Material": "SS 304, mirror or satin", "Glass": "10–12 mm toughened", "Cut-outs": "Before toughening", "Pairs with": "Floor spring"},
+      "applications": ["Frameless glass doors", "Showrooms", "Offices"],
+      "tier": "PREMIUM",
+      "priceMin": 3000, "priceMax": 25000, "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "glass door fitting"
+    },
+    {
+      "name": "Door hinge (butt)",
+      "blurb": "Standard hinges, sized by door weight and rated in cycles",
+      "description": "Three hinges minimum on a solid door, four on a heavy or fire-rated one. Ball-bearing hinges last far longer under a closer; plain hinges will start to squeak and sag.",
+      "specs": {"Size": "100 / 125 mm", "Type": "Ball bearing preferred", "Quantity": "3 minimum, 4 on heavy leaves", "Material": "SS 304"},
+      "applications": ["All swing doors"],
+      "tier": "BUDGET",
+      "priceMin": 120, "priceMax": 1800, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "door hinge"
+    },
+    {
+      "name": "Sliding door hardware",
+      "blurb": "Track, rollers and soft-close for sliding leaves",
+      "description": "The kit that decides whether a sliding door glides or grinds: track section, roller bearings, anti-jump guides and a soft-close damper, all rated to the leaf weight.",
+      "specs": {"Load": "40–150 kg per leaf", "Track": "Aluminium, top-hung", "Damper": "Soft close both ends", "Guide": "Anti-jump required"},
+      "applications": ["Sliding doors", "Barn doors", "Wardrobes", "Partitions"],
+      "tier": "MID",
+      "priceMin": 2500, "priceMax": 25000, "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "sliding door track"
+    }
+  ]
+}

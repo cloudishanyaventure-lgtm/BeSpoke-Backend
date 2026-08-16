@@ -1,0 +1,189 @@
+{
+  "slug": "kitchen-accessories",
+  "name": "Kitchen Accessories",
+  "tagline": "Pull-outs, baskets and organisers — where a kitchen earns its keep",
+  "description": "Internal accessories decide whether a kitchen works on a Tuesday evening. Indian kitchens have their own requirements — thali baskets, grain storage, bottle pull-outs beside the hob — and this section is specified against those, not a European template.",
+  "image": "modular kitchen interior",
+  "brands": ["Kesseböhmer", "Hettich", "Häfele", "Blum", "Ebco", "Godrej", "Sleek", "Dorset"],
+  "materials": [
+    {
+      "name": "Magic corner",
+      "blurb": "Pulls the dead corner cabinet out into the room",
+      "description": "A two-stage mechanism that swings the front basket clear and slides the rear basket forward, turning the least usable cabinet in the kitchen into proper storage. Needs a minimum 900 mm corner run.",
+      "specs": {"Mechanism": "Two-stage pull-out", "Min cabinet": "900 mm", "Load": "25–35 kg", "Finish": "Chrome / anthracite"},
+      "applications": ["Corner base units"],
+      "warranty": "5–10 years",
+      "tier": "PREMIUM",
+      "priceMin": 8000, "priceMax": 26000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "kitchen corner unit"
+    },
+    {
+      "name": "Pantry unit",
+      "blurb": "Full-height pull-out larder with multiple tiers",
+      "description": "Six to eight shelves on a single frame that rolls out completely, so nothing is lost at the back. The single highest-impact accessory in an Indian kitchen — and the most expensive.",
+      "specs": {"Height": "1200–2000 mm", "Tiers": "4–8", "Load": "150–300 kg total", "Cabinet": "450–600 mm wide"},
+      "applications": ["Tall units", "Larder storage"],
+      "warranty": "10 years",
+      "tier": "PREMIUM",
+      "priceMin": 22000, "priceMax": 95000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "pantry pull out"
+    },
+    {
+      "name": "Bottle pull-out",
+      "blurb": "Narrow 150–300 mm pull-out for oils and condiments",
+      "description": "Fills the offcut cabinet next to the hob with the bottles that otherwise clutter the counter. Cheap, universally useful, and the accessory clients notice most for its cost.",
+      "specs": {"Widths": "150, 200, 300 mm", "Load": "15–20 kg", "Runner": "Soft close"},
+      "applications": ["Beside the hob", "Narrow cabinets"],
+      "tier": "MID",
+      "priceMin": 3000, "priceMax": 12000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "bottle pullout kitchen"
+    },
+    {
+      "name": "Tall unit",
+      "blurb": "Floor-to-ceiling storage column with pull-out shelves",
+      "description": "A full-height cabinet fitted out with wire or solid shelves on runners. Where a pantry mechanism is out of budget, a well-planned tall unit still recovers a lot of storage.",
+      "specs": {"Height": "1800–2200 mm", "Width": "450–600 mm", "Shelves": "5–7"},
+      "applications": ["Grocery storage", "Appliance housing"],
+      "tier": "PREMIUM",
+      "priceMin": 18000, "priceMax": 70000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "tall kitchen unit"
+    },
+    {
+      "name": "Corner unit carousel",
+      "blurb": "Rotating trays that bring the corner to the front",
+      "description": "A 270° or 360° carousel spins the contents of a corner cabinet into reach. Simpler and cheaper than a magic corner, though it wastes a little more of the cabinet volume.",
+      "specs": {"Rotation": "270° / 360°", "Trays": "2", "Material": "Steel / plastic"},
+      "applications": ["Corner base units"],
+      "tier": "MID",
+      "priceMin": 6000, "priceMax": 20000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "kitchen carousel"
+    },
+    {
+      "name": "Cutlery tray",
+      "blurb": "Compartmented insert that keeps the top drawer sane",
+      "description": "Cut-to-size trays in plastic, beech or aluminium that stop the top drawer becoming a jumble. Specify the tray with the drawer so the compartments match the internal width exactly.",
+      "specs": {"Material": "Plastic / beech / aluminium", "Sizing": "Cut to drawer width"},
+      "applications": ["Top drawers"],
+      "tier": "BUDGET",
+      "priceMin": 900, "priceMax": 6500, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cutlery drawer"
+    },
+    {
+      "name": "Thali basket",
+      "blurb": "Deep basket sized for Indian plates and steel vessels",
+      "description": "Designed around the diameter of a thali and the weight of steel vessels — the reason a European basket set never quite works in an Indian kitchen. Usually placed directly under the counter.",
+      "specs": {"Depth": "Deep", "Load": "20–30 kg", "Finish": "Chrome / SS"},
+      "applications": ["Base units", "Crockery storage"],
+      "tier": "MID",
+      "priceMin": 3500, "priceMax": 14000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "steel kitchen basket"
+    },
+    {
+      "name": "Plate basket",
+      "blurb": "Vertical dividers that hold plates on edge",
+      "description": "Plates stand upright and drain, which suits kitchens where crockery is put away wet. Keep it near the sink so the wet-to-store journey is short.",
+      "specs": {"Orientation": "Vertical dividers", "Widths": "450–900 mm"},
+      "applications": ["Base units near the sink"],
+      "tier": "MID",
+      "priceMin": 3000, "priceMax": 12000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "plate rack kitchen"
+    },
+    {
+      "name": "Cup & saucer unit",
+      "blurb": "Shallow tiered basket for tea sets and glassware",
+      "description": "A two-tier shallow pull-out that keeps fragile pieces separated and visible. Works best at chest height in a tall unit rather than low down.",
+      "specs": {"Tiers": "2", "Depth": "Shallow"},
+      "applications": ["Tall units", "Crockery storage"],
+      "tier": "MID",
+      "priceMin": 3000, "priceMax": 11000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "crockery storage"
+    },
+    {
+      "name": "Grain storage system",
+      "blurb": "Sealed containers on a pull-out frame for atta, rice and dal",
+      "description": "Airtight drums or jars mounted in a heavy-duty pull-out. Weight is the design constraint here — specify a 60 kg+ runner, not a standard channel.",
+      "specs": {"Load": "60–100 kg", "Containers": "Airtight, 5–20 L", "Runner": "Heavy duty"},
+      "applications": ["Base units", "Utility"],
+      "tier": "PREMIUM",
+      "priceMin": 9000, "priceMax": 35000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "grain storage kitchen"
+    },
+    {
+      "name": "Under-sink system",
+      "blurb": "U-shaped pull-out that works around the sink waste",
+      "description": "Baskets notched to clear the trap and pipework, so the wettest, most awkward cabinet finally holds something. Pair with a waterproof board and a drip tray.",
+      "specs": {"Shape": "U-cut for plumbing", "Material": "SS / coated steel", "Pair with": "WPC carcass"},
+      "applications": ["Sink base unit"],
+      "tier": "MID",
+      "priceMin": 3500, "priceMax": 14000, "priceUnit": "per unit",
+      "water": true,
+      "use": "Indoor",
+      "image": "under sink storage"
+    },
+    {
+      "name": "Dustbin system",
+      "blurb": "Concealed bin that pulls out with the shutter",
+      "description": "Single or twin bins on a frame, usually under the sink, often with automatic shutter linkage. A segregation-ready twin bin is worth the small premium.",
+      "specs": {"Capacity": "12–30 L", "Type": "Single / twin", "Mount": "Shutter-linked"},
+      "applications": ["Sink base unit", "Utility"],
+      "tier": "MID",
+      "priceMin": 2500, "priceMax": 12000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "kitchen bin cabinet"
+    },
+    {
+      "name": "Lift-up system",
+      "blurb": "Gas or spring mechanism for upward-opening shutters",
+      "description": "Lets a wall cabinet open upward and stay put, which keeps heads clear in a narrow kitchen. Specify the correct gas pressure for the shutter weight or it will drift.",
+      "specs": {"Types": "Parallel, swing, bi-fold", "Force": "Matched to shutter weight", "Closing": "Soft close"},
+      "applications": ["Wall units", "Narrow kitchens"],
+      "tier": "PREMIUM",
+      "priceMin": 3500, "priceMax": 18000, "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "lift up cabinet"
+    },
+    {
+      "name": "Appliance garage",
+      "blurb": "Roller or lift shutter that hides the counter appliances",
+      "description": "A dedicated pocket with a power point where the mixer, kettle and toaster live and stay plugged in. The single best way to keep an Indian counter looking clear.",
+      "specs": {"Shutter": "Roller / lift-up", "Power": "Include a socket inside", "Width": "450–900 mm"},
+      "applications": ["Counter appliances", "Coffee stations"],
+      "tier": "PREMIUM",
+      "priceMin": 7000, "priceMax": 28000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "appliance garage kitchen"
+    },
+    {
+      "name": "Kitchen organiser set",
+      "blurb": "Spice racks, tray dividers, foil holders and rails",
+      "description": "The small-parts layer: spice pull-outs, tray dividers, cling-film holders and back rails. Individually cheap, collectively the difference between a kitchen that tidies itself and one that does not.",
+      "specs": {"Includes": "Spice, tray, foil, rail", "Material": "Steel / aluminium"},
+      "applications": ["Drawers", "Wall rails", "Narrow cabinets"],
+      "tier": "BUDGET",
+      "priceMin": 800, "priceMax": 9000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "kitchen organiser"
+    },
+    {
+      "name": "Wicker / mesh basket",
+      "blurb": "Ventilated basket for onions, potatoes and produce",
+      "description": "Open-weave baskets that let air move around vegetables so they last. Traditional in Indian kitchens and still the right answer for the onion-and-potato drawer.",
+      "specs": {"Material": "Wicker / wire mesh", "Ventilation": "Open weave"},
+      "applications": ["Vegetable storage", "Utility"],
+      "tier": "BUDGET",
+      "priceMin": 1200, "priceMax": 7000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "wicker basket kitchen"
+    }
+  ]
+}

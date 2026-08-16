@@ -1,0 +1,131 @@
+{
+  "slug": "handles-knobs",
+  "name": "Handles & Knobs",
+  "tagline": "The one detail every client actually touches",
+  "description": "Handles are jewellery on joinery: the cheapest way to lift a scheme and the fastest way to date it. This section runs from concealed profiles for handle-less kitchens through to leather and solid brass pieces for statement furniture.",
+  "image": "cabinet handle",
+  "brands": ["Häfele", "Hettich", "Ozone", "Dorset", "Kich", "Sugatsune", "Godrej"],
+  "materials": [
+    {
+      "name": "Cabinet handle (D / bar)",
+      "blurb": "The standard pull, from 96 mm to 1200 mm centres",
+      "description": "A straightforward bar or D-pull in stainless, aluminium or brass. Get the centre spacing right against the shutter width — a handle that is too short makes a tall wardrobe door look stubby.",
+      "specs": {"Centres": "96–1200 mm", "Material": "SS / aluminium / brass", "Fixing": "Two-point screw"},
+      "applications": ["Kitchens", "Wardrobes", "Vanities"],
+      "finish": "Brushed / matte black / brass",
+      "tier": "MID",
+      "priceMin": 150, "priceMax": 2500, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cabinet bar handle"
+    },
+    {
+      "name": "Profile handle",
+      "blurb": "Continuous aluminium profile fixed along the shutter edge",
+      "description": "Runs the full width of the shutter and reads as a line rather than an object. Keeps a long kitchen run visually calm and is far more forgiving than push-to-open on site tolerances.",
+      "specs": {"Length": "Cut to shutter width", "Material": "Anodised aluminium", "Mount": "Edge / surface"},
+      "applications": ["Kitchens", "Wardrobes", "Handle-less schemes"],
+      "finish": "Anodised silver / black / champagne",
+      "tier": "MID",
+      "priceMin": 250, "priceMax": 1200, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "profile handle kitchen"
+    },
+    {
+      "name": "G-profile handle",
+      "blurb": "Recessed G-section that gives a grip without projecting",
+      "description": "The G-shape is fixed behind the shutter top edge so nothing sticks out into the room. The default handle-less detail for kitchens where push-to-open is judged too fussy.",
+      "specs": {"Section": "G", "Projection": "Nil", "Material": "Aluminium"},
+      "applications": ["Handle-less kitchens", "Base units"],
+      "finish": "Anodised / matte black",
+      "tier": "MID",
+      "priceMin": 300, "priceMax": 1400, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "handleless kitchen profile"
+    },
+    {
+      "name": "Edge profile handle",
+      "blurb": "L or J section fitted to the shutter edge itself",
+      "description": "The profile becomes the shutter edge, so the joinery reads as a single plane. Best with matte finishes; a gloss edge profile shows every knock.",
+      "specs": {"Section": "L / J", "Fixing": "Screwed to shutter edge"},
+      "applications": ["Minimal kitchens", "Wardrobes"],
+      "finish": "Anodised / black / gold",
+      "tier": "MID",
+      "priceMin": 280, "priceMax": 1300, "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "kitchen edge profile"
+    },
+    {
+      "name": "Knob",
+      "blurb": "Single-point pull for small shutters and drawers",
+      "description": "One screw, endless variety — ceramic, brass, wood, leather-wrapped. Right for small drawers and traditional schemes; wrong for anything heavy that needs two hands.",
+      "specs": {"Fixing": "Single screw", "Material": "Brass / ceramic / wood / SS", "Diameter": "20–45 mm"},
+      "applications": ["Small drawers", "Traditional furniture", "Bathroom units"],
+      "tier": "BUDGET",
+      "priceMin": 80, "priceMax": 1800, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cabinet knob"
+    },
+    {
+      "name": "Leather handle",
+      "blurb": "Stitched leather strap — warm, tactile, hospitality-grade",
+      "description": "A leather pull softens a hard scheme and ages well if it is real hide rather than PU. Popular on bedroom joinery and boutique hospitality work.",
+      "specs": {"Material": "Full-grain leather / PU", "Fixing": "Screw-through with cap", "Colours": "Tan, black, cognac"},
+      "applications": ["Bedroom joinery", "Hospitality", "Wardrobes"],
+      "finish": "Natural leather",
+      "tier": "PREMIUM",
+      "priceMin": 600, "priceMax": 4500, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "leather handle"
+    },
+    {
+      "name": "Brass handle",
+      "blurb": "Solid brass in antique, satin or unlacquered finishes",
+      "description": "Real brass has weight in the hand that plated steel never fakes. Unlacquered brass will patina — a feature if the client is told, a complaint if they are not.",
+      "specs": {"Material": "Solid brass", "Finish": "Antique / satin / unlacquered", "Note": "Unlacquered patinas over time"},
+      "applications": ["Statement joinery", "Classic interiors", "Bar units"],
+      "finish": "Antique / satin brass",
+      "tier": "PREMIUM",
+      "priceMin": 500, "priceMax": 6000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "brass handle"
+    },
+    {
+      "name": "Aluminium handle",
+      "blurb": "Light, corrosion-free and the cheapest clean-looking option",
+      "description": "Extruded and anodised aluminium keeps cost down without looking cheap, and it will not rust in a coastal flat. Softer than steel, so it dents if treated roughly.",
+      "specs": {"Material": "Anodised aluminium", "Weight": "Light", "Corrosion": "Excellent"},
+      "applications": ["Kitchens", "Coastal projects", "Budget joinery"],
+      "finish": "Anodised",
+      "tier": "BUDGET",
+      "priceMin": 100, "priceMax": 900, "priceUnit": "per piece",
+      "water": true,
+      "use": "Indoor",
+      "image": "aluminium handle"
+    },
+    {
+      "name": "Stainless steel handle",
+      "blurb": "SS 304 pulls that survive kitchens and coastal air",
+      "description": "The dependable specification: 304-grade stainless resists kitchen grease, cleaning chemicals and salt air. Insist on 304 rather than 202, which will spot within a year near the sea.",
+      "specs": {"Grade": "SS 304", "Finish": "Brushed / mirror", "Corrosion": "High resistance"},
+      "applications": ["Kitchens", "Commercial", "Coastal projects"],
+      "finish": "Brushed steel",
+      "warranty": "5–10 years",
+      "tier": "MID",
+      "priceMin": 200, "priceMax": 2200, "priceUnit": "per piece",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "stainless steel handle"
+    },
+    {
+      "name": "Invisible / recessed handle",
+      "blurb": "Machined pocket in the shutter — nothing added at all",
+      "description": "A finger recess routed into the shutter face or edge, so the joinery has no hardware on it whatsoever. Requires CNC work and a finish that will survive being touched in one spot forever.",
+      "specs": {"Type": "Routed recess / inset pull", "Fabrication": "CNC", "Finish": "Must be durable at the touch point"},
+      "applications": ["Minimal joinery", "Feature walls", "Premium wardrobes"],
+      "tier": "PREMIUM",
+      "priceMin": 400, "priceMax": 3500, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "recessed handle cabinet"
+    }
+  ]
+}

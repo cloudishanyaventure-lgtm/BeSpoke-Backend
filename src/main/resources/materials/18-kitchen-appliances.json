@@ -1,0 +1,113 @@
+{
+  "slug": "kitchen-appliances",
+  "name": "Kitchen Appliances",
+  "tagline": "Built-in equipment that has to be planned, not bought later",
+  "description": "Appliances drive the kitchen layout: a built-in oven needs a housing and a 16 A point, a dishwasher needs inlet, outlet and a level floor. Every entry here lists the cut-out, the service and the clearance so the carpentry and the electrical drawings agree.",
+  "image": "modern kitchen appliances",
+  "brands": ["Bosch", "Siemens", "Faber", "Elica", "Kaff", "Glen", "Franke", "Hafele", "Whirlpool", "Samsung", "LG"],
+  "materials": [
+    {
+      "name": "Chimney",
+      "blurb": "Extraction over the hob — sized by kitchen volume, not looks",
+      "description": "Indian cooking needs real extraction: 1200 m³/h and up for a regularly used hob. Ducted always beats recirculating, and the duct run should be short, straight and rise as it goes.",
+      "specs": {"Suction": "1000–1600 m³/h", "Width": "600 / 750 / 900 mm", "Duct": "150 mm, short and straight", "Height": "650–750 mm above hob"},
+      "applications": ["Above the hob"],
+      "warranty": "1–5 years",
+      "tier": "MID",
+      "priceMin": 12000, "priceMax": 90000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "kitchen chimney"
+    },
+    {
+      "name": "Hob",
+      "blurb": "Gas, induction or hybrid cooktop set into the counter",
+      "description": "Cut-out size and gas point position must reach the carpenter before the counter is templated. Leave 50 mm clearance behind for the gas connection and 300 mm of landing space on each side.",
+      "specs": {"Type": "Gas / induction / hybrid", "Burners": "2–5", "Cut-out": "Per model — confirm before templating", "Clearance": "300 mm landing each side"},
+      "applications": ["Kitchen counters", "Islands"],
+      "tier": "MID",
+      "priceMin": 8000, "priceMax": 80000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "gas hob kitchen"
+    },
+    {
+      "name": "Built-in oven",
+      "blurb": "Housed at eye level or under the counter, with its own circuit",
+      "description": "Needs a dedicated 16 A point, ventilation gaps around the housing, and a cabinet built to the exact aperture. Eye-level installation is safer and far more comfortable to use.",
+      "specs": {"Capacity": "60–75 L", "Power": "16 A dedicated point", "Housing": "Ventilated, exact aperture", "Height": "Eye level preferred"},
+      "applications": ["Tall units", "Under counter"],
+      "tier": "PREMIUM",
+      "priceMin": 25000, "priceMax": 180000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "built in oven"
+    },
+    {
+      "name": "Built-in microwave",
+      "blurb": "Integrated into the tall unit so the counter stays clear",
+      "description": "A trim kit lets a microwave sit flush in joinery. Confirm the ventilation clearance and put the point inside the housing, not behind the appliance where a plug will not fit.",
+      "specs": {"Capacity": "20–34 L", "Trim kit": "Required for flush fit", "Point": "Inside the housing", "Ventilation": "Per manufacturer gaps"},
+      "applications": ["Tall units", "Wall units"],
+      "tier": "MID",
+      "priceMin": 15000, "priceMax": 90000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "built in microwave"
+    },
+    {
+      "name": "Dishwasher",
+      "blurb": "Freestanding or integrated — needs inlet, outlet and a level base",
+      "description": "Increasingly standard in Indian kitchens. Plan a hot or cold inlet, a waste connection above trap level, and a 16 A point; an integrated model also needs a matching shutter and a level plinth.",
+      "specs": {"Width": "450 / 600 mm", "Services": "Inlet, waste, 16 A point", "Type": "Freestanding / semi / fully integrated", "Place settings": "8–15"},
+      "applications": ["Beside the sink", "Island units"],
+      "tier": "PREMIUM",
+      "priceMin": 30000, "priceMax": 150000, "priceUnit": "per unit",
+      "water": true,
+      "use": "Indoor",
+      "image": "dishwasher kitchen"
+    },
+    {
+      "name": "Refrigerator",
+      "blurb": "Freestanding or built-in, with ventilation the joinery must allow",
+      "description": "The biggest single appliance decision. Built-in and side-by-side models need generous rear and top ventilation plus door-swing clearance — check the plan against the fully open door, not the closed one.",
+      "specs": {"Type": "Single / double door / side-by-side / built-in", "Ventilation": "50–100 mm rear and top", "Door swing": "Check against adjacent walls", "Point": "Dedicated, stabiliser if needed"},
+      "applications": ["Kitchen", "Utility", "Pantry"],
+      "tier": "MID",
+      "priceMin": 20000, "priceMax": 400000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "refrigerator kitchen"
+    },
+    {
+      "name": "Wine cooler",
+      "blurb": "Temperature-controlled wine storage, freestanding or built-in",
+      "description": "Single or dual zone, sized in bottles. Built-in units vent from the front, so they can sit under a counter; freestanding ones cannot, and will overheat if boxed in.",
+      "specs": {"Capacity": "20–150 bottles", "Zones": "Single / dual", "Venting": "Front-vent models for built-in", "Point": "Dedicated socket"},
+      "applications": ["Bar units", "Dining rooms", "Islands"],
+      "tier": "PREMIUM",
+      "priceMin": 35000, "priceMax": 300000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "wine cooler cabinet"
+    },
+    {
+      "name": "Built-in coffee machine",
+      "blurb": "Plumbed or tank-fed machine integrated into the tall unit",
+      "description": "A hospitality touch that needs a 16 A point, a housing aperture and — for plumbed models — a water line. Decide plumbed versus tank before the joinery is cut.",
+      "specs": {"Type": "Plumbed / tank", "Aperture": "45 cm typical", "Power": "16 A point", "Water": "Line required if plumbed"},
+      "applications": ["Tall units", "Coffee stations", "Offices"],
+      "tier": "PREMIUM",
+      "priceMin": 80000, "priceMax": 500000, "priceUnit": "per unit",
+      "water": true,
+      "use": "Indoor",
+      "image": "built in coffee machine"
+    },
+    {
+      "name": "Water purifier",
+      "blurb": "RO or UV unit under the sink or on the wall",
+      "description": "Under-sink installation keeps the counter clear but needs a dedicated tap, a drain connection for the reject line and space for filter changes. Plan the service access, not just the unit.",
+      "specs": {"Type": "RO / UV / RO+UV", "Mount": "Under-sink / wall", "Drain": "Reject line to waste", "Service": "Filter access required"},
+      "applications": ["Under sink", "Utility", "Kitchen wall"],
+      "tier": "MID",
+      "priceMin": 9000, "priceMax": 60000, "priceUnit": "per unit",
+      "water": true,
+      "use": "Indoor",
+      "image": "water purifier kitchen"
+    }
+  ]
+}

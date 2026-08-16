@@ -1,0 +1,147 @@
+{
+  "slug": "electrical-smart-home",
+  "name": "Electrical & Smart Home",
+  "tagline": "Switches, sockets and the automation layer behind them",
+  "description": "Switch plates are the most-touched hardware in a house and the easiest thing to get wrong at the end of a project. This section covers modular wiring devices by grade, then the smart-home layer — which has to be decided at first fix, not after the walls close.",
+  "image": "modular switch plate",
+  "brands": ["Legrand", "Schneider Electric", "Anchor", "Havells", "GM", "L&T", "Panasonic", "Crabtree", "Wipro", "Philips Hue", "Honeywell", "Control4", "Lutron", "ABB"],
+  "materials": [
+    {
+      "name": "Modular switch",
+      "blurb": "Standard 1M/2M modules in a plate — the Indian baseline",
+      "description": "The modular system every Indian electrician works with: modules clipped into a grid plate and mounting box. Specify the plate range early — it dictates the box depth the site has to build in.",
+      "specs": {"Module": "1M / 2M / 3M", "Rating": "6A / 16A", "Plates": "2M–18M", "Standard": "IS 3854"},
+      "applications": ["All rooms"],
+      "standard": "IS 3854",
+      "warranty": "2–5 years",
+      "tier": "BUDGET",
+      "priceMin": 90, "priceMax": 400, "priceUnit": "per module",
+      "use": "Indoor",
+      "image": "electrical switch board"
+    },
+    {
+      "name": "Premium switch",
+      "blurb": "Metal, glass and matte plates that suit a designed interior",
+      "description": "Same electrical guts, far better plates: brushed steel, glass, matte black, wood. The cheapest way to stop a beautiful wall being spoiled by a builder-grade white rectangle.",
+      "specs": {"Plate": "Metal / glass / matte", "Rating": "6A / 16A", "Finish": "Brushed, matte, mirror"},
+      "applications": ["Living rooms", "Bedrooms", "Hospitality"],
+      "warranty": "5–10 years",
+      "tier": "PREMIUM",
+      "priceMin": 350, "priceMax": 1800, "priceUnit": "per module",
+      "use": "Indoor",
+      "image": "designer switch plate"
+    },
+    {
+      "name": "Smart switch",
+      "blurb": "Wi-Fi or Zigbee module controlled by app and voice",
+      "description": "Replaces the mechanical switch with a relay that also answers to a phone or voice assistant. Needs a neutral wire at the switch box — confirm it at first fix or the whole plan changes.",
+      "specs": {"Protocol": "Wi-Fi / Zigbee / Z-Wave", "Neutral": "Required at switch box", "Control": "App, voice, physical", "Load": "Check per-gang rating"},
+      "applications": ["Living rooms", "Bedrooms", "Whole-home automation"],
+      "warranty": "2–5 years",
+      "tier": "PREMIUM",
+      "priceMin": 1500, "priceMax": 7000, "priceUnit": "per module",
+      "use": "Indoor",
+      "image": "smart home switch"
+    },
+    {
+      "name": "Touch switch",
+      "blurb": "Capacitive glass panel with no moving parts",
+      "description": "A flat glass plate that responds to touch, usually with a backlit indicator. Looks superb in a hotel-style bedroom; check the night-time LED brightness before committing.",
+      "specs": {"Panel": "Tempered glass", "Feedback": "LED indicator", "Neutral": "Usually required"},
+      "applications": ["Bedrooms", "Hotels", "Feature walls"],
+      "tier": "PREMIUM",
+      "priceMin": 1800, "priceMax": 8000, "priceUnit": "per plate",
+      "use": "Indoor",
+      "image": "touch switch panel"
+    },
+    {
+      "name": "USB socket",
+      "blurb": "Type-A and Type-C charging built into the plate",
+      "description": "Removes the adaptor from bedside and desk sockets. Specify PD-capable Type-C where laptops and phones will charge — 5 V-only ports already feel dated.",
+      "specs": {"Ports": "Type-A + Type-C", "Output": "2.1 A to 45 W PD", "Module": "2M / 3M"},
+      "applications": ["Bedsides", "Study desks", "Kitchens", "Hotels"],
+      "tier": "MID",
+      "priceMin": 700, "priceMax": 3500, "priceUnit": "per module",
+      "use": "Indoor",
+      "image": "usb wall socket"
+    },
+    {
+      "name": "HDMI socket",
+      "blurb": "In-wall AV outlet that keeps cables out of sight",
+      "description": "A wall plate carrying HDMI through to the media unit, so a wall-mounted TV has no visible lead. Run a conduit rather than burying the cable — HDMI standards keep changing.",
+      "specs": {"Type": "HDMI 2.0 / 2.1 pass-through", "Install": "Pull conduit, not buried cable", "Module": "2M"},
+      "applications": ["TV walls", "Home theatres", "Conference rooms"],
+      "tier": "MID",
+      "priceMin": 600, "priceMax": 3000, "priceUnit": "per module",
+      "use": "Indoor",
+      "image": "hdmi wall plate"
+    },
+    {
+      "name": "Data socket (RJ45)",
+      "blurb": "Structured cabling outlet for wired networking",
+      "description": "Cat 6 or Cat 6A outlets back to a central rack. Wi-Fi has not removed the need for wired points at TVs, access points and workstations — put them in while the walls are open.",
+      "specs": {"Category": "Cat 6 / 6A", "Termination": "Keystone jack", "Back to": "Central rack / patch panel"},
+      "applications": ["Study", "TV wall", "Access-point locations", "Offices"],
+      "tier": "MID",
+      "priceMin": 400, "priceMax": 2000, "priceUnit": "per module",
+      "use": "Indoor",
+      "image": "network wall socket"
+    },
+    {
+      "name": "Dimmer",
+      "blurb": "Level control for dimmable lighting circuits",
+      "description": "Rotary, slide or smart dimmers that make one room serve several moods. The dimmer must match the driver — mismatched LED dimming is the most common cause of flicker complaints.",
+      "specs": {"Types": "Rotary / slide / smart", "Load": "Match to LED driver type", "Rating": "Check watts per module"},
+      "applications": ["Living rooms", "Bedrooms", "Dining", "Hospitality"],
+      "tier": "MID",
+      "priceMin": 800, "priceMax": 5000, "priceUnit": "per module",
+      "use": "Indoor",
+      "image": "light dimmer switch"
+    },
+    {
+      "name": "MCB distribution board",
+      "blurb": "The consumer unit — circuit protection for the whole home",
+      "description": "Where every circuit begins and every fault stops. Specify an RCCB/RCBO for socket and wet-area circuits; it is the difference between a trip and an electrocution.",
+      "specs": {"Protection": "MCB + RCCB / RCBO", "Ways": "4–24 way", "Standard": "IS 8623", "Location": "Accessible, labelled"},
+      "applications": ["Every project"],
+      "standard": "IS 8623",
+      "tier": "MID",
+      "priceMin": 3000, "priceMax": 25000, "priceUnit": "per board",
+      "use": "Indoor",
+      "image": "electrical distribution board"
+    },
+    {
+      "name": "Smart home hub",
+      "blurb": "The controller that ties lights, blinds, AV and sensors together",
+      "description": "A central hub speaking Zigbee, Z-Wave, Matter or a proprietary protocol. Choose the ecosystem before buying any device — retrofitting a second protocol later doubles the cost.",
+      "specs": {"Protocols": "Zigbee / Z-Wave / Matter / proprietary", "Control": "App, voice, keypad", "Placement": "Central, wired network"},
+      "applications": ["Whole-home automation", "Villas", "Apartments"],
+      "tier": "PREMIUM",
+      "priceMin": 8000, "priceMax": 150000, "priceUnit": "per system",
+      "use": "Indoor",
+      "image": "smart home hub"
+    },
+    {
+      "name": "Motorised curtain track",
+      "blurb": "App and remote-controlled curtain and blind drives",
+      "description": "A quiet motor on the track, wired to a point behind the pelmet. The power point has to exist before the false ceiling closes, which makes this a first-fix decision.",
+      "specs": {"Drive": "Track motor / roller tube motor", "Power": "Point required behind pelmet", "Control": "Remote, app, scene"},
+      "applications": ["Living rooms", "Bedrooms", "Tall windows", "Hotels"],
+      "tier": "PREMIUM",
+      "priceMin": 12000, "priceMax": 90000, "priceUnit": "per window",
+      "use": "Indoor",
+      "image": "motorised curtains"
+    },
+    {
+      "name": "Occupancy / motion sensor",
+      "blurb": "PIR or microwave sensor that switches lights automatically",
+      "description": "Corridors, wardrobes, utility rooms and bathrooms all work better on sensors. Match the detection pattern to the room shape, or the light will switch off while somebody is still standing there.",
+      "specs": {"Type": "PIR / microwave / dual", "Coverage": "Match to room geometry", "Delay": "Adjustable"},
+      "applications": ["Corridors", "Wardrobes", "Utility", "Bathrooms", "Offices"],
+      "tier": "MID",
+      "priceMin": 900, "priceMax": 6000, "priceUnit": "per sensor",
+      "use": "Indoor",
+      "image": "motion sensor ceiling"
+    }
+  ]
+}

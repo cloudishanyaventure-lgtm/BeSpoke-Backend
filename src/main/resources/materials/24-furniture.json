@@ -1,0 +1,134 @@
+{
+  "slug": "furniture",
+  "name": "Furniture",
+  "tagline": "Loose pieces — specified by dimension, clearance and construction",
+  "description": "Loose furniture is where a beautifully planned room succeeds or fails at 1:1. Every entry here leads with the dimensions and circulation clearances that decide whether a piece actually fits, then the construction that decides how long it lasts.",
+  "image": "living room furniture",
+  "brands": ["Godrej Interio", "Durian", "Pepperfry", "Urban Ladder", "WoodenStreet", "IKEA", "Nilkamal", "Stanley"],
+  "materials": [
+    {
+      "name": "Sofa",
+      "blurb": "Seat depth, back height and frame decide the comfort",
+      "description": "A 550–600 mm seat depth suits most Indian users; deeper looks generous in a showroom and unsupportive at home. Insist on a kiln-dried hardwood or steel frame and high-resilience foam.",
+      "specs": {"Seat depth": "550–600 mm", "Seat height": "400–450 mm", "Frame": "Kiln-dried hardwood / steel", "Foam": "32–40 density HR", "Clearance": "900 mm walkway in front"},
+      "applications": ["Living rooms", "Lounges", "Reception areas"],
+      "warranty": "3–10 years on frame",
+      "tier": "MID",
+      "priceMin": 25000, "priceMax": 400000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "sofa living room"
+    },
+    {
+      "name": "Dining table",
+      "blurb": "600 mm of table edge per person, 900 mm of clearance behind",
+      "description": "Size the table by covers, then check the room: you need 900 mm from the table edge to the nearest wall for a chair to pull out and a person to pass behind it.",
+      "specs": {"Per person": "600 mm of edge", "Height": "750 mm", "Clearance": "900 mm behind chairs", "Top": "Solid wood / stone / glass"},
+      "applications": ["Dining rooms", "Kitchens", "Breakfast areas"],
+      "tier": "MID",
+      "priceMin": 20000, "priceMax": 400000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "dining table"
+    },
+    {
+      "name": "Dining chair",
+      "blurb": "450 mm seat height and 280–300 mm under the table",
+      "description": "The gap between seat top and table underside should be 280–300 mm — any less and legs do not fit, any more and diners perch. Armless chairs tuck in; arm chairs need a wider table.",
+      "specs": {"Seat height": "450 mm", "Knee gap": "280–300 mm", "Width": "450–550 mm", "Upholstery": "Wipeable for family use"},
+      "applications": ["Dining rooms", "Kitchens", "Meeting rooms"],
+      "tier": "MID",
+      "priceMin": 3500, "priceMax": 60000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "dining chairs"
+    },
+    {
+      "name": "Bed",
+      "blurb": "Queen or king, with storage decided at drawing stage",
+      "description": "Indian queen is 60×78 inches and king 72×78 — always confirm the mattress size before the bed is made. Hydraulic storage needs 700 mm clearance above to lift.",
+      "specs": {"Queen": "60×78 in", "King": "72×78 in", "Storage": "Hydraulic / drawer / box", "Lift clearance": "700 mm above"},
+      "applications": ["Bedrooms", "Guest rooms", "Hotels"],
+      "tier": "MID",
+      "priceMin": 20000, "priceMax": 300000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "bed bedroom"
+    },
+    {
+      "name": "Side table",
+      "blurb": "Level with the sofa arm, within reach of the seat",
+      "description": "Height should match the sofa arm within 50 mm so a glass can be set down without looking. Two small tables usually work better than one large one.",
+      "specs": {"Height": "Match sofa arm ±50 mm", "Diameter": "400–550 mm", "Material": "Wood / metal / stone"},
+      "applications": ["Beside sofas", "Bedsides", "Reading corners"],
+      "tier": "BUDGET",
+      "priceMin": 3000, "priceMax": 60000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "side table living room"
+    },
+    {
+      "name": "Coffee table",
+      "blurb": "Two-thirds the sofa length, 400 mm away from it",
+      "description": "Roughly two-thirds of the sofa's length looks right, at 400–450 mm from the seat edge so legs still pass. Nesting or paired tables suit rooms that get rearranged.",
+      "specs": {"Length": "~2/3 of sofa", "Height": "400–450 mm", "Gap from sofa": "400–450 mm", "Shape": "Rectangle / round / nested"},
+      "applications": ["Living rooms", "Lounges", "Reception"],
+      "tier": "MID",
+      "priceMin": 6000, "priceMax": 120000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "coffee table"
+    },
+    {
+      "name": "TV unit",
+      "blurb": "Screen centre at seated eye level, cables planned in",
+      "description": "Seated eye level is around 1000–1100 mm, so a wall-mounted screen's centre should land there. Leave a cable route and a socket behind the unit before the joinery is fixed.",
+      "specs": {"Screen centre": "1000–1100 mm AFL", "Width": "Wider than the screen", "Services": "Socket + conduit behind", "Ventilation": "For AV equipment"},
+      "applications": ["Living rooms", "Bedrooms", "Home theatres"],
+      "tier": "MID",
+      "priceMin": 15000, "priceMax": 200000, "priceUnit": "per unit",
+      "use": "Indoor",
+      "image": "tv unit living room"
+    },
+    {
+      "name": "Study table",
+      "blurb": "750 mm high with real legroom and a light that works",
+      "description": "750 mm top height, at least 600 mm of clear depth and 700 mm of knee width. Add a socket at desk level — a study table without power is a table.",
+      "specs": {"Height": "750 mm", "Depth": "600 mm min", "Knee space": "700 mm wide", "Power": "Socket at desk level"},
+      "applications": ["Studies", "Bedrooms", "Home offices", "Kids' rooms"],
+      "tier": "MID",
+      "priceMin": 8000, "priceMax": 90000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "study desk"
+    },
+    {
+      "name": "Office chair",
+      "blurb": "Adjustable seat height, lumbar support and armrests",
+      "description": "The one piece of furniture whose ergonomics affect health. Seat height 400–520 mm adjustable, adjustable lumbar and armrests, and a five-star base — anything less is decoration.",
+      "specs": {"Seat height": "400–520 mm adjustable", "Support": "Adjustable lumbar", "Base": "5-star with castors", "Standard": "BIFMA tested"},
+      "applications": ["Home offices", "Studies", "Workstations"],
+      "warranty": "3–12 years",
+      "tier": "MID",
+      "priceMin": 6000, "priceMax": 120000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "office chair"
+    },
+    {
+      "name": "Bar furniture",
+      "blurb": "Counter and stools coordinated by height — 750, 900 or 1050 mm",
+      "description": "Three standard heights and each needs its own stool: 750 mm table with a 450 mm seat, 900 mm counter with a 600 mm seat, 1050 mm bar with a 750 mm seat.",
+      "specs": {"Table 750 mm": "450 mm stool", "Counter 900 mm": "600 mm stool", "Bar 1050 mm": "750 mm stool", "Footrest": "Required above 600 mm"},
+      "applications": ["Bar counters", "Kitchen islands", "Balconies", "Lounges"],
+      "tier": "MID",
+      "priceMin": 8000, "priceMax": 150000, "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "bar stools counter"
+    },
+    {
+      "name": "Outdoor furniture",
+      "blurb": "Weather-rated frames and fabrics for balconies and terraces",
+      "description": "Powder-coated aluminium, teak or synthetic rattan over aluminium — never mild steel, which will bleed rust down the terrace within a monsoon. Cushions need solution-dyed acrylic fabric.",
+      "specs": {"Frame": "Aluminium / teak / synthetic rattan", "Avoid": "Mild steel outdoors", "Fabric": "Solution-dyed acrylic", "Storage": "Plan monsoon storage"},
+      "applications": ["Balconies", "Terraces", "Gardens", "Poolsides"],
+      "tier": "PREMIUM",
+      "priceMin": 15000, "priceMax": 300000, "priceUnit": "per set",
+      "water": true,
+      "use": "Outdoor",
+      "image": "outdoor patio furniture"
+    }
+  ]
+}

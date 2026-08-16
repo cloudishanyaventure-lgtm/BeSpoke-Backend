@@ -1,0 +1,160 @@
+{
+  "slug": "wall-finishes",
+  "name": "Wall Finishes",
+  "tagline": "Panels, papers and plasters that give a flat wall depth",
+  "description": "Paint covers a wall; these finishes give it character. Fluted and 3D panels add shadow, wallpaper adds pattern, microcement and Venetian plaster add craft. Most of this section is about how a wall catches light at six in the evening.",
+  "image": "textured feature wall",
+  "brands": ["D'Decor", "Marshalls", "Asian Paints", "Evolve", "Kalakaari", "Elementto", "Royale Play"],
+  "materials": [
+    {
+      "name": "Wallpaper",
+      "blurb": "Rolls of pattern — the fastest transformation in interiors",
+      "description": "A 5.2 sq.m roll and a day's labour will change a room more than anything else at the price. Non-woven papers are the easiest to hang and to strip later, which matters in rented homes.",
+      "specs": {"Roll": "10 m × 0.53 m (~5.2 sq.m)", "Type": "Non-woven / vinyl / paper", "Adhesive": "Paste the wall"},
+      "applications": ["Bedrooms", "Living rooms", "Feature walls", "Kids' rooms"],
+      "tier": "MID",
+      "priceMin": 60, "priceMax": 350, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "wallpaper bedroom"
+    },
+    {
+      "name": "Fabric wall covering",
+      "blurb": "Upholstered walls — acoustic softness with real texture",
+      "description": "Fabric stretched over a padded backing absorbs sound and gives a hotel-suite softness. Used on bedbacks and home theatres; it collects dust, so specify a treated fabric.",
+      "specs": {"Build": "Fabric over foam / batten", "Acoustics": "Absorbs mid-high frequencies", "Care": "Vacuum periodically"},
+      "applications": ["Bedbacks", "Home theatres", "Hotel rooms"],
+      "tier": "PREMIUM",
+      "priceMin": 180, "priceMax": 700, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "upholstered wall panel"
+    },
+    {
+      "name": "3D wall panel",
+      "blurb": "Moulded relief panels that read as sculpture under grazing light",
+      "description": "PVC, gypsum or MDF panels with a deep relief pattern. They only work with the right lighting — wash them from above or the whole effect flattens out.",
+      "specs": {"Material": "PVC / gypsum / MDF", "Size": "600×600, 500×500 mm", "Finish": "Paint after fixing"},
+      "applications": ["Feature walls", "Reception areas", "TV walls"],
+      "tier": "MID",
+      "priceMin": 120, "priceMax": 450, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "3d wall panel"
+    },
+    {
+      "name": "Fluted panel",
+      "blurb": "Vertical timber battens — the defining detail of the decade",
+      "description": "Ribbed MDF or solid timber slats that add rhythm and hide imperfect walls. Available as veneered, laminated or acoustic-backed panels in 2.4 m and 2.9 m lengths.",
+      "specs": {"Length": "2400 / 2900 mm", "Width": "~150–300 mm panels", "Finish": "Veneer / laminate / paint", "Acoustic": "Felt-backed versions"},
+      "applications": ["TV walls", "Bedbacks", "Partitions", "Reception"],
+      "texture": "Vertical flutes",
+      "tier": "MID",
+      "priceMin": 180, "priceMax": 550, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "fluted wood wall"
+    },
+    {
+      "name": "WPC wall panel",
+      "blurb": "Waterproof composite cladding, indoors or out",
+      "description": "Wood-plastic composite panels that will not rot, warp or feed termites — so they work on balcony walls and bathroom exteriors where MDF cannot go.",
+      "specs": {"Material": "WPC", "Water": "Waterproof", "Termite": "Immune", "Fixing": "Screw / adhesive on battens"},
+      "applications": ["Balconies", "Bathroom exteriors", "Feature walls", "Façades"],
+      "tier": "MID",
+      "priceMin": 150, "priceMax": 420, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "wpc wall cladding"
+    },
+    {
+      "name": "PVC wall panel",
+      "blurb": "The budget wet-area cladding — light and wipe-clean",
+      "description": "Hollow PVC sheets that clip together over battens. Cheap, fast and waterproof; also unmistakably plastic up close, so keep it to service areas and rentals.",
+      "specs": {"Material": "PVC", "Fixing": "Clip / adhesive", "Weight": "Very light"},
+      "applications": ["Utility", "Rental refurbishments", "Ceilings", "Service areas"],
+      "tier": "BUDGET",
+      "priceMin": 45, "priceMax": 150, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor",
+      "image": "pvc wall panel"
+    },
+    {
+      "name": "Charcoal panel",
+      "blurb": "Bamboo-charcoal composite — low-VOC and lightly acoustic",
+      "description": "Extruded bamboo charcoal panels marketed for low emissions and odour absorption, usually in fluted profiles. Fast to install with adhesive and popular in quick residential upgrades.",
+      "specs": {"Material": "Bamboo charcoal composite", "VOC": "Low", "Profiles": "Fluted / flat"},
+      "applications": ["Feature walls", "Bedrooms", "Offices"],
+      "tier": "MID",
+      "priceMin": 130, "priceMax": 400, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "charcoal wall panel"
+    },
+    {
+      "name": "Wood wall panelling",
+      "blurb": "Classic framed or slatted timber panelling",
+      "description": "From traditional stile-and-rail panelling to modern slat systems in veneer or solid timber. The most convincing way to give a new apartment some architectural weight.",
+      "specs": {"Build": "Frame + panel / slat on batten", "Material": "Veneered MDF / solid timber", "Finish": "PU / melamine"},
+      "applications": ["Living rooms", "Studies", "Dining rooms", "Corridors"],
+      "tier": "PREMIUM",
+      "priceMin": 250, "priceMax": 900, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "wood wall panelling"
+    },
+    {
+      "name": "Microcement",
+      "blurb": "Seamless 2–3 mm cement skin over almost any substrate",
+      "description": "A thin polymer-cement coat applied by hand, giving continuous floors, walls and even counters with no joints. Highly skill-dependent — insist on the applicator's previous work.",
+      "specs": {"Thickness": "2–3 mm", "Substrate": "Tile, concrete, board", "Joints": "None", "Skill": "Specialist applicator"},
+      "applications": ["Bathrooms", "Feature walls", "Floors", "Counters"],
+      "finish": "Matte troweled",
+      "tier": "PREMIUM",
+      "priceMin": 250, "priceMax": 700, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "microcement wall"
+    },
+    {
+      "name": "Textured paint",
+      "blurb": "Trowelled and rolled effects — stucco, sand, combed",
+      "description": "Thick decorative coatings applied with a trowel, roller or comb. Far cheaper than panelling for adding surface interest, and easily patched compared with wallpaper.",
+      "specs": {"Application": "Trowel / roller / comb", "Coats": "2–3", "Base": "Primer + putty"},
+      "applications": ["Feature walls", "Exteriors", "Corridors"],
+      "tier": "BUDGET",
+      "priceMin": 45, "priceMax": 180, "priceUnit": "per sq.ft",
+      "use": "Indoor & outdoor",
+      "image": "textured paint wall"
+    },
+    {
+      "name": "Venetian plaster",
+      "blurb": "Polished lime plaster with depth and a marble-like sheen",
+      "description": "Layered lime and marble dust burnished to a soft glow that changes with the light. Genuinely handmade, genuinely expensive, and unmatched in a formal room.",
+      "specs": {"Material": "Lime + marble dust", "Layers": "3–5", "Finish": "Burnished sheen", "Skill": "Highly specialist"},
+      "applications": ["Formal living rooms", "Feature walls", "Hospitality"],
+      "finish": "Polished",
+      "tier": "PREMIUM",
+      "priceMin": 350, "priceMax": 1200, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "venetian plaster wall"
+    },
+    {
+      "name": "Stone cladding",
+      "blurb": "Natural stone strips and ledges for feature and façade walls",
+      "description": "Split-face stone in strips or ledger panels gives strong shadow and texture. Heavy — confirm the wall and the fixing detail before it goes on the drawing.",
+      "specs": {"Format": "Strips / ledger panels", "Weight": "Check wall capacity", "Fixing": "Adhesive + mechanical"},
+      "applications": ["Façades", "Feature walls", "Compound walls", "Landscape"],
+      "tier": "MID",
+      "priceMin": 90, "priceMax": 400, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "stone cladding wall"
+    },
+    {
+      "name": "Brick cladding",
+      "blurb": "Thin brick slips for exposed-brick looks without the wall",
+      "description": "20–25 mm brick slips glued to the wall give the texture of exposed brick at a fraction of the thickness and weight. Seal them if they are anywhere near a kitchen.",
+      "specs": {"Thickness": "20–25 mm", "Fixing": "Adhesive + pointing", "Sealing": "Recommended in kitchens"},
+      "applications": ["Feature walls", "Cafés", "Balconies", "Façades"],
+      "tier": "MID",
+      "priceMin": 70, "priceMax": 250, "priceUnit": "per sq.ft",
+      "use": "Indoor & outdoor",
+      "image": "brick wall interior"
+    }
+  ]
+}

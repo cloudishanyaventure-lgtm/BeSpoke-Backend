@@ -1,0 +1,167 @@
+{
+  "slug": "doors-windows",
+  "name": "Doors & Windows",
+  "tagline": "Openings — where security, acoustics and weather are decided",
+  "description": "Doors and windows are the only interior elements that also have to be building envelope. This section covers door types by construction and rating, then window systems by frame material, since that single choice drives thermal, acoustic and maintenance performance for the life of the building.",
+  "image": "modern window interior",
+  "brands": ["Fenesta", "Aparna Venster", "Prominance", "Koemmerling", "Rehau", "Schueco", "TOSTEM", "Jindal", "Hindalco"],
+  "materials": [
+    {
+      "name": "Flush door",
+      "blurb": "Solid or hollow core door — the internal standard",
+      "description": "A timber frame with board facings, in solid or hollow core. Solid core is heavier, quieter and takes a mortise lock properly; hollow core belongs on cupboards, not bedrooms.",
+      "specs": {"Core": "Solid / hollow / tubular particle", "Facing": "Ply / laminate / veneer", "Standard": "IS 2202", "Thickness": "30, 35, 40 mm"},
+      "applications": ["Bedrooms", "Bathrooms", "Internal doors"],
+      "standard": "IS 2202",
+      "warranty": "5–10 years",
+      "tier": "BUDGET",
+      "priceMin": 1800, "priceMax": 9000, "priceUnit": "per door",
+      "use": "Indoor",
+      "image": "wooden flush door"
+    },
+    {
+      "name": "Veneer door",
+      "blurb": "Flush door faced in real timber and polished",
+      "description": "The finish upgrade for main and bedroom doors: veneer on both faces, polished in PU with matching edge lipping. Order doors and frames as a set so grain and tone match.",
+      "specs": {"Facing": "Natural / engineered veneer", "Finish": "PU polished", "Edge": "Matching hardwood lipping"},
+      "applications": ["Main doors", "Bedroom doors", "Hotel rooms"],
+      "tier": "MID",
+      "priceMin": 6000, "priceMax": 35000, "priceUnit": "per door",
+      "use": "Indoor",
+      "image": "veneer door"
+    },
+    {
+      "name": "Laminate door",
+      "blurb": "Laminate-faced door — hard-wearing and easy to clean",
+      "description": "A pressed laminate face that shrugs off knocks and cleaning, which is why it dominates rental, hostel and commercial work. Available pre-finished with matching architraves.",
+      "specs": {"Facing": "1 mm HPL both sides", "Edge": "PVC / hardwood lipping", "Finish": "Factory pressed"},
+      "applications": ["Rentals", "Hostels", "Offices", "Bathrooms"],
+      "tier": "BUDGET",
+      "priceMin": 3500, "priceMax": 15000, "priceUnit": "per door",
+      "water": true,
+      "scratch": true,
+      "use": "Indoor",
+      "image": "laminate door"
+    },
+    {
+      "name": "Glass door",
+      "blurb": "Frameless or framed toughened glass for light and openness",
+      "description": "10–12 mm toughened glass on patch fittings or a slim frame. Beautiful in studies and bathrooms; always add manifestation and check the floor spring load rating.",
+      "specs": {"Glass": "10–12 mm toughened", "Fittings": "Patch / floor spring", "Safety": "Manifestation band required"},
+      "applications": ["Studies", "Bathrooms", "Offices", "Showrooms"],
+      "tier": "PREMIUM",
+      "priceMin": 15000, "priceMax": 80000, "priceUnit": "per door",
+      "use": "Indoor",
+      "image": "glass door interior"
+    },
+    {
+      "name": "Fire-rated door",
+      "blurb": "30, 60, 90 or 120-minute certified assembly",
+      "description": "The rating belongs to the whole assembly — leaf, frame, hinges, closer and seals — not just the leaf. Substituting any component voids the certificate, which fire consultants do check.",
+      "specs": {"Rating": "30 / 60 / 90 / 120 min", "Assembly": "Leaf + frame + hardware certified together", "Seals": "Intumescent + smoke", "Standard": "IS 3614 / BS 476"},
+      "applications": ["Staircases", "Service shafts", "Kitchens in commercial", "Escape routes"],
+      "standard": "IS 3614",
+      "tier": "PREMIUM",
+      "priceMin": 18000, "priceMax": 90000, "priceUnit": "per door",
+      "fire": true,
+      "use": "Indoor",
+      "image": "fire rated door"
+    },
+    {
+      "name": "Pocket door",
+      "blurb": "Slides into a cavity inside the wall — zero swing space",
+      "description": "The answer for tight bathrooms and study entries where a swing door would block the room. The cavity frame must go in during the wall build, so it is an early decision.",
+      "specs": {"Cavity": "Frame built into wall", "Timing": "Decide before wall construction", "Hardware": "Soft-close kits available", "Acoustic": "Weaker than a hinged door"},
+      "applications": ["Small bathrooms", "Studies", "Walk-in wardrobes"],
+      "tier": "PREMIUM",
+      "priceMin": 25000, "priceMax": 90000, "priceUnit": "per door"
+      , "use": "Indoor",
+      "image": "sliding pocket door"
+    },
+    {
+      "name": "Sliding door",
+      "blurb": "Surface-sliding leaf on a top track",
+      "description": "Barn-style or channel-mounted sliders save the swing area without touching the wall build. Top-hung systems run more smoothly than bottom-rolling ones and keep the floor clean.",
+      "specs": {"System": "Top-hung preferred", "Track": "Surface / concealed", "Weight": "Match track to leaf weight", "Soft close": "Recommended"},
+      "applications": ["Wardrobes", "Studies", "Balcony access", "Partitions"],
+      "tier": "MID",
+      "priceMin": 12000, "priceMax": 60000, "priceUnit": "per door",
+      "use": "Indoor",
+      "image": "sliding barn door"
+    },
+    {
+      "name": "Aluminium window",
+      "blurb": "Slim sightlines and long life, with a thermal-break option",
+      "description": "Powder-coated or anodised aluminium gives the thinnest frames and the largest glass area. Plain aluminium conducts heat, so specify a thermal break wherever the room is air-conditioned.",
+      "specs": {"Frame": "Powder coated / anodised", "Thermal break": "Specify for AC rooms", "Systems": "Sliding, casement, tilt-turn", "Glazing": "Single / DGU"},
+      "applications": ["Living rooms", "Bedrooms", "Balconies", "Commercial"],
+      "warranty": "10 years on hardware",
+      "tier": "MID",
+      "priceMin": 550, "priceMax": 1600, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "aluminium window"
+    },
+    {
+      "name": "uPVC window",
+      "blurb": "Best thermal and acoustic performance for the money",
+      "description": "Multi-chambered uPVC with steel reinforcement seals better than anything else at the price, cutting both noise and cooling load. Frames are chunkier than aluminium — check the sightlines against the elevation.",
+      "specs": {"Frame": "Multi-chamber uPVC + steel core", "Acoustic": "Up to 35 dB with DGU", "Maintenance": "Wipe clean, no painting", "Standard": "IS 17278"},
+      "applications": ["Bedrooms on busy roads", "Air-conditioned homes", "Coastal projects"],
+      "standard": "IS 17278",
+      "warranty": "10 years",
+      "tier": "MID",
+      "priceMin": 450, "priceMax": 1200, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "upvc window"
+    },
+    {
+      "name": "Wooden window",
+      "blurb": "Traditional timber frames — warm, repairable, high-maintenance",
+      "description": "Nothing looks like real wood at a window reveal, and nothing needs as much upkeep in Indian monsoons. Use durable species and budget for repainting every few years.",
+      "specs": {"Species": "Teak / sal / merbau", "Maintenance": "Repaint or oil every 2–4 years", "Repair": "Fully repairable"},
+      "applications": ["Heritage projects", "Villas", "Hill stations"],
+      "tier": "PREMIUM",
+      "priceMin": 900, "priceMax": 3500, "priceUnit": "per sq.ft",
+      "use": "Outdoor",
+      "image": "wooden window frame"
+    },
+    {
+      "name": "Sliding window",
+      "blurb": "Sashes that slide past each other — no swing into the room",
+      "description": "The Indian default: nothing projects, and half the opening ventilates. Sealing is inherently weaker than a casement, so specify good brush and gasket detailing on a noisy road.",
+      "specs": {"Opening": "50% of area", "Sealing": "Brush / gasket — weaker than casement", "Tracks": "2 or 3 track", "Mesh": "Integral mosquito track available"},
+      "applications": ["Bedrooms", "Living rooms", "Balconies"],
+      "tier": "BUDGET",
+      "priceMin": 400, "priceMax": 1100, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "sliding window"
+    },
+    {
+      "name": "Casement window",
+      "blurb": "Side-hung sash that seals hard against the frame",
+      "description": "Compression seals make casements the best performer for weather-tightness and acoustics, and they open the full aperture for ventilation. They do swing, so check curtains and furniture.",
+      "specs": {"Opening": "100% of aperture", "Seal": "Compression gasket", "Hardware": "Multi-point locking", "Swing": "Inward or outward"},
+      "applications": ["Bedrooms", "Coastal projects", "High-rise", "Acoustic-critical rooms"],
+      "tier": "MID",
+      "priceMin": 550, "priceMax": 1500, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "casement window"
+    },
+    {
+      "name": "Tilt & turn window",
+      "blurb": "One handle, two modes — vent at the top or open fully",
+      "description": "Tilts inward for secure trickle ventilation and swings fully open for cleaning. The most practical high-rise window there is, and it cleans from inside the room.",
+      "specs": {"Modes": "Tilt vent / full inward swing", "Hardware": "European multi-point", "Cleaning": "From inside", "Security": "Vent position is lockable"},
+      "applications": ["High-rise apartments", "Bedrooms", "Premium residential"],
+      "tier": "PREMIUM",
+      "priceMin": 800, "priceMax": 2200, "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "tilt turn window"
+    }
+  ]
+}

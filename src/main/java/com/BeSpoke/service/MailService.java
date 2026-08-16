@@ -87,6 +87,26 @@ public class MailService {
                         + "— BeSpoke");
     }
 
+    /** Partner "forgot password": the code that lets them set a new one. */
+    public void passwordResetCode(User user, String code) {
+        send(user.getEmail(), "Reset your BeSpoke password",
+                "Hi " + user.getName() + ",\n\n"
+                        + "Your password reset code is: " + code + " . It expires in 10 minutes.\n\n"
+                        + "Enter it here to choose a new password:\n"
+                        + appUrl + "/partner/login\n\n"
+                        + "If you didn't ask for this, ignore this email — your password"
+                        + " stays as it is.\n\n"
+                        + "— BeSpoke");
+    }
+
+    public void passwordChanged(User user) {
+        send(user.getEmail(), "Your BeSpoke password was changed",
+                "Hi " + user.getName() + ",\n\n"
+                        + "Your password has just been changed. If this wasn't you, reply to"
+                        + " this email straight away.\n\n"
+                        + "— BeSpoke");
+    }
+
     /** Called when the customer submits their project brief (requirement form). */
     public void briefSubmitted(User customer) {
         send(customer.getEmail(), "Thanks — your project brief is in",

@@ -1,0 +1,122 @@
+{
+  "slug": "acoustic-materials",
+  "name": "Acoustic Materials",
+  "tagline": "Absorption and insulation — two different problems, two different products",
+  "description": "Absorption stops a room echoing; insulation stops sound getting between rooms. Confusing the two is the most common mistake in interior acoustics — foam on a wall will never stop your neighbour's television. Every product here states which job it does and its NRC or STC rating.",
+  "image": "acoustic wall panel",
+  "brands": ["Rockwool", "Saint-Gobain", "Armstrong", "Ecophon", "Hunter Douglas", "Gypcore", "Decoustics"],
+  "materials": [
+    {
+      "name": "Acoustic wall panel",
+      "blurb": "Fabric or felt panels that soak up reverberation (NRC 0.6–0.95)",
+      "description": "Absorptive panels placed at first reflection points calm a room's echo and make speech intelligible. Coverage of 20–30% of wall area is usually enough — full coverage is wasted money.",
+      "specs": {"NRC": "0.6–0.95", "Core": "Glass wool / PET", "Coverage": "20–30% of wall area", "Thickness": "25–50 mm"},
+      "applications": ["Home theatres", "Conference rooms", "Studios", "Restaurants"],
+      "tier": "PREMIUM",
+      "priceMin": 220, "priceMax": 700, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "acoustic panel wall"
+    },
+    {
+      "name": "PET acoustic panel",
+      "blurb": "Recycled polyester felt — cuttable, colourful, no fibres",
+      "description": "Made from recycled bottles, PET felt cuts with a knife, sheds no fibres and comes in strong colours. It has become the default for offices, ceilings baffles and desk screens.",
+      "specs": {"Material": "Recycled PET felt", "NRC": "0.4–0.85", "Thickness": "9, 12, 24 mm", "Fixing": "Adhesive / mechanical"},
+      "applications": ["Offices", "Ceiling baffles", "Desk screens", "Classrooms"],
+      "tier": "MID",
+      "priceMin": 180, "priceMax": 500, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "pet felt panel"
+    },
+    {
+      "name": "Fabric acoustic panel",
+      "blurb": "Upholstered absorber that reads as a design element",
+      "description": "An absorptive core wrapped in fabric, so acoustics arrive looking like panelling rather than equipment. Choose an acoustically transparent fabric or the panel stops working.",
+      "specs": {"Core": "Glass wool / rockwool", "Fabric": "Must be acoustically transparent", "NRC": "0.7–0.95", "Edge": "Resin-hardened or framed"},
+      "applications": ["Home theatres", "Boardrooms", "Bedbacks", "Auditoria"],
+      "tier": "PREMIUM",
+      "priceMin": 280, "priceMax": 900, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "fabric acoustic panel"
+    },
+    {
+      "name": "Wooden acoustic panel",
+      "blurb": "Slatted or perforated timber over an absorptive backing",
+      "description": "The finish that lets a room look like a library and perform like a studio. Absorption depends on the open area between slats and the felt behind — the timber itself does little.",
+      "specs": {"Type": "Slatted / perforated / grooved", "Backing": "Acoustic felt or mineral wool", "NRC": "0.5–0.85", "Finish": "Veneer / laminate"},
+      "applications": ["Home theatres", "Boardrooms", "Lobbies", "Auditoria"],
+      "tier": "PREMIUM",
+      "priceMin": 350, "priceMax": 1100, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "wooden slat acoustic"
+    },
+    {
+      "name": "Acoustic ceiling tile",
+      "blurb": "Mineral or metal tiles that treat the largest surface in the room",
+      "description": "The ceiling is usually the biggest uninterrupted surface available, which makes it the most efficient place to add absorption. Combine a high-NRC tile with carpet and the room settles immediately.",
+      "specs": {"NRC": "0.5–0.9", "Module": "600×600 / 600×1200 mm", "Material": "Mineral fibre / perforated metal", "Grid": "Exposed / concealed"},
+      "applications": ["Offices", "Classrooms", "Restaurants", "Call centres"],
+      "tier": "MID",
+      "priceMin": 150, "priceMax": 450, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "acoustic ceiling"
+    },
+    {
+      "name": "Acoustic baffle",
+      "blurb": "Vertical fins hung from the slab — absorption on two faces",
+      "description": "Suspended baffles absorb from both sides and leave services exposed, which suits industrial-style offices and restaurants. Spacing controls both the acoustic effect and the visual rhythm.",
+      "specs": {"Faces": "Both sides absorb", "Spacing": "150–400 mm centres", "Material": "PET felt / mineral", "Depth": "300–1200 mm"},
+      "applications": ["Open-plan offices", "Restaurants", "Atria", "Retail"],
+      "tier": "PREMIUM",
+      "priceMin": 300, "priceMax": 900, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "acoustic baffles ceiling"
+    },
+    {
+      "name": "Acoustic cloud",
+      "blurb": "Horizontal absorptive raft floating below the slab",
+      "description": "A suspended panel placed directly above the noise source — a meeting table, a dining area — giving local absorption without a full ceiling. Efficient because both faces work.",
+      "specs": {"Faces": "Both sides absorb", "Suspension": "Wire hung", "Placement": "Directly above the source", "Sizes": "1200×1200 to 2400×1200 mm"},
+      "applications": ["Meeting rooms", "Dining areas", "Reception", "Open offices"],
+      "tier": "PREMIUM",
+      "priceMin": 320, "priceMax": 950, "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "acoustic cloud ceiling"
+    },
+    {
+      "name": "Soundproof door",
+      "blurb": "Sealed heavy leaf rated by STC — stops sound, not echo",
+      "description": "Mass plus perimeter seals plus a drop seal at the threshold. A studio door is only as good as its weakest gap, so the frame and seals matter as much as the leaf.",
+      "specs": {"STC": "35–55", "Seals": "Perimeter + automatic drop seal", "Core": "High-mass, often double leaf", "Frame": "Sealed, acoustic rated"},
+      "applications": ["Home theatres", "Studios", "Boardrooms", "Bedrooms on corridors"],
+      "tier": "PREMIUM",
+      "priceMin": 35000, "priceMax": 200000, "priceUnit": "per door",
+      "use": "Indoor",
+      "image": "studio door"
+    },
+    {
+      "name": "Rockwool insulation",
+      "blurb": "Mineral wool slab that fills partitions and blocks transmission",
+      "description": "Dense stone wool packed into a stud partition or ceiling void raises the STC substantially and is non-combustible. The workhorse of interior sound insulation.",
+      "specs": {"Density": "48–100 kg/m³", "Fire": "Non-combustible, A1", "Thickness": "25, 50, 75, 100 mm", "Use": "Partition and ceiling infill"},
+      "applications": ["Stud partitions", "Ceiling voids", "Home theatres", "Service ducts"],
+      "tier": "MID",
+      "priceMin": 45, "priceMax": 160, "priceUnit": "per sq.ft",
+      "fire": true,
+      "use": "Indoor",
+      "image": "rockwool insulation"
+    },
+    {
+      "name": "Glass wool insulation",
+      "blurb": "Lighter mineral wool for ducts, ceilings and general infill",
+      "description": "Cheaper and lighter than rockwool with slightly lower density, so it is used for ducting, ceiling voids and general thermal-plus-acoustic work. Always install behind a proper facing.",
+      "specs": {"Density": "16–48 kg/m³", "Facing": "Foil / tissue faced options", "Thickness": "25, 50 mm", "Handling": "Use gloves and mask"},
+      "applications": ["Duct lining", "Ceiling voids", "Partitions", "Roof insulation"],
+      "tier": "BUDGET",
+      "priceMin": 30, "priceMax": 110, "priceUnit": "per sq.ft",
+      "fire": true,
+      "use": "Indoor",
+      "image": "glass wool insulation"
+    }
+  ]
+}

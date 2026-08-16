@@ -18,6 +18,7 @@ import com.BeSpoke.repository.LeadActivityRepository;
 import com.BeSpoke.repository.LeadRepository;
 import com.BeSpoke.repository.StaffProfileRepository;
 import com.BeSpoke.repository.UserRepository;
+import com.BeSpoke.security.GoogleTokenVerifier;
 import com.BeSpoke.security.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final StaffProfileRepository staffProfileRepository;
     private final MailService mailService;
+    private final GoogleTokenVerifier googleTokenVerifier;
 
     public AuthService(UserRepository userRepository,
                        LeadRepository leadRepository,
@@ -60,7 +62,9 @@ public class AuthService {
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService,
                        StaffProfileRepository staffProfileRepository,
-                       MailService mailService) {
+                       MailService mailService,
+                       GoogleTokenVerifier googleTokenVerifier) {
+        this.googleTokenVerifier = googleTokenVerifier;
         this.userRepository = userRepository;
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
@@ -144,59 +148,32 @@ public class AuthService {
             throw new BadCredentialsException(
                     "This is the partner sign-in. Homeowners sign in with a one-time code.");
         }
-        // The sidebar shows the designation under the name (V3 §12); customers have no profile.
-        String title = staffProfileRepository.findByUser(user)
-                .map(com.BeSpoke.entity.StaffProfile::getTitle).orElse(null);
-        return new AuthResponse(jwtService.generateToken(user), UserDto.from(user, title), null);
+        return session(user);
     }
 
     private static final Duration OTP_TTL = Duration.ofMinutes(10);
 
-    /** Each sign-in page only ever serves its own side: homeowners vs partner staff. */
-    private static boolean belongsAt(User user, boolean partnerDoor) {
-        return partnerDoor == (user.getRole() != Role.CUSTOMER);
+    /** Issues a fresh one-time code and mails it via {@code send}. */
+    private void issueCode(User user, java.util.function.BiConsumer<User, String> send) {
+        String code = String.format("%06d", RANDOM.nextInt(1_000_000));
+        user.setOtpCode(code);
+        user.setOtpExpiresAt(Instant.now().plus(OTP_TTL));
+        user.setOtpAttempts(0);
+        userRepository.save(user);
+        send.accept(user, code);
     }
 
     /**
-     * Silently does nothing for unknown/inactive emails, or an email that belongs at the
-     * other sign-in — the controller always answers with the same generic message, so the
-     * endpoint cannot be used to probe accounts.
+     * Burns the stored code once it matches — single use, and burned after 5 wrong
+     * guesses. Wrong, expired or burned code → one generic 400.
      */
-    @Transactional
-    public void requestOtp(String email, boolean partnerDoor) {
-        log.error("REQUEST RECEIVED");
-        try{
-            var found = userRepository.findByEmail(email.toLowerCase().trim());
-            log.error("OTP lookup for '{}': present={}, active={}, role={}, partnerDoor={}", email,
-                    found.isPresent(), found.map(User::isActive).orElse(null),
-                    found.map(User::getRole).orElse(null), partnerDoor);
-            found
-                    .filter(User::isActive)
-                    .filter(u -> belongsAt(u, partnerDoor))
-                    .ifPresent(user -> {
-                        String code = String.format("%06d", RANDOM.nextInt(1_000_000));
-                        user.setOtpCode(code);
-                        user.setOtpExpiresAt(Instant.now().plus(OTP_TTL));
-                        user.setOtpAttempts(0);
-                        userRepository.save(user);
-                        mailService.loginOtp(user, code);
-                    });
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
-        }
-    }
-
-    /**
-     * Single use: the code is cleared on success, and burned after 5 wrong guesses.
-     * Wrong, expired or burned code → one generic 400.
-     */
-    @Transactional
-    public AuthResponse verifyOtp(String email, String code, boolean partnerDoor) {
+    private User consumeCode(String email, String code, boolean staffSide) {
         User user = userRepository.findByEmail(email.toLowerCase().trim())
                 .filter(User::isActive)
-                .filter(u -> belongsAt(u, partnerDoor))
+                .filter(u -> staffSide == (u.getRole() != Role.CUSTOMER))
                 .filter(u -> u.getOtpCode() != null
-                        && u.getOtpExpiresAt() != null && u.getOtpExpiresAt().isAfter(Instant.now()))
+                        && u.getOtpExpiresAt() != null
+                        && u.getOtpExpiresAt().isAfter(Instant.now()))
                 .orElseThrow(() -> new BadRequestException("Invalid or expired code"));
         if (!user.getOtpCode().equals(code.trim())) {
             user.setOtpAttempts(user.getOtpAttempts() + 1);
@@ -210,7 +187,79 @@ public class AuthService {
         user.setOtpCode(null);
         user.setOtpExpiresAt(null);
         user.setOtpAttempts(0);
-        userRepository.save(user);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Homeowner sign-in. Silently does nothing for unknown/inactive emails or for staff
+     * (they sign in with a password) — the controller always answers with the same generic
+     * message, so the endpoint cannot be used to probe accounts.
+     */
+    @Transactional
+    public void requestOtp(String email) {
+        userRepository.findByEmail(email.toLowerCase().trim())
+                .filter(User::isActive)
+                .filter(u -> u.getRole() == Role.CUSTOMER)
+                .ifPresent(user -> issueCode(user, mailService::loginOtp));
+    }
+
+    /**
+     * Single use: the code is cleared on success, and burned after 5 wrong guesses.
+     * Wrong, expired or burned code → one generic 400.
+     */
+    @Transactional
+    public AuthResponse verifyOtp(String email, String code) {
+        return session(consumeCode(email, code, false));
+    }
+
+    /**
+     * Partner "forgot password": mails a code to staff only. Customers have no password
+     * to reset — they sign in with a code — and unknown emails are silently ignored, so
+     * the generic 200 from the controller gives nothing away either way.
+     */
+    @Transactional
+    public void forgotPassword(String email) {
+        userRepository.findByEmail(email.toLowerCase().trim())
+                .filter(User::isActive)
+                .filter(u -> u.getRole() != Role.CUSTOMER)
+                .ifPresent(user -> issueCode(user, mailService::passwordResetCode));
+    }
+
+    /** Code verified and burned, new password stored, and they're signed straight in. */
+    @Transactional
+    public AuthResponse resetPassword(String email, String code, String newPassword) {
+        User user = consumeCode(email, code, true);
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user = userRepository.save(user);
+        mailService.passwordChanged(user);
+        return session(user);
+    }
+
+    /**
+     * Google sign-in for both sides. The email Google confirms must already have an
+     * account on the side it was asked from — we never create one here, so the caller
+     * gets a clear "no account" message and sends them to sign up / apply.
+     */
+    public AuthResponse loginWithGoogle(String credential, boolean partnerDoor) {
+        String email = googleTokenVerifier.verifiedEmail(credential);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException(NO_GOOGLE_ACCOUNT));
+        if (!user.isActive()) {
+            throw new BadCredentialsException("Account is deactivated");
+        }
+        if (partnerDoor != (user.getRole() != Role.CUSTOMER)) {
+            throw new BadRequestException(partnerDoor
+                    ? "That Google account is a homeowner account — sign in on the main site."
+                    : "That's a partner account — sign in on the partner site.");
+        }
+        return session(user);
+    }
+
+    /** The message the frontend keys on to offer "create an account". */
+    public static final String NO_GOOGLE_ACCOUNT = "No BeSpoke account uses that Google email";
+
+    private AuthResponse session(User user) {
+        // The sidebar shows the designation under the name (V3 §12); customers have no profile.
         String title = staffProfileRepository.findByUser(user)
                 .map(com.BeSpoke.entity.StaffProfile::getTitle).orElse(null);
         return new AuthResponse(jwtService.generateToken(user), UserDto.from(user, title), null);
