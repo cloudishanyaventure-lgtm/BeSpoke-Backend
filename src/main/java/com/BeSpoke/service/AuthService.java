@@ -130,6 +130,7 @@ public class AuthService {
         return password.toString();
     }
 
+    /** Partner sign-in: password is for staff only — homeowners use the OTP flow. */
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email().toLowerCase().trim())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
@@ -139,6 +140,10 @@ public class AuthService {
         if (!user.isActive()) {
             throw new BadCredentialsException("Account is deactivated");
         }
+        if (user.getRole() == Role.CUSTOMER) {
+            throw new BadCredentialsException(
+                    "This is the partner sign-in. Homeowners sign in with a one-time code.");
+        }
         // The sidebar shows the designation under the name (V3 §12); customers have no profile.
         String title = staffProfileRepository.findByUser(user)
                 .map(com.BeSpoke.entity.StaffProfile::getTitle).orElse(null);
@@ -147,19 +152,27 @@ public class AuthService {
 
     private static final Duration OTP_TTL = Duration.ofMinutes(10);
 
+    /** Each sign-in page only ever serves its own side: homeowners vs partner staff. */
+    private static boolean belongsAt(User user, boolean partnerDoor) {
+        return partnerDoor == (user.getRole() != Role.CUSTOMER);
+    }
+
     /**
-     * Silently does nothing for unknown/inactive emails — the controller always answers
-     * with the same generic message, so the endpoint cannot be used to probe accounts.
+     * Silently does nothing for unknown/inactive emails, or an email that belongs at the
+     * other sign-in — the controller always answers with the same generic message, so the
+     * endpoint cannot be used to probe accounts.
      */
     @Transactional
-    public void requestOtp(String email) {
+    public void requestOtp(String email, boolean partnerDoor) {
         log.error("REQUEST RECEIVED");
         try{
             var found = userRepository.findByEmail(email.toLowerCase().trim());
-            log.error("OTP lookup for '{}': present={}, active={}", email,
-                    found.isPresent(), found.map(User::isActive).orElse(null));
+            log.error("OTP lookup for '{}': present={}, active={}, role={}, partnerDoor={}", email,
+                    found.isPresent(), found.map(User::isActive).orElse(null),
+                    found.map(User::getRole).orElse(null), partnerDoor);
             found
                     .filter(User::isActive)
+                    .filter(u -> belongsAt(u, partnerDoor))
                     .ifPresent(user -> {
                         String code = String.format("%06d", RANDOM.nextInt(1_000_000));
                         user.setOtpCode(code);
@@ -178,9 +191,10 @@ public class AuthService {
      * Wrong, expired or burned code → one generic 400.
      */
     @Transactional
-    public AuthResponse verifyOtp(String email, String code) {
+    public AuthResponse verifyOtp(String email, String code, boolean partnerDoor) {
         User user = userRepository.findByEmail(email.toLowerCase().trim())
                 .filter(User::isActive)
+                .filter(u -> belongsAt(u, partnerDoor))
                 .filter(u -> u.getOtpCode() != null
                         && u.getOtpExpiresAt() != null && u.getOtpExpiresAt().isAfter(Instant.now()))
                 .orElseThrow(() -> new BadRequestException("Invalid or expired code"));
