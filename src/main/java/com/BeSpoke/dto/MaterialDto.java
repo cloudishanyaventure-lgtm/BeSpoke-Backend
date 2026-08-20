@@ -15,6 +15,8 @@ public record MaterialDto(
         String name,
         String categorySlug,
         String categoryName,
+        /** The category's photo — what a material without its own shot falls back to. */
+        String categoryImageUrl,
         String blurb,
         String description,
         Map<String, String> specs,
@@ -72,6 +74,7 @@ public record MaterialDto(
     public static MaterialDto from(Material m) {
         return new MaterialDto(m.getId(), m.getSlug(), m.getName(),
                 m.getCategory().getSlug(), m.getCategory().getName(),
+                m.getCategory().getImageUrl(),
                 m.getBlurb(), m.getDescription(),
                 parseSpecs(m.getSpecs()), parseList(m.getApplications()),
                 m.getFinish(), m.getColour(), m.getTexture(), m.getThickness(),

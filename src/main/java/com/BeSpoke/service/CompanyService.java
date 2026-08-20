@@ -5,7 +5,6 @@ import com.BeSpoke.dto.CompanyRolesRequest;
 import com.BeSpoke.dto.CreateCompanyRequest;
 import com.BeSpoke.dto.HierarchyDto;
 import com.BeSpoke.dto.OrgMemberDto;
-import com.BeSpoke.dto.PublicStudioDto;
 import com.BeSpoke.dto.UpdateCompanyRequest;
 import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.CompanyType;
@@ -33,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -128,7 +128,8 @@ public class CompanyService {
                 company.getType() + " company \"" + company.getName() + "\" onboarded"
                         + " (director " + director.getName() + ")");
         mailService.companyOnboarded(company, director, request.directorPassword());
-        return CompanyDto.from(company, missing, 1L, 0L, director.getName());
+        return CompanyDto.from(company, missing, missingProfileFields(company),
+                1L, 0L, director.getName());
     }
 
     /**
@@ -175,10 +176,50 @@ public class CompanyService {
         return value == null || value.isBlank();
     }
 
+    /** Mutable on purpose — Hibernate cannot adopt an immutable list into a mapped collection. */
+    private static List<String> cleaned(List<String> values) {
+        return values.stream().filter(v -> !isBlank(v)).map(String::trim).distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Human names of the public-profile fields still blank. A company appears in the
+     * public directory only once this is empty — an empty card helps nobody (V3 §1).
+     */
+    public List<String> missingProfileFields(Company company) {
+        List<String> missing = new ArrayList<>();
+        if (isBlank(company.getAbout())) {
+            missing.add("about");
+        }
+        if (isBlank(company.getLogoUrl())) {
+            missing.add("logo");
+        }
+        if (isBlank(company.getCoverUrl())) {
+            missing.add("cover photo");
+        }
+        if (company.getFoundedYear() == null) {
+            missing.add("founded year");
+        }
+        if (company.getStyles().stream().allMatch(CompanyService::isBlank)) {
+            missing.add("design styles");
+        }
+        if (company.getPortfolioUrls().stream().allMatch(CompanyService::isBlank)) {
+            missing.add("portfolio photos");
+        }
+        return missing;
+    }
+
+    /** Live, verified and profile-complete — the bar for showing up on the marketing site. */
+    public boolean listedPublicly(Company company) {
+        return company.isActive() && company.getKycStatus() == KycStatus.VERIFIED
+                && missingProfileFields(company).isEmpty();
+    }
+
     public List<CompanyDto> list() {
         return companyRepository.findAllByOrderByCreatedAtDesc().stream()
                 .map(company -> CompanyDto.from(company,
                         missingKycFields(company),
+                        missingProfileFields(company),
                         userRepository.countByCompany(company),
                         leadRepository.countByCompanyAndStatusNotIn(company, CLOSED_STAGES),
                         userRepository.findFirstByCompanyAndRoleAndActiveTrue(company, Role.DIRECTOR)
@@ -190,7 +231,8 @@ public class CompanyService {
         if (current.getCompany() == null) {
             throw new NotFoundException("You are not attached to a company");
         }
-        return CompanyDto.from(current.getCompany(), missingKycFields(current.getCompany()));
+        return CompanyDto.from(current.getCompany(), missingKycFields(current.getCompany()),
+                missingProfileFields(current.getCompany()));
     }
 
     /** Platform admins edit any company; a DIRECTOR edits only their own. */
@@ -227,6 +269,18 @@ public class CompanyService {
         if (request.logoUrl() != null) {
             company.setLogoUrl(request.logoUrl());
         }
+        if (request.coverUrl() != null) {
+            company.setCoverUrl(request.coverUrl());
+        }
+        if (request.foundedYear() != null) {
+            company.setFoundedYear(request.foundedYear());
+        }
+        if (request.styles() != null) {
+            company.setStyles(cleaned(request.styles()));
+        }
+        if (request.portfolioUrls() != null) {
+            company.setPortfolioUrls(cleaned(request.portfolioUrls()));
+        }
         if (request.accentColor() != null) {
             company.setAccentColor(request.accentColor());
         }
@@ -236,7 +290,7 @@ public class CompanyService {
         company = companyRepository.save(company);
         auditService.log(current, company, "COMPANY_UPDATED",
                 "Profile of \"" + company.getName() + "\" updated");
-        return CompanyDto.from(company, missingKycFields(company));
+        return CompanyDto.from(company, missingKycFields(company), missingProfileFields(company));
     }
 
     @Transactional
@@ -260,7 +314,7 @@ public class CompanyService {
         company = companyRepository.save(company);
         auditService.log(actor, company, "KYC_UPDATED",
                 "KYC status: " + before + " → " + company.getKycStatus());
-        return CompanyDto.from(company, missingKycFields(company));
+        return CompanyDto.from(company, missingKycFields(company), missingProfileFields(company));
     }
 
     /** Platform admins configure any company; a DIRECTOR configures their own. */
@@ -281,7 +335,7 @@ public class CompanyService {
         company = companyRepository.save(company);
         auditService.log(current, company, "ROLES_CONFIGURED",
                 "Enabled roles: " + before + " → " + company.effectiveEnabledRoles());
-        return CompanyDto.from(company, missingKycFields(company));
+        return CompanyDto.from(company, missingKycFields(company), missingProfileFields(company));
     }
 
     /** Org chart: platform admins or any staff member of that company. */
@@ -319,12 +373,6 @@ public class CompanyService {
     }
 
     /** Public directory: only active, KYC-verified design studios. */
-    public List<PublicStudioDto> publicStudios() {
-        return companyRepository
-                .findByActiveTrueAndTypeAndKycStatusOrderByNameAsc(CompanyType.DESIGN, KycStatus.VERIFIED)
-                .stream().map(PublicStudioDto::from).toList();
-    }
-
     private List<OrgMemberDto> orgMembers(Company company) {
         List<OrgMemberDto> members = new ArrayList<>();
         for (User user : userRepository.findByCompanyOrderByCreatedAtDesc(company)) {

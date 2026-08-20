@@ -3,13 +3,14 @@ package com.BeSpoke.controller;
 import com.BeSpoke.dto.EnquiryRequest;
 import com.BeSpoke.dto.PublicDesignerDto;
 import com.BeSpoke.dto.PublicStudioDto;
-import com.BeSpoke.service.CompanyService;
+import com.BeSpoke.entity.CompanyType;
 import com.BeSpoke.service.LeadService;
-import com.BeSpoke.service.TeamService;
+import com.BeSpoke.service.PublicProfileService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,26 +22,43 @@ import java.util.Map;
 @RestController
 public class PublicController {
 
-    private final TeamService teamService;
     private final LeadService leadService;
-    private final CompanyService companyService;
+    private final PublicProfileService publicProfileService;
 
-    public PublicController(TeamService teamService, LeadService leadService,
-                            CompanyService companyService) {
-        this.teamService = teamService;
+    public PublicController(LeadService leadService, PublicProfileService publicProfileService) {
         this.leadService = leadService;
-        this.companyService = companyService;
+        this.publicProfileService = publicProfileService;
     }
 
     @GetMapping("/api/public/designers")
     public List<PublicDesignerDto> designers() {
-        return teamService.publicDesigners();
+        return publicProfileService.designers();
     }
 
-    /** Active studios for the public directory and the signup/enquiry studio picker. */
+    @GetMapping("/api/public/designers/{id}")
+    public PublicDesignerDto designer(@PathVariable Long id) {
+        return publicProfileService.designer(id);
+    }
+
+    /** Profile-complete studios for the public directory and the signup/enquiry picker. */
     @GetMapping("/api/public/studios")
     public List<PublicStudioDto> studios() {
-        return companyService.publicStudios();
+        return publicProfileService.studios();
+    }
+
+    @GetMapping("/api/public/studios/{slug}")
+    public PublicStudioDto studio(@PathVariable String slug) {
+        return publicProfileService.profile(slug, CompanyType.DESIGN);
+    }
+
+    @GetMapping("/api/public/vendors")
+    public List<PublicStudioDto> vendors() {
+        return publicProfileService.vendors();
+    }
+
+    @GetMapping("/api/public/vendors/{slug}")
+    public PublicStudioDto vendor(@PathVariable String slug) {
+        return publicProfileService.profile(slug, CompanyType.VENDOR);
     }
 
     @PostMapping("/api/enquiries")

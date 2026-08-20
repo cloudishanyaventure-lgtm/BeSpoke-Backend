@@ -17,6 +17,7 @@ import com.BeSpoke.repository.ProductRepository;
 import com.BeSpoke.repository.RoomCatalogItemRepository;
 import com.BeSpoke.repository.StaffProfileRepository;
 import com.BeSpoke.repository.UserRepository;
+import com.BeSpoke.service.PlatformOptionService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ public class SeedRunner implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
     private final JdbcTemplate jdbcTemplate;
+    private final PlatformOptionService platformOptionService;
 
     public SeedRunner(UserRepository userRepository,
                       StaffProfileRepository staffProfileRepository,
@@ -62,7 +64,8 @@ public class SeedRunner implements CommandLineRunner {
                       ProductRepository productRepository,
                       PasswordEncoder passwordEncoder,
                       ObjectMapper objectMapper,
-                      JdbcTemplate jdbcTemplate) {
+                      JdbcTemplate jdbcTemplate,
+                      PlatformOptionService platformOptionService) {
         this.userRepository = userRepository;
         this.staffProfileRepository = staffProfileRepository;
         this.roomCatalogItemRepository = roomCatalogItemRepository;
@@ -72,6 +75,7 @@ public class SeedRunner implements CommandLineRunner {
         this.passwordEncoder = passwordEncoder;
         this.objectMapper = objectMapper;
         this.jdbcTemplate = jdbcTemplate;
+        this.platformOptionService = platformOptionService;
     }
 
     @Override
@@ -100,6 +104,10 @@ public class SeedRunner implements CommandLineRunner {
                 + "AND phone IS NOT NULL");
         if (clearedPhones > 0) {
             log.info("Cleared {} duplicate phone number(s) before the users.phone unique index", clearedPhones);
+        }
+        int options = platformOptionService.seedDefaults();
+        if (options > 0) {
+            log.info("Seeded {} platform option(s) — editable at /admin/options", options);
         }
         seedTeam();
         ensureSuperAdmin();
@@ -157,6 +165,7 @@ public class SeedRunner implements CommandLineRunner {
                 Role.ACCOUNT_MANAGER, "Mumbai", vendor, vendorDirector);
 
         seedProducts(vendor);
+        seedPublicProfiles(studio, vendor);
         log.info("Demo data present: platform team, 'BeSpoke Studio' (design), 'BeSpoke Living' (vendor)");
     }
 
@@ -265,6 +274,114 @@ public class SeedRunner implements CommandLineRunner {
         }
         log.info("Migrated legacy staff and leads into default studio 'BeSpoke Studio'"
                 + " (director login: director@bespoke.in / director123)");
+    }
+
+    /**
+     * Fills the public-directory fields on the demo companies and their client-facing
+     * staff, so /studios has something to show on a fresh database. Only blank fields
+     * are written — a real studio that edited its own profile is never overwritten.
+     */
+    private void seedPublicProfiles(Company studio, Company vendor) {
+        String unsplash = "https://images.unsplash.com/photo-";
+        publicProfile(studio, 2016,
+                unsplash + "1618221195710-dd6b41faaea6?q=80&w=1600&auto=format&fit=crop",
+                unsplash + "1555181937-efe4e074a301?q=80&w=400&auto=format&fit=crop",
+                List.of("Modern minimal", "Contemporary", "Traditional Indian"),
+                List.of(unsplash + "1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop",
+                        unsplash + "1616486338812-3dadae4b4ace?q=80&w=1200&auto=format&fit=crop",
+                        unsplash + "1600566753086-00f18fb6b3ea?q=80&w=1200&auto=format&fit=crop",
+                        unsplash + "1556911220-bff31c812dba?q=80&w=1200&auto=format&fit=crop"));
+        publicProfile(vendor, 2019,
+                unsplash + "1567016432779-094069958ea5?q=80&w=1600&auto=format&fit=crop",
+                unsplash + "1678794792916-e5cb1217bed1?q=80&w=400&auto=format&fit=crop",
+                List.of("Contemporary", "Scandinavian", "Mid-century modern"),
+                List.of(unsplash + "1586023492125-27b2c045efd7?q=80&w=1200&auto=format&fit=crop",
+                        unsplash + "1616594039964-ae9021a400a0?q=80&w=1200&auto=format&fit=crop",
+                        unsplash + "1617806118233-18e1de247200?q=80&w=1200&auto=format&fit=crop"));
+
+        designerProfile("director@bespoke.in", 18,
+                "Founded BeSpoke Studio in 2016 after a decade with large residential practices."
+                        + " Vikram leads every project brief personally.",
+                List.of("Modern minimal", "Contemporary"),
+                unsplash + "1560250097-0b93528c311a?q=80&w=400&auto=format&fit=crop");
+        designerProfile("architect@bespoke.in", 14,
+                "Arjun works the drawings end: layouts, services coordination and the"
+                        + " details that make a small flat feel twice its size.",
+                List.of("Modern minimal", "Japandi"),
+                unsplash + "1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop");
+        designerProfile("manager@bespoke.in", 11,
+                "Aarti runs the design floor and keeps a project honest between the mood"
+                        + " board and the site.",
+                List.of("Contemporary", "Industrial"),
+                unsplash + "1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop");
+        designerProfile("designer@bespoke.in", 6,
+                "Priya designs homes for young families — warm materials, hard-working"
+                        + " storage and a palette that survives real life.",
+                List.of("Bohemian", "Scandinavian"),
+                unsplash + "1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop");
+        designerProfile("vendor@bespokeliving.in", 12,
+                "Nikhil curates the BeSpoke Living catalogue and works directly with"
+                        + " the workshops that build it.",
+                List.of("Contemporary", "Mid-century modern"),
+                unsplash + "1519085360753-af0119f7cbe7?q=80&w=400&auto=format&fit=crop");
+    }
+
+    private void publicProfile(Company company, int foundedYear, String coverUrl, String logoUrl,
+                               List<String> styles, List<String> portfolio) {
+        boolean changed = false;
+        if (company.getCoverUrl() == null) {
+            company.setCoverUrl(coverUrl);
+            changed = true;
+        }
+        if (company.getLogoUrl() == null) {
+            company.setLogoUrl(logoUrl);
+            changed = true;
+        }
+        if (company.getFoundedYear() == null) {
+            company.setFoundedYear(foundedYear);
+            changed = true;
+        }
+        if (company.getStyles().isEmpty()) {
+            company.setStyles(new ArrayList<>(styles));
+            changed = true;
+        }
+        if (company.getPortfolioUrls().isEmpty()) {
+            company.setPortfolioUrls(new ArrayList<>(portfolio));
+            changed = true;
+        }
+        if (changed) {
+            companyRepository.save(company);
+        }
+    }
+
+    private void designerProfile(String email, int years, String bio, List<String> styles,
+                                 String avatarUrl) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return;
+        }
+        if (user.getAvatarUrl() == null) {
+            user.setAvatarUrl(avatarUrl);
+            userRepository.save(user);
+        }
+        staffProfileRepository.findByUser(user).ifPresent(profile -> {
+            boolean changed = false;
+            if (profile.getBio() == null) {
+                profile.setBio(bio);
+                changed = true;
+            }
+            if (profile.getYearsExperience() == null) {
+                profile.setYearsExperience(years);
+                changed = true;
+            }
+            if (profile.getStyles().isEmpty()) {
+                profile.setStyles(new ArrayList<>(styles));
+                changed = true;
+            }
+            if (changed) {
+                staffProfileRepository.save(profile);
+            }
+        });
     }
 
     private User staff(String name, String email, String password, Role role,

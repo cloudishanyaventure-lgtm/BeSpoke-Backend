@@ -1,15 +1,23 @@
 package com.BeSpoke.entity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Extra profile data for staff users (designers and admins). */
 @Entity
@@ -31,6 +39,20 @@ public class StaffProfile {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Dept dept;
+
+    /** Public bio — shown on the designer's profile page. */
+    @Column(length = 2000)
+    private String bio;
+
+    /** Years in the trade, not years at this studio. */
+    private Integer yearsExperience;
+
+    /** Design styles this person works in; the public directory filters on these. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "staff_profile_styles", joinColumns = @JoinColumn(name = "staff_profile_id"))
+    @Column(name = "style", length = 60)
+    private List<String> styles = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean active = true;
@@ -74,6 +96,30 @@ public class StaffProfile {
 
     public void setDept(Dept dept) {
         this.dept = dept;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public Integer getYearsExperience() {
+        return yearsExperience;
+    }
+
+    public void setYearsExperience(Integer yearsExperience) {
+        this.yearsExperience = yearsExperience;
+    }
+
+    public List<String> getStyles() {
+        return styles;
+    }
+
+    public void setStyles(List<String> styles) {
+        this.styles = styles;
     }
 
     public boolean isActive() {

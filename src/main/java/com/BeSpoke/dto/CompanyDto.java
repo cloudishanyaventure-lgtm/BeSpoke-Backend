@@ -20,6 +20,10 @@ public record CompanyDto(
         String email,
         String about,
         String logoUrl,
+        String coverUrl,
+        Integer foundedYear,
+        List<String> styles,
+        List<String> portfolioUrls,
         String accentColor,
         boolean active,
         String type,
@@ -35,26 +39,33 @@ public record CompanyDto(
         Instant createdAt,
         // Human names of the KYC fields still blank — empty means Verify is allowed (V3 §2).
         List<String> missingKyc,
+        // Human names of the public-profile fields still blank — empty means it is listed.
+        List<String> missingProfile,
         Long members,
         Long openLeads,
         String directorName
 ) {
-    public static CompanyDto from(Company company, List<String> missingKyc) {
-        return from(company, missingKyc, null, null, null);
+    public static CompanyDto from(Company company, List<String> missingKyc,
+                                  List<String> missingProfile) {
+        return from(company, missingKyc, missingProfile, null, null, null);
     }
 
     public static CompanyDto from(Company company, List<String> missingKyc,
+                                  List<String> missingProfile,
                                   Long members, Long openLeads, String directorName) {
         return new CompanyDto(company.getId(), company.getName(), company.getSlug(),
                 company.getCity(), company.getHeadquartersCity(),
                 List.copyOf(company.getOperationalCities()),
                 company.getPhone(), company.getEmail(), company.getAbout(),
-                company.getLogoUrl(), company.getAccentColor(), company.isActive(),
+                company.getLogoUrl(), company.getCoverUrl(), company.getFoundedYear(),
+                List.copyOf(company.getStyles()), List.copyOf(company.getPortfolioUrls()),
+                company.getAccentColor(), company.isActive(),
                 company.getType().name(), company.getSolo(), company.getKycStatus().name(),
                 company.getGstin(), company.getPan(), company.getCin(),
                 company.getRegisteredName(), company.getRegisteredAddress(),
                 List.copyOf(company.getKycDocUrls()),
                 company.effectiveEnabledRoles().stream().map(Role::name).toList(),
-                company.getCreatedAt(), missingKyc, members, openLeads, directorName);
+                company.getCreatedAt(), missingKyc, missingProfile,
+                members, openLeads, directorName);
     }
 }

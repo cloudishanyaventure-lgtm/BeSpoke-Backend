@@ -1,6 +1,8 @@
 package com.BeSpoke.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -16,6 +18,10 @@ public record UpdateCompanyRequest(
         @Email @Size(max = 255) String email,
         @Size(max = 2000) String about,
         @Size(max = 1000) String logoUrl,
+        @Size(max = 1000) String coverUrl,
+        @Min(1900) @Max(2100) Integer foundedYear,
+        List<String> styles,
+        List<String> portfolioUrls,
         @Size(max = 20) String accentColor,
         Boolean active
 ) {

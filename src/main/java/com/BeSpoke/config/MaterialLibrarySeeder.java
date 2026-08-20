@@ -42,6 +42,71 @@ public class MaterialLibrarySeeder implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(MaterialLibrarySeeder.class);
     private static final String PATTERN = "classpath:materials/*.json";
 
+    /**
+     * Starter photo per category, keyed by slug. The JSON files carry a search keyword
+     * rather than a picture, so these are the shipped defaults — written once into
+     * image_url, after which the admin's edit in the CRM owns the field.
+     */
+    private static final Map<String, String> STARTER_PHOTO = Map.ofEntries(
+            Map.entry("plywood-wood-boards", "1700973408133-b45276ec8feb"),
+            Map.entry("laminates", "1678794792916-e5cb1217bed1"),
+            Map.entry("veneers", "1591709990007-25dd40fa4b63"),
+            Map.entry("acrylic-high-gloss", "1748680223727-bdaf1e7f5465"),
+            Map.entry("modular-furniture-hardware", "1591640891024-3ee88673e639"),
+            Map.entry("kitchen-accessories", "1678108040468-0cc9addd984d"),
+            Map.entry("handles-knobs", "1607710533910-d7cdffd9e593"),
+            Map.entry("glass-mirrors", "1765766600457-abfd14dd502c"),
+            Map.entry("tiles-stone", "1584354273341-3eb96574e5be"),
+            Map.entry("quartz-countertops", "1690310588533-6043216b0b5f"),
+            Map.entry("flooring", "1560184897-1ee3713708ee"),
+            Map.entry("wall-finishes", "1555181937-efe4e074a301"),
+            Map.entry("paints-coatings", "1581079289196-67865ea83118"),
+            Map.entry("ceiling-partition", "1551770873-897f127385d5"),
+            Map.entry("electrical-smart-home", "1556217994-22de7face210"),
+            Map.entry("lighting", "1540932239986-30128078f3c5"),
+            Map.entry("bathroom-sanitary", "1584622650111-993a426fbf0a"),
+            Map.entry("kitchen-appliances", "1543503103-f94a0036ed9d"),
+            Map.entry("doors-windows", "1613324061338-19d4528a5be9"),
+            Map.entry("door-hardware-locks", "1563417994968-13665a6ff908"),
+            Map.entry("adhesives-sealants", "1768839725085-829e6ac7ac26"),
+            Map.entry("acoustic-materials", "1675528030748-d463ab87e8d5"),
+            Map.entry("soft-furnishing", "1771039621838-4c8dd6ae0f9d"),
+            Map.entry("furniture", "1616486338812-3dadae4b4ace"),
+            Map.entry("decorative-materials", "1774305097322-f6835d39527b"),
+            Map.entry("outdoor-balcony", "1565985482558-4c32923fb2d3"));
+
+    /** The photo URL for a category, or null when we ship no picture for that slug. */
+    private static String starterPhoto(String slug) {
+        String id = STARTER_PHOTO.get(slug);
+        return id == null ? null
+                : "https://images.unsplash.com/photo-" + id + "?q=80&w=1200&auto=format&fit=crop";
+    }
+
+    /**
+     * Early rows stored the JSON search keyword ("plywood stack") in image_url, which is
+     * not a picture and rendered as a broken tile. Replace those with the starter photo;
+     * a real URL — an admin upload or an earlier backfill — is never touched.
+     */
+    private void backfillCategoryPhotos() {
+        int fixed = 0;
+        for (MaterialCategory category : categoryRepository.findAll()) {
+            String current = category.getImageUrl();
+            if (current != null && (current.startsWith("http") || current.startsWith("/"))) {
+                continue;
+            }
+            String photo = starterPhoto(category.getSlug());
+            if (photo == null) {
+                continue;
+            }
+            category.setImageUrl(photo);
+            categoryRepository.save(category);
+            fixed++;
+        }
+        if (fixed > 0) {
+            log.info("Backfilled {} category photo(s) that held a keyword instead of a URL", fixed);
+        }
+    }
+
     private final MaterialCategoryRepository categoryRepository;
     private final MaterialBrandRepository brandRepository;
     private final MaterialRepository materialRepository;
@@ -63,6 +128,7 @@ public class MaterialLibrarySeeder implements ApplicationRunner {
         Resource[] files = new PathMatchingResourcePatternResolver().getResources(PATTERN);
         Arrays.sort(files, (a, b) -> String.valueOf(a.getFilename())
                 .compareTo(String.valueOf(b.getFilename())));
+        backfillCategoryPhotos();
         int categories = 0;
         int materials = 0;
         int order = 0;
@@ -80,7 +146,8 @@ public class MaterialLibrarySeeder implements ApplicationRunner {
             category.setName(parsed.name);
             category.setTagline(parsed.tagline);
             category.setDescription(parsed.description);
-            category.setImageUrl(parsed.image);
+            // parsed.image is a search keyword, not a picture — ship a real photo instead.
+            category.setImageUrl(starterPhoto(parsed.slug));
             category.setSortOrder(order);
             category = categoryRepository.save(category);
             categories++;

@@ -1,7 +1,6 @@
 package com.BeSpoke.service;
 
 import com.BeSpoke.dto.CreateTeamMemberRequest;
-import com.BeSpoke.dto.PublicDesignerDto;
 import com.BeSpoke.dto.TeamMemberDto;
 import com.BeSpoke.dto.UpdateTeamMemberRequest;
 import com.BeSpoke.entity.Company;
@@ -259,23 +258,6 @@ public class TeamService {
                 profile != null ? profile.getDept().name() : null,
                 user.isActive(), openLeads, activeProjects,
                 user.getCompany() != null ? user.getCompany().getName() : null);
-    }
-
-    /** Public marketing card list: active designers with a staff profile. */
-    public List<PublicDesignerDto> publicDesigners() {
-        List<PublicDesignerDto> designers = new ArrayList<>();
-        for (User user : userRepository.findByRole(Role.DESIGNER)) {
-            if (!user.isActive()) {
-                continue;
-            }
-            StaffProfile profile = staffProfileRepository.findByUser(user).orElse(null);
-            if (profile == null || !profile.isActive()) {
-                continue;
-            }
-            designers.add(new PublicDesignerDto(user.getId(), user.getName(),
-                    profile.getTitle(), user.getCity()));
-        }
-        return designers;
     }
 
     private long countActiveDirectors(Company company) {

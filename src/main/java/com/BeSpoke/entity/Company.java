@@ -61,6 +61,13 @@ public class Company {
     @Column(length = 1000)
     private String logoUrl;
 
+    /** Wide hero photo behind the public directory card and profile header. */
+    @Column(length = 1000)
+    private String coverUrl;
+
+    /** Year the studio started — the public card shows the years since. */
+    private Integer foundedYear;
+
     /** Brand accent used to theme the studio's workspace and public card. */
     @Column(length = 20)
     private String accentColor;
@@ -109,6 +116,20 @@ public class Company {
     @CollectionTable(name = "company_operational_cities", joinColumns = @JoinColumn(name = "company_id"))
     @Column(name = "city", length = 120)
     private List<String> operationalCities = new ArrayList<>();
+
+    /** Design styles the studio works in — the public directory filters on these. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "company_styles", joinColumns = @JoinColumn(name = "company_id"))
+    @Column(name = "style", length = 60)
+    private List<String> styles = new ArrayList<>();
+
+    /** Project photos shown on the public profile; the first one backs the card. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "company_portfolio", joinColumns = @JoinColumn(name = "company_id"))
+    @Column(name = "image_url", length = 1000)
+    private List<String> portfolioUrls = new ArrayList<>();
 
     /** Empty set == all applicable roles enabled (grandfathering trick). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -210,6 +231,38 @@ public class Company {
 
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
+    }
+
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
+
+    public Integer getFoundedYear() {
+        return foundedYear;
+    }
+
+    public void setFoundedYear(Integer foundedYear) {
+        this.foundedYear = foundedYear;
+    }
+
+    public List<String> getStyles() {
+        return styles;
+    }
+
+    public void setStyles(List<String> styles) {
+        this.styles = styles;
+    }
+
+    public List<String> getPortfolioUrls() {
+        return portfolioUrls;
+    }
+
+    public void setPortfolioUrls(List<String> portfolioUrls) {
+        this.portfolioUrls = portfolioUrls;
     }
 
     public String getAccentColor() {
