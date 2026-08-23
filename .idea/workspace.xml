@@ -4,22 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SeedRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SeedRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/MeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/MeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/PublicController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/PublicController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CompanyDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CompanyDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/PublicDesignerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/PublicDesignerDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/PublicStudioDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/PublicStudioDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateCompanyRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateCompanyRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateMeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateMeRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UserDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Company.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Company.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/StaffProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/StaffProfile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/CompanyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/CompanyService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/TeamService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/TeamService.java" afterDir="false" />
-    </list>
+    <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

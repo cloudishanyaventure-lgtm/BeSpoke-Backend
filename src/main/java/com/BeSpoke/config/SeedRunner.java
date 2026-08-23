@@ -18,6 +18,7 @@ import com.BeSpoke.repository.RoomCatalogItemRepository;
 import com.BeSpoke.repository.StaffProfileRepository;
 import com.BeSpoke.repository.UserRepository;
 import com.BeSpoke.service.PlatformOptionService;
+import com.BeSpoke.service.PolicyService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ public class SeedRunner implements CommandLineRunner {
     private final ObjectMapper objectMapper;
     private final JdbcTemplate jdbcTemplate;
     private final PlatformOptionService platformOptionService;
+    private final PolicyService policyService;
 
     public SeedRunner(UserRepository userRepository,
                       StaffProfileRepository staffProfileRepository,
@@ -65,7 +67,8 @@ public class SeedRunner implements CommandLineRunner {
                       PasswordEncoder passwordEncoder,
                       ObjectMapper objectMapper,
                       JdbcTemplate jdbcTemplate,
-                      PlatformOptionService platformOptionService) {
+                      PlatformOptionService platformOptionService,
+                      PolicyService policyService) {
         this.userRepository = userRepository;
         this.staffProfileRepository = staffProfileRepository;
         this.roomCatalogItemRepository = roomCatalogItemRepository;
@@ -76,6 +79,7 @@ public class SeedRunner implements CommandLineRunner {
         this.objectMapper = objectMapper;
         this.jdbcTemplate = jdbcTemplate;
         this.platformOptionService = platformOptionService;
+        this.policyService = policyService;
     }
 
     @Override
@@ -108,6 +112,10 @@ public class SeedRunner implements CommandLineRunner {
         int options = platformOptionService.seedDefaults();
         if (options > 0) {
             log.info("Seeded {} platform option(s) — editable at /admin/options", options);
+        }
+        int policies = policyService.seedDefaults();
+        if (policies > 0) {
+            log.info("Published {} policy document(s) — editable at /admin/policies", policies);
         }
         seedTeam();
         ensureSuperAdmin();
