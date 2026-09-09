@@ -2,7 +2,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/be_spoke}
     username: ${DB_USERNAME:bespokeuser}
-    password: ${DB_PASSWORD:Ritikrox@18}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       # Keep the pool small so we fit in a low-memory VM alongside Postgres.
@@ -17,13 +17,20 @@ spring:
   mail:
     # bespokedesign.in is on Google Workspace (MX → aspmx.l.google.com), so SMTP is
     # Gmail's. MAIL_PASSWORD must be a Google App Password, not the mailbox password.
+    # Outbound is ALWAYS noreply@ — contact@ is read-only (see app.inbox below), so the
+    # From header Gmail accepts and the one MailService sets are the same address.
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
     username: ${MAIL_USERNAME:noreply@bespokedesign.in}
-    password: ${MAIL_PASSWORD:}
+    password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+      # Sends happen on the request thread inside a transaction (signup, OTP). Without
+      # these an unreachable Gmail hangs the request until the OS gives up — minutes.
+      mail.smtp.connectiontimeout: 10000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
 
 server:
   port: ${SERVER_PORT:8080}
@@ -31,17 +38,30 @@ server:
 app:
   jwt:
     # MUST be provided in production via the JWT_SECRET env var (>= 32 bytes).
-    secret: ${JWT_SECRET:n5SmGiI.-!dx/Ek5FR][ib&r5t-X&FoeX1Z*%ud%Kim}
+    secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
     # Comma-separated list of allowed frontend origins. Browsers send Origin on every
     # POST — including same-origin ones — so the live domains must be listed here or
     # Spring answers 403 "Invalid CORS request".
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://bespokedesign.in,https://www.bespokedesign.in,https://crm.bespokedesign.in,http://localhost:*,http://127.0.0.1:*}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://bespokedesign.in,https://www.bespokedesign.in,https://crm.bespokedesign.in}
   mail:
     enabled: ${MAIL_ENABLED:true}
     from: ${MAIL_FROM:BeSpoke <noreply@bespokedesign.in>}
     app-url: ${APP_URL:https://crm.bespokedesign.in}
+    # Where BeSpoke's own notifications land (new partner signups). contact@ is the
+    # mailbox humans read; it stays read-only for outbound (see app.inbox below).
+    internal: ${MAIL_INTERNAL:contact@bespokedesign.in}
+  inbox:
+    # contact@ is the mailbox humans write to. We only READ it (IMAP) — every reply
+    # goes out as noreply@ via spring.mail above. INBOX_PASSWORD is contact@'s own
+    # Google App Password.
+    enabled: ${INBOX_ENABLED:false}
+    host: ${INBOX_HOST:imap.gmail.com}
+    port: ${INBOX_PORT:993}
+    username: ${INBOX_USERNAME:contact@bespokedesign.in}
+    password: ${INBOX_PASSWORD:}
+    poll-ms: ${INBOX_POLL_MS:120000}
   google:
     # OAuth 2.0 Web client id from console.cloud.google.com. Blank = the Google
     # buttons stay hidden and /api/auth/google refuses.
@@ -49,4 +69,16 @@ app:
   crypto:
     # MUST be provided via CRYPTO_KEY: base64 of 32 random bytes.
     # Rotating it makes every previously stored message body unreadable.
-    key: ${CRYPTO_KEY:8Zq2mJ0xR7vT1cN5bK9wY3sD6fH4gL8pA2eU7iO0rQ4=}
+    key: ${CRYPTO_KEY}
+  storage:
+    # The GCS bucket uploads are written to. MUST be set in production: without it
+    # images land on the container's disk and are gone on the next deploy.
+    # Credentials come from GOOGLE_APPLICATION_CREDENTIALS, or from the instance's
+    # own service account when running on GCP.
+    bucket: ${STORAGE_BUCKET:}
+    public-base-url: ${STORAGE_PUBLIC_BASE_URL:https://crm.bespokedesign.in}
+  seed:
+    demo-enabled: false
+  bootstrap:
+    admin-email: ${BOOTSTRAP_ADMIN_EMAIL:}
+    admin-password: ${BOOTSTRAP_ADMIN_PASSWORD:}

@@ -12,8 +12,11 @@ public record UpdateProductRequest(
         @Size(max = 2000) String description,
         @Pattern(regexp = "DESIGNS|FURNITURE|MATERIALS") String category,
         @Size(max = 60) String roomType,
+        @Size(max = 120) String shopCategory,
+        @Size(max = 120) String shopSubCategory,
         @Positive BigDecimal price,
         @Size(max = 1000) String imageUrl,
-        Boolean active
+        Boolean active,
+        @jakarta.validation.Valid ProductSpatialSpec spatial
 ) {
 }

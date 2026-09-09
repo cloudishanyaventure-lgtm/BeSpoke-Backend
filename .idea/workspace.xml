@@ -4,7 +4,68 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="" />
+    <list default="true" id="b9542e58-5031-4428-b1c3-374d8a4c3070" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy/DEPLOY.md" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/DEPLOY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy/bespoke.service" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/bespoke.service" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/BeSpokeApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/BeSpokeApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/MaterialLibrarySeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/MaterialLibrarySeeder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SeedRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/config/SeedRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/ShopController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/controller/ShopController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CompanyDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CompanyDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CreateProductRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/CreateProductRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/ProductDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/ProductDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/PublicStudioDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/PublicStudioDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/TeamMemberDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/TeamMemberDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateCompanyRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateCompanyRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateProductRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/dto/UpdateProductRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Company.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Company.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/entity/Product.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/CompanyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/CompanyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/LeadRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/repository/LeadRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/CompanyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/CompanyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/FileStorageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/FileStorageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/InvoiceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/InvoiceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/LeadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/LeadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/MailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/PlatformOptionDefaults.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/PlatformOptionDefaults.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/PlatformOptionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/PlatformOptionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/PublicProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/PublicProfileService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/QuoteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/QuoteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ShopService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/ShopService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/TeamService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/TeamService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/VendorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/BeSpoke/service/VendorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/01-plywood-wood-boards.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/02-laminates.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/03-veneers.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/04-acrylic-high-gloss.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/05-modular-furniture-hardware.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/06-kitchen-accessories.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/07-handles-knobs.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/08-glass-mirrors.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/09-tiles-stone.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/10-quartz-countertops.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/11-flooring.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/12-wall-finishes.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/13-paints-coatings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/14-ceiling-partition.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/15-electrical-smart-home.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/16-lighting.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/17-bathroom-sanitary.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/18-kitchen-appliances.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/19-doors-windows.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/20-door-hardware-locks.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/21-adhesives-sealants.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/22-acoustic-materials.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/23-soft-furnishing.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/24-furniture.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/25-decorative-materials.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/materials/26-outdoor-balcony.json" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -88,7 +149,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.Unnamed">
+  <component name="RunManager" selected="Gradle.BeSpoke-Backend [build]">
     <configuration name="Unnamed (1)" type="Application" factoryName="Application" nameIsGenerated="true">
       <module name="BeSpoke-backend.main" />
       <method v="2">
@@ -177,9 +238,9 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.Whole project" />
-        <item itemvalue="Gradle.BeSpoke-Backend [clean]" />
         <item itemvalue="Gradle.BeSpoke-Backend [build]" />
+        <item itemvalue="Gradle.BeSpoke-Backend [clean]" />
+        <item itemvalue="JUnit.Whole project" />
       </list>
     </recent_temporary>
   </component>
@@ -229,5 +290,16 @@
     <MESSAGE value="added changes reagrding the new design" />
     <MESSAGE value="added changes" />
     <option name="LAST_COMMIT_MESSAGE" value="added changes" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/BeSpoke/security/AppUserDetailsService.java</url>
+          <line>23</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

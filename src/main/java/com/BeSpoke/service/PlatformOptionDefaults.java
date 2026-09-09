@@ -22,9 +22,103 @@ final class PlatformOptionDefaults {
     private static Map<String, List<PlatformOption>> build() {
         Map<String, List<PlatformOption>> lists = new LinkedHashMap<>();
 
-        plain(lists, "CITY", "Delhi", "Gurugram", "Noida", "Ghaziabad", "Faridabad", "Mumbai",
-                "Pune", "Bengaluru", "Hyderabad", "Chennai", "Kolkata", "Jaipur", "Chandigarh",
-                "Other");
+        // note = "lat,lng" — how the public directory sorts studios near-to-far from a
+        // visitor who has shared their location. The admin owns these like any other
+        // option, so a new city is added with its coordinates and nothing else changes.
+        noted(lists, "CITY",
+                noteEntry("Delhi", "Delhi", "28.6139,77.2090"),
+                noteEntry("Gurugram", "Gurugram", "28.4595,77.0266"),
+                noteEntry("Noida", "Noida", "28.5355,77.3910"),
+                noteEntry("Ghaziabad", "Ghaziabad", "28.6692,77.4538"),
+                noteEntry("Faridabad", "Faridabad", "28.4089,77.3178"),
+                noteEntry("Mumbai", "Mumbai", "19.0760,72.8777"),
+                noteEntry("Pune", "Pune", "18.5204,73.8567"),
+                noteEntry("Bengaluru", "Bengaluru", "12.9716,77.5946"),
+                noteEntry("Hyderabad", "Hyderabad", "17.3850,78.4867"),
+                noteEntry("Chennai", "Chennai", "13.0827,80.2707"),
+                noteEntry("Kolkata", "Kolkata", "22.5726,88.3639"),
+                noteEntry("Jaipur", "Jaipur", "26.9124,75.7873"),
+                noteEntry("Chandigarh", "Chandigarh", "30.7333,76.7794"),
+                noteEntry("Other", "Other", null));
+
+        // What a vendor company supplies. Multi-select, set by the admin at approval.
+        plain(lists, "VENDOR_CATEGORY", "Glass", "Electricals", "Modular furniture", "Lighting",
+                "Flooring & tiles", "Sanitaryware & CP fittings", "Hardware & fittings",
+                "Paints & finishes", "Kitchen appliances", "Furnishings & upholstery",
+                "Stone & marble", "Carpentry & joinery", "False ceiling & POP",
+                "Wallpaper & wall finishes", "HVAC", "Home automation");
+
+        // The shop's left-hand rail.
+        plain(lists, "SHOP_CATEGORY", "Sofas & seating", "Beds", "Wardrobes & storage", "Tables",
+                "Chairs & stools", "Kitchen", "TV & media units", "Lighting", "Soft furnishings",
+                "Decor & art", "Outdoor");
+
+        // note = the SHOP_CATEGORY this sub-type sits under. That one column is the whole
+        // parent-child link: adding a sub-type is one row, not a second table.
+        noted(lists, "SHOP_SUBCATEGORY",
+                sub("3-seater sofa", "Sofas & seating"),
+                sub("2-seater sofa", "Sofas & seating"),
+                sub("L-shaped sofa", "Sofas & seating"),
+                sub("Recliner", "Sofas & seating"),
+                sub("Sofa cum bed", "Sofas & seating"),
+                sub("Chaise lounge", "Sofas & seating"),
+                sub("Ottoman & pouffe", "Sofas & seating"),
+                sub("King bed", "Beds"),
+                sub("Queen bed", "Beds"),
+                sub("Single bed", "Beds"),
+                sub("Bunk bed", "Beds"),
+                sub("Storage bed", "Beds"),
+                sub("Upholstered bed", "Beds"),
+                sub("Bedside table", "Beds"),
+                sub("Sliding wardrobe", "Wardrobes & storage"),
+                sub("Hinged wardrobe", "Wardrobes & storage"),
+                sub("Walk-in wardrobe", "Wardrobes & storage"),
+                sub("Chest of drawers", "Wardrobes & storage"),
+                sub("Shoe rack", "Wardrobes & storage"),
+                sub("Bookshelf", "Wardrobes & storage"),
+                sub("Crockery unit", "Wardrobes & storage"),
+                sub("Dining table", "Tables"),
+                sub("Coffee table", "Tables"),
+                sub("Side table", "Tables"),
+                sub("Console table", "Tables"),
+                sub("Study desk", "Tables"),
+                sub("Dining chair", "Chairs & stools"),
+                sub("Accent chair", "Chairs & stools"),
+                sub("Office chair", "Chairs & stools"),
+                sub("Bar stool", "Chairs & stools"),
+                sub("Bench", "Chairs & stools"),
+                sub("Rocking chair", "Chairs & stools"),
+                sub("Modular kitchen", "Kitchen"),
+                sub("Kitchen island", "Kitchen"),
+                sub("Base unit", "Kitchen"),
+                sub("Wall unit", "Kitchen"),
+                sub("Tall unit", "Kitchen"),
+                sub("Pantry unit", "Kitchen"),
+                sub("Wall-mounted TV unit", "TV & media units"),
+                sub("Floor TV unit", "TV & media units"),
+                sub("Entertainment centre", "TV & media units"),
+                sub("Ceiling light", "Lighting"),
+                sub("Pendant light", "Lighting"),
+                sub("Chandelier", "Lighting"),
+                sub("Floor lamp", "Lighting"),
+                sub("Table lamp", "Lighting"),
+                sub("Wall sconce", "Lighting"),
+                sub("Cove & profile lighting", "Lighting"),
+                sub("Curtains", "Soft furnishings"),
+                sub("Blinds", "Soft furnishings"),
+                sub("Rugs & carpets", "Soft furnishings"),
+                sub("Cushions", "Soft furnishings"),
+                sub("Bedding", "Soft furnishings"),
+                sub("Upholstery fabric", "Soft furnishings"),
+                sub("Wall art", "Decor & art"),
+                sub("Mirrors", "Decor & art"),
+                sub("Planters", "Decor & art"),
+                sub("Vases & showpieces", "Decor & art"),
+                sub("Clocks", "Decor & art"),
+                sub("Balcony seating", "Outdoor"),
+                sub("Garden furniture", "Outdoor"),
+                sub("Swing & hammock", "Outdoor"),
+                sub("Outdoor lighting", "Outdoor"));
 
         plain(lists, "DESIGN_STYLE", "Modern minimal", "Contemporary", "Scandinavian",
                 "Mid-century modern", "Industrial", "Bohemian", "Traditional Indian", "Japandi",
@@ -139,5 +233,10 @@ final class PlatformOptionDefaults {
 
     private static String[] noteEntry(String value, String label, String note) {
         return new String[]{value, label, note};
+    }
+
+    /** A shop sub-type: its own label, filed under a SHOP_CATEGORY. */
+    private static String[] sub(String label, String parentCategory) {
+        return new String[]{label, label, parentCategory};
     }
 }

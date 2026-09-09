@@ -14,11 +14,14 @@ public record ProductDto(
         String description,
         String category,
         String roomType,
+        String shopCategory,
+        String shopSubCategory,
         BigDecimal price,
         String imageUrl,
         boolean active,
         Instant createdAt,
-        VendorRef vendor
+        VendorRef vendor,
+        ProductSpatialSpec spatial
 ) {
 
     public record VendorRef(Long id, String name, String city) {
@@ -40,11 +43,16 @@ public record ProductDto(
                 product.getDescription(),
                 product.getCategory().name(),
                 product.getRoomType(),
+                product.getShopCategory(),
+                product.getShopSubCategory(),
                 product.getPrice(),
                 product.getImageUrl(),
                 product.isActive(),
                 product.getCreatedAt(),
-                vendor
+                vendor,
+                product.getWidthMm() == null ? null : new ProductSpatialSpec(
+                        product.getWidthMm(), product.getDepthMm(), product.getHeightMm(),
+                        product.getModelUrl(), product.getFinishColor())
         );
     }
 }

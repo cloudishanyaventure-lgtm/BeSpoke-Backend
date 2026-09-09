@@ -17,6 +17,8 @@ public record PublicStudioDto(Long id, String name, String slug, String city,
                               String accentColor, String type, Boolean solo,
                               Integer foundedYear, Integer yearsExperience,
                               List<String> styles, List<String> portfolioUrls,
+                              /** What a vendor supplies — glass, electricals, …; empty for a studio. */
+                              List<String> vendorCategories,
                               String leadName, String leadTitle, String leadAvatarUrl,
                               Integer teamSize,
                               List<PublicDesignerDto> designers) {
@@ -36,6 +38,7 @@ public record PublicStudioDto(Long id, String name, String slug, String city,
                 company.getAccentColor(), company.getType().name(), company.getSolo(),
                 founded, founded == null ? null : Math.max(0, Year.now().getValue() - founded),
                 List.copyOf(company.getStyles()), List.copyOf(company.getPortfolioUrls()),
+                List.copyOf(company.getVendorCategories()),
                 leadName, leadTitle, leadAvatarUrl, teamSize, designers);
     }
 }

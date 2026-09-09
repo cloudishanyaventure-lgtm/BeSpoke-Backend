@@ -59,10 +59,26 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Clients must distinguish an expired session (401) from insufficient permissions (403).
+                .exceptionHandling(errors -> errors
+                        .authenticationEntryPoint((request, response, exception) -> {
+                            response.setStatus(401);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\":401,\"message\":\"Your session has expired. Please sign in again.\"}");
+                        })
+                        .accessDeniedHandler((request, response, exception) -> {
+                            response.setStatus(403);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\":403,\"message\":\"You do not have permission to perform this action.\"}");
+                        }))
                 .authorizeHttpRequests(auth -> auth
                         // Public: auth, enquiry form, catalog, marketing cards, shop, uploads, health.
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/enquiries").permitAll()
+                        // Partner sign-up: the form is public, the decision queue is not.
+                        .requestMatchers(HttpMethod.POST, "/api/partner-applications").permitAll()
+                        .requestMatchers("/api/partner-applications/**")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/shop/**").permitAll()
@@ -75,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()
                         // Customer portal + shop checkout.
                         .requestMatchers("/api/my/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/notifications/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("CUSTOMER")
                         // Vendor workspace (service layer 404s non-vendor companies).
                         .requestMatchers("/api/vendor/**").hasAnyRole(VENDOR_ROLES)
@@ -102,7 +119,8 @@ public class SecurityConfig {
                         // Staff workspace (company/role scoping enforced in the service layer;
                         // finer restrictions via @PreAuthorize).
                         .requestMatchers("/api/leads/**", "/api/projects/**", "/api/clients/**",
-                                "/api/messages/**", "/api/dashboard", "/api/audit")
+                                "/api/messages/**", "/api/tasks/**", "/api/tasks",
+                                "/api/dashboard", "/api/audit")
                         .hasAnyRole(STAFF_ROLES)
                         .anyRequest().authenticated()
                 )

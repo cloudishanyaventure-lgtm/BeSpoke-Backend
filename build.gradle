@@ -23,6 +23,11 @@ ext {
 }
 
 dependencies {
+    // The BOM, not a pinned version: google-cloud-storage drags in guava, grpc and
+    // protobuf, and letting it pick its own versions alongside Spring Boot's is how
+    // you get a NoSuchMethodError at runtime rather than at compile time.
+    implementation platform('com.google.cloud:libraries-bom:26.50.0')
+    implementation 'com.google.cloud:google-cloud-storage'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -34,6 +39,7 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.withType(JavaCompile).configureEach {

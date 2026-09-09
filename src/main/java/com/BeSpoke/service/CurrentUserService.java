@@ -19,8 +19,7 @@ public class CurrentUserService {
     public User requireByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Authenticated user not found"));
-        // JWTs live 24h and carry the role claim, so a deactivated account keeps a valid
-        // token. This is the one gate every authenticated request passes through.
+        // Defense in depth for direct callers; the JWT filter also checks current account state.
         if (!user.isActive()) {
             throw new ForbiddenException("Account is deactivated");
         }

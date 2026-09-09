@@ -38,15 +38,18 @@ public class QuoteService {
     private final LeadRepository leadRepository;
     private final LeadActivityRepository leadActivityRepository;
     private final LeadService leadService;
+    private final MailService mailService;
 
     public QuoteService(QuoteRepository quoteRepository,
                         LeadRepository leadRepository,
                         LeadActivityRepository leadActivityRepository,
-                        LeadService leadService) {
+                        LeadService leadService,
+                        MailService mailService) {
         this.quoteRepository = quoteRepository;
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.leadService = leadService;
+        this.mailService = mailService;
     }
 
     @Transactional
@@ -88,6 +91,7 @@ public class QuoteService {
         quote = quoteRepository.save(quote);
         leadActivityRepository.save(new LeadActivity(quote.getLead(), admin, ActivityType.SYSTEM,
                 "Quote v" + quote.getVersion() + " \"" + quote.getTitle() + "\" sent to customer"));
+        mailService.quoteSent(quote.getLead(), quote.getTitle(), quote.getVersion());
         return QuoteDto.from(quote);
     }
 

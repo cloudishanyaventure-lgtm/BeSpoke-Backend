@@ -17,6 +17,10 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
 
     List<Lead> findByCustomerOrderByCreatedAtDesc(User customer);
 
+    /** Open lead for a contact address — a mail thread must not mint a lead per reply. */
+    Optional<Lead> findFirstByContactEmailIgnoreCaseAndStatusNotInOrderByCreatedAtDesc(
+            String contactEmail, Collection<LeadStatus> excluded);
+
     List<Lead> findAllByOrderByCreatedAtDesc();
 
     List<Lead> findByAssignedDesignerOrderByCreatedAtDesc(User assignedDesigner);

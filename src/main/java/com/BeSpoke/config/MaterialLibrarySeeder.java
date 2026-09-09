@@ -48,6 +48,17 @@ public class MaterialLibrarySeeder implements ApplicationRunner {
      * image_url, after which the admin's edit in the CRM owns the field.
      */
     private static final Map<String, String> STARTER_PHOTO = Map.ofEntries(
+            // The 14 live categories.
+            Map.entry("plyboards-laminates", "1700973408133-b45276ec8feb"),
+            Map.entry("modular-hardware", "1591640891024-3ee88673e639"),
+            Map.entry("tiles-stone-quartz", "1584354273341-3eb96574e5be"),
+            Map.entry("electrical-lights", "1540932239986-30128078f3c5"),
+            Map.entry("appliances-fans", "1543503103-f94a0036ed9d"),
+            Map.entry("paint-polish", "1581079289196-67865ea83118"),
+            Map.entry("sanitary-bathing", "1584622650111-993a426fbf0a"),
+            Map.entry("glass-door-slider", "1765766600457-abfd14dd502c"),
+            Map.entry("locks-latches", "1563417994968-13665a6ff908"),
+            // Slugs that survived the 2026-08 merge unchanged, plus the retired six.
             Map.entry("plywood-wood-boards", "1700973408133-b45276ec8feb"),
             Map.entry("laminates", "1678794792916-e5cb1217bed1"),
             Map.entry("veneers", "1591709990007-25dd40fa4b63"),
@@ -136,6 +147,13 @@ public class MaterialLibrarySeeder implements ApplicationRunner {
             CategoryFile parsed;
             try (InputStream in = file.getInputStream()) {
                 parsed = objectMapper.readValue(in, CategoryFile.class);
+            } catch (Exception ex) {
+                // A stray comma in one catalogue file used to abort the whole application:
+                // an ApplicationRunner that throws stops the boot, so a data typo took the
+                // API down with it. Skip the file, shout about it, keep serving.
+                log.error("[SEED] {} is not valid JSON and was skipped — {}",
+                        file.getFilename(), ex.getMessage());
+                continue;
             }
             order++;
             if (categoryRepository.findBySlug(parsed.slug).isPresent()) {
@@ -149,6 +167,8 @@ public class MaterialLibrarySeeder implements ApplicationRunner {
             // parsed.image is a search keyword, not a picture — ship a real photo instead.
             category.setImageUrl(starterPhoto(parsed.slug));
             category.setSortOrder(order);
+            // Retired categories ship hidden — the content stays, the directory stays at 14.
+            category.setActive(parsed.active == null || parsed.active);
             category = categoryRepository.save(category);
             categories++;
 
@@ -241,6 +261,8 @@ public class MaterialLibrarySeeder implements ApplicationRunner {
         public String tagline;
         public String description;
         public String image;
+        /** Boxed: absent in most files, and absence must mean "live", not false. */
+        public Boolean active;
         public List<String> brands;
         public List<MaterialFile> materials;
     }

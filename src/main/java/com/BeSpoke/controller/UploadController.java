@@ -27,4 +27,10 @@ public class UploadController {
         String url = fileStorageService.storeImage(file);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("url", url));
     }
+
+    @PostMapping("/models")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRODUCT_MANAGER','PRODUCT_SME')")
+    public ResponseEntity<Map<String, String>> uploadModel(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("url", fileStorageService.storeModel(file)));
+    }
 }

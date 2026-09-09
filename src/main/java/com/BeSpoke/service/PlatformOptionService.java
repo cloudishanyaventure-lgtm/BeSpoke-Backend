@@ -32,6 +32,25 @@ public class PlatformOptionService {
         this.auditService = auditService;
     }
 
+    /**
+     * The human label for a stored code — "APARTMENT" → "Apartment", "L10_25" → "₹10–25 L".
+     * Emails read the same wording the pickers show, and an option the admin has since
+     * renamed or deleted still degrades to something readable rather than a raw enum.
+     */
+    public String label(String listKey, String value) {
+        if (value == null || value.isBlank()) {
+            return "—";
+        }
+        return repository.findByListKeyAndValue(listKey, value)
+                .map(PlatformOption::getLabel)
+                .orElseGet(() -> humanize(value));
+    }
+
+    static String humanize(String value) {
+        String lower = value.replace('_', ' ').toLowerCase(java.util.Locale.ROOT).trim();
+        return lower.isEmpty() ? "—" : Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
+    }
+
     /** Active entries, grouped by list — one call serves every picker on the site. */
     public Map<String, List<PlatformOptionDto>> publicLists() {
         return group(repository.findByActiveTrueOrderByListKeyAscSortOrderAsc(),
@@ -160,11 +179,36 @@ public class PlatformOptionService {
         int added = 0;
         for (Map.Entry<String, List<PlatformOption>> entry : PlatformOptionDefaults.LISTS.entrySet()) {
             if (repository.existsByListKey(entry.getKey())) {
+                added += backfillNotes(entry.getValue());
                 continue;
             }
             repository.saveAll(entry.getValue());
             added += entry.getValue().size();
         }
         return added;
+    }
+
+    /**
+     * Fills in a note the shipped defaults carry but the live row is missing — how city
+     * coordinates reach a database seeded before they existed. Only ever writes over a
+     * blank: a note the admin typed is theirs, and a row they deleted stays deleted.
+     */
+    private int backfillNotes(List<PlatformOption> defaults) {
+        int filled = 0;
+        for (PlatformOption fallback : defaults) {
+            if (fallback.getNote() == null) {
+                continue;
+            }
+            PlatformOption live = repository
+                    .findByListKeyAndValue(fallback.getListKey(), fallback.getValue())
+                    .orElse(null);
+            if (live == null || live.getNote() != null) {
+                continue;
+            }
+            live.setNote(fallback.getNote());
+            repository.save(live);
+            filled++;
+        }
+        return filled;
     }
 }

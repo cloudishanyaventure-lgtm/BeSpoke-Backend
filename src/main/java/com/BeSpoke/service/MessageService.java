@@ -23,13 +23,15 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final LeadService leadService;
     private final CryptoService cryptoService;
+    private final NotificationService notifications;
 
     public MessageService(MessageRepository messageRepository,
                           LeadService leadService,
-                          CryptoService cryptoService) {
+                          CryptoService cryptoService, NotificationService notifications) {
         this.messageRepository = messageRepository;
         this.leadService = leadService;
         this.cryptoService = cryptoService;
+        this.notifications = notifications;
     }
 
     /** Returns the thread and marks the other side's messages as read for the current user. */
@@ -50,6 +52,11 @@ public class MessageService {
         requireAccepted(lead);
         String plain = body.trim();
         Message message = messageRepository.save(new Message(lead, sender, cryptoService.encrypt(plain)));
+        if (sender.getRole() != com.BeSpoke.entity.Role.CUSTOMER) {
+            notifications.publish(lead.getCustomer(), "New message from your studio", "Open your conversation to read and reply.", "/my/messages");
+        } else if (lead.getAssignedDesigner() != null) {
+            notifications.publish(lead.getAssignedDesigner(), "New customer message", "Open your client conversation to read and reply.", "/studio/messages");
+        }
         return MessageDto.from(message, plain);
     }
 

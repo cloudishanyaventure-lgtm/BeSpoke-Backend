@@ -96,8 +96,23 @@ public class Company {
     @Column(length = 255)
     private String registeredName;
 
+    /** The GST / registered address. */
     @Column(length = 500)
     private String registeredAddress;
+
+    /** Where they actually sit. Often the same as the GST address — see gstSameAsOffice. */
+    @Column(length = 500)
+    private String officeAddress;
+
+    /** The admin ticked "GST address same as office"; the two columns are still written. */
+    private Boolean gstSameAsOffice;
+
+    /**
+     * Which staff member fronts this company on the public Designers tab. Plain id, not a
+     * mapped association: Company is eager-fetched through Lead's six User/Company
+     * references, and another eager ManyToOne back into User widens that join again.
+     */
+    private Long featuredDesignerId;
 
     // EAGER: tiny collections, and companies travel on detached users (open-in-view is off).
     // SUBSELECT, not the default JOIN: a Lead eager-loads six User/Company references, and
@@ -116,6 +131,16 @@ public class Company {
     @CollectionTable(name = "company_operational_cities", joinColumns = @JoinColumn(name = "company_id"))
     @Column(name = "city", length = 120)
     private List<String> operationalCities = new ArrayList<>();
+
+    /**
+     * What a VENDOR company actually supplies — glass, electricals, flooring. Multi-select,
+     * set by the platform admin at approval; empty on design studios.
+     */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "company_vendor_categories", joinColumns = @JoinColumn(name = "company_id"))
+    @Column(name = "category", length = 120)
+    private List<String> vendorCategories = new ArrayList<>();
 
     /** Design styles the studio works in — the public directory filters on these. */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -354,6 +379,38 @@ public class Company {
 
     public void setRegisteredAddress(String registeredAddress) {
         this.registeredAddress = registeredAddress;
+    }
+
+    public String getOfficeAddress() {
+        return officeAddress;
+    }
+
+    public void setOfficeAddress(String officeAddress) {
+        this.officeAddress = officeAddress;
+    }
+
+    public Boolean getGstSameAsOffice() {
+        return gstSameAsOffice;
+    }
+
+    public void setGstSameAsOffice(Boolean gstSameAsOffice) {
+        this.gstSameAsOffice = gstSameAsOffice;
+    }
+
+    public Long getFeaturedDesignerId() {
+        return featuredDesignerId;
+    }
+
+    public void setFeaturedDesignerId(Long featuredDesignerId) {
+        this.featuredDesignerId = featuredDesignerId;
+    }
+
+    public List<String> getVendorCategories() {
+        return vendorCategories;
+    }
+
+    public void setVendorCategories(List<String> vendorCategories) {
+        this.vendorCategories = vendorCategories;
     }
 
     public List<String> getKycDocUrls() {

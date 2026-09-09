@@ -441,7 +441,50 @@ public class LeadService {
         lead = leadRepository.save(lead);
         leadActivityRepository.save(new LeadActivity(lead, actor, ActivityType.SYSTEM,
                 "Lead captured manually (" + source.name() + ")"));
+        mailService.leadReceived(lead, null);
         return toSummary(lead);
+    }
+
+    /**
+     * A mail to contact@bespokedesign.in becomes a lead (V3 §0 pool, source EMAIL) and gets
+     * an acknowledgement back from noreply@. A second mail from an address that already has
+     * an open lead lands on that lead as a note instead of minting a duplicate.
+     */
+    @Transactional
+    public Lead createFromEmail(String fromEmail, String fromName, String subject, String body) {
+        String email = fromEmail.toLowerCase(Locale.ROOT).trim();
+        String note = ("Subject: " + (subject == null || subject.isBlank() ? "(none)" : subject.trim())
+                + "\n\n" + (body == null ? "" : body.trim())).trim();
+        Lead existing = leadRepository
+                .findFirstByContactEmailIgnoreCaseAndStatusNotInOrderByCreatedAtDesc(
+                        email, EnumSet.of(LeadStatus.WON, LeadStatus.LOST))
+                .orElse(null);
+        if (existing != null) {
+            leadActivityRepository.save(new LeadActivity(existing, null, ActivityType.NOTE, clip(note)));
+            existing.setUpdatedAt(Instant.now());
+            leadRepository.save(existing);
+            mailService.leadReceived(existing, subject);
+            return existing;
+        }
+        Lead lead = new Lead();
+        lead.setContactName(fromName == null || fromName.isBlank() ? email : fromName.trim());
+        lead.setContactEmail(email);
+        lead.setContactPhone("");  // not in an email; the consultant collects it on first contact
+        lead.setCity("");
+        lead.setSource(LeadSource.EMAIL);
+        lead.setStatus(LeadStatus.NEW_INQUIRY);
+        scoreService.rescore(lead, null);
+        lead = leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.SYSTEM,
+                "Enquiry received by email to contact@bespokedesign.in"));
+        leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.NOTE, clip(note)));
+        mailService.leadReceived(lead, subject);
+        return lead;
+    }
+
+    /** LeadActivity.body is a 2000-char column; a long mail is stored truncated. */
+    private static String clip(String text) {
+        return text.length() <= 2000 ? text : text.substring(0, 1997) + "...";
     }
 
     /**
@@ -493,6 +536,7 @@ public class LeadService {
             leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.NOTE,
                     "Enquiry message: " + request.message().trim()));
         }
+        mailService.leadReceived(lead, null);
         return lead.getId();
     }
 

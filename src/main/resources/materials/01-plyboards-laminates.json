@@ -1,0 +1,1414 @@
+{
+  "slug": "plyboards-laminates",
+  "name": "Plyboards & Laminates",
+  "tagline": "The carcass and the surface stuck to it",
+  "description": "Boards are the first specification decision on any interior job: they set the cost, the lifespan and how the joinery behaves in a damp Indian summer. What is pressed onto them decides how the job reads. This section runs from plywood by bonding grade and engineered boards like MDF and HDHMR, through high-pressure laminates organised the way designers actually shop — Brand, Collection, Design — to natural and reconstituted veneers, and the acrylic and PET panels used when a client wants mirror depth.",
+  "image": "plywood stack",
+  "brands": [
+    "Century Plyboards",
+    "Greenply Industries",
+    "Greenpanel",
+    "Action TESA",
+    "Kitply",
+    "Archidply",
+    "Duro",
+    "Merino",
+    "National",
+    "Virgo",
+    "Rushil Decor",
+    "Ecoste",
+    "Greenlam",
+    "Royale Touche",
+    "Century Laminates",
+    "Formica",
+    "Stylam",
+    "Advance",
+    "AICA Sunmica",
+    "Decowood",
+    "Evolve",
+    "Rehau",
+    "Century Veneers",
+    "Rehau Rauvisio",
+    "Senosan"
+  ],
+  "materials": [
+    {
+      "name": "MR plywood",
+      "blurb": "Moisture-resistant interior grade — the default for dry-area joinery",
+      "description": "Bonded with urea-formaldehyde resin, MR ply handles humidity but not standing water. It is the workhorse board for wardrobes, beds and TV units in dry rooms, and the cheapest plywood worth specifying on a paying job.",
+      "specs": {
+        "Bonding": "Urea formaldehyde (MR)",
+        "Core": "Hardwood / mixed hardwood",
+        "Standard": "IS 303 MR grade",
+        "Density": "600–700 kg/m³"
+      },
+      "applications": [
+        "Wardrobes",
+        "Bedroom furniture",
+        "TV units",
+        "Study tables"
+      ],
+      "thickness": "4, 6, 9, 12, 16, 19 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 303 (MR)",
+      "warranty": "5–10 years",
+      "tier": "BUDGET",
+      "priceMin": 45,
+      "priceMax": 85,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "plywood sheet"
+    },
+    {
+      "name": "BWR plywood",
+      "blurb": "Boiling-water-resistant grade for kitchens and utility joinery",
+      "description": "BWR uses phenolic resin, so it survives repeated wetting and drying far better than MR. Specify it wherever splashes are routine but full immersion is not — kitchen carcasses, utility storage and washbasin counters.",
+      "specs": {
+        "Bonding": "Phenol formaldehyde (BWR)",
+        "Core": "Hardwood",
+        "Standard": "IS 303 BWR",
+        "Boil test": "8 hours"
+      },
+      "applications": [
+        "Kitchen cabinets",
+        "Utility storage",
+        "Vanity units"
+      ],
+      "thickness": "6, 12, 16, 19 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 303 (BWR)",
+      "warranty": "10–15 years",
+      "tier": "MID",
+      "priceMin": 70,
+      "priceMax": 115,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor",
+      "image": "plywood board"
+    },
+    {
+      "name": "BWP / Marine plywood",
+      "blurb": "Fully waterproof marine grade for wet areas and outdoor joinery",
+      "description": "The top bonding grade in the IS system, tested against 72 hours of boiling water. Worth the premium for sink units, bathroom vanities, balcony joinery and anything that will sit against an external wall.",
+      "specs": {
+        "Bonding": "Phenol formaldehyde (BWP)",
+        "Core": "Full hardwood, gap-free",
+        "Standard": "IS 710",
+        "Boil test": "72 hours"
+      },
+      "applications": [
+        "Sink units",
+        "Bathroom vanities",
+        "Balcony joinery",
+        "Outdoor furniture"
+      ],
+      "thickness": "6, 12, 16, 19, 25 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 710",
+      "warranty": "15–25 years / lifetime",
+      "tier": "PREMIUM",
+      "priceMin": 95,
+      "priceMax": 165,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "marine plywood"
+    },
+    {
+      "name": "Commercial plywood",
+      "blurb": "Budget MR-grade board for backing panels and low-load work",
+      "description": "Lighter core, thinner face veneers and a lower price. Fine for back panels, shutters that carry no load and site-level temporary work — not for anything that must hold a hinge for a decade.",
+      "specs": {
+        "Bonding": "Urea formaldehyde",
+        "Core": "Mixed / softwood",
+        "Standard": "IS 303 commercial"
+      },
+      "applications": [
+        "Back panels",
+        "Loft storage",
+        "Site mock-ups"
+      ],
+      "thickness": "4, 6, 9, 12, 19 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 303",
+      "warranty": "3–7 years",
+      "tier": "BUDGET",
+      "priceMin": 35,
+      "priceMax": 65,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "plywood texture"
+    },
+    {
+      "name": "Fire-retardant plywood",
+      "blurb": "Chemically treated board for escape routes and public interiors",
+      "description": "Impregnated with fire-retardant chemicals so flame spread is slowed and the board self-extinguishes. Commonly mandated in hotels, offices, hospitals and any interior work near an escape corridor.",
+      "specs": {
+        "Bonding": "Phenolic",
+        "Treatment": "FR chemical impregnation",
+        "Standard": "IS 5509",
+        "Flame spread": "Class 1 rated"
+      },
+      "applications": [
+        "Offices",
+        "Hotels",
+        "Hospitals",
+        "Escape corridors"
+      ],
+      "thickness": "6, 12, 19 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 5509",
+      "warranty": "10–15 years",
+      "tier": "PREMIUM",
+      "priceMin": 110,
+      "priceMax": 190,
+      "priceUnit": "per sq.ft",
+      "fire": true,
+      "use": "Indoor",
+      "image": "plywood panel"
+    },
+    {
+      "name": "Flexible plywood",
+      "blurb": "Bends to a curve without steaming — for columns and curved fronts",
+      "description": "Cross-grain construction lets the sheet roll in one direction. Two layers laminated over a former give a stable curved panel for reception desks, curved bedbacks and column cladding.",
+      "specs": {
+        "Bonding": "MR",
+        "Bend radius": "From ~300 mm",
+        "Core": "Ceiba / poplar"
+      },
+      "applications": [
+        "Curved panels",
+        "Reception desks",
+        "Column cladding",
+        "Bedbacks"
+      ],
+      "thickness": "3, 6, 8 mm",
+      "size": "8×4 ft standard",
+      "warranty": "5 years",
+      "tier": "MID",
+      "priceMin": 70,
+      "priceMax": 130,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "curved wood panel"
+    },
+    {
+      "name": "Shuttering plywood",
+      "blurb": "Film-faced board for concrete formwork, reusable many times",
+      "description": "A phenolic film face lets concrete release cleanly and survives repeated pours. On interior sites it also turns up as a rugged working surface and protection board during the messy trades.",
+      "specs": {
+        "Face": "Phenolic film",
+        "Bonding": "BWP",
+        "Standard": "IS 4990",
+        "Reuse": "8–20 pours"
+      },
+      "applications": [
+        "Formwork",
+        "Site protection",
+        "Temporary works"
+      ],
+      "thickness": "12, 19 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 4990",
+      "tier": "MID",
+      "priceMin": 55,
+      "priceMax": 95,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "shuttering plywood"
+    },
+    {
+      "name": "Blockboard",
+      "blurb": "Softwood-batten core — light and straight over long spans",
+      "description": "Strips of softwood sandwiched between veneers make a board that stays flat across a long shutter and weighs much less than ply. The classic choice for tall wardrobe shutters, door panels and long shelves.",
+      "specs": {
+        "Core": "Softwood battens",
+        "Bonding": "MR / BWP",
+        "Standard": "IS 1659"
+      },
+      "applications": [
+        "Wardrobe shutters",
+        "Door panels",
+        "Long shelves"
+      ],
+      "thickness": "19, 25, 30 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 1659",
+      "warranty": "7–15 years",
+      "tier": "MID",
+      "priceMin": 60,
+      "priceMax": 110,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "blockboard timber"
+    },
+    {
+      "name": "Calibrated plywood",
+      "blurb": "Sanded to an exact thickness — the base for veneer and laminate",
+      "description": "Machine-sanded to a tight thickness tolerance so pressed veneer or laminate lies perfectly flat with no telegraphing. Specify it whenever a high-gloss or veneered face has to look faultless.",
+      "specs": {
+        "Tolerance": "±0.2 mm",
+        "Face": "Sanded both sides",
+        "Bonding": "MR / BWR"
+      },
+      "applications": [
+        "Veneer pressing",
+        "Laminate pressing",
+        "High-gloss panels"
+      ],
+      "thickness": "6, 12, 16, 19 mm",
+      "size": "8×4 ft standard",
+      "tier": "MID",
+      "priceMin": 65,
+      "priceMax": 120,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "sanded plywood"
+    },
+    {
+      "name": "MDF",
+      "blurb": "Dense, uniform fibreboard — the surface for paint and routing",
+      "description": "No grain, no voids and a face smooth enough to spray directly. Ideal for CNC-routed panels, painted shutters and mouldings, but it swells badly if water reaches an unsealed edge.",
+      "specs": {
+        "Density": "700–800 kg/m³",
+        "Core": "Wood fibre + resin",
+        "Standard": "IS 12406",
+        "Edge": "Seal before painting"
+      },
+      "applications": [
+        "Painted shutters",
+        "CNC panels",
+        "Mouldings",
+        "Wall panelling"
+      ],
+      "thickness": "5.5, 9, 12, 18, 25 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 12406",
+      "warranty": "5–7 years",
+      "tier": "BUDGET",
+      "priceMin": 35,
+      "priceMax": 70,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "mdf board"
+    },
+    {
+      "name": "HDHMR",
+      "blurb": "High-density, high-moisture-resistant board — screws like ply, finishes like MDF",
+      "description": "A denser cousin of MDF made to hold fasteners and resist swelling. It has become the default modular-kitchen board where a laminate finish and good screw-holding both matter.",
+      "specs": {
+        "Density": "850–900 kg/m³",
+        "Moisture resistance": "High",
+        "Screw holding": "Comparable to plywood"
+      },
+      "applications": [
+        "Modular kitchens",
+        "Wardrobes",
+        "Wall panels",
+        "Commercial furniture"
+      ],
+      "thickness": "6, 12, 16, 18, 25 mm",
+      "size": "8×4 ft standard",
+      "warranty": "7–10 years",
+      "tier": "MID",
+      "priceMin": 70,
+      "priceMax": 120,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor",
+      "image": "hdf board"
+    },
+    {
+      "name": "HDF",
+      "blurb": "Very dense thin board for laminate flooring cores and back panels",
+      "description": "Denser and harder than MDF, usually seen as the core of laminate flooring or as a rigid thin back panel. Excellent surface hardness, poor tolerance of standing water.",
+      "specs": {
+        "Density": "800–1050 kg/m³",
+        "Typical use": "Flooring core, back panels"
+      },
+      "applications": [
+        "Flooring core",
+        "Back panels",
+        "Door skins"
+      ],
+      "thickness": "2.5, 3, 5.5 mm",
+      "size": "8×4 ft standard",
+      "tier": "BUDGET",
+      "priceMin": 30,
+      "priceMax": 60,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "hardboard"
+    },
+    {
+      "name": "Particle board",
+      "blurb": "Lowest-cost engineered board for flat-pack and low-load furniture",
+      "description": "Wood chips bonded under pressure — cheap, flat and stable in dry conditions. Best kept to flat-pack furniture, office workstations and anywhere the budget will not stretch to HDHMR.",
+      "specs": {
+        "Density": "600–680 kg/m³",
+        "Core": "Wood chips + resin",
+        "Standard": "IS 3087"
+      },
+      "applications": [
+        "Office workstations",
+        "Flat-pack furniture",
+        "Low-load storage"
+      ],
+      "thickness": "9, 12, 17, 25 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 3087",
+      "tier": "BUDGET",
+      "priceMin": 25,
+      "priceMax": 45,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "particle board"
+    },
+    {
+      "name": "Pre-laminated MDF",
+      "blurb": "MDF with the decorative face already pressed on — no site lamination",
+      "description": "Comes out of the factory finished on both faces, so carpentry is cut-and-assemble only. Saves days on fast-track jobs; the trade-off is a fixed palette and edges that must be banded.",
+      "specs": {
+        "Faces": "One or both sides",
+        "Finish": "Melamine",
+        "Edge": "Requires edge banding"
+      },
+      "applications": [
+        "Wardrobes",
+        "Office furniture",
+        "Fast-track fit-outs"
+      ],
+      "thickness": "9, 12, 18, 25 mm",
+      "size": "8×4 ft standard",
+      "tier": "BUDGET",
+      "priceMin": 50,
+      "priceMax": 90,
+      "priceUnit": "per sq.ft",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "laminated board"
+    },
+    {
+      "name": "Pre-laminated particle board",
+      "blurb": "Factory-finished particle board for high-volume, low-cost furniture",
+      "description": "The cheapest finished board on the market and the backbone of budget office furniture. Specify with sealed edges and keep it well away from wet areas.",
+      "specs": {
+        "Faces": "Both sides melamine",
+        "Core": "Particle board",
+        "Standard": "IS 12823"
+      },
+      "applications": [
+        "Office furniture",
+        "Hostel furniture",
+        "Budget storage"
+      ],
+      "thickness": "9, 12, 18, 25 mm",
+      "size": "8×4 ft standard",
+      "standard": "IS 12823",
+      "tier": "BUDGET",
+      "priceMin": 40,
+      "priceMax": 70,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "melamine board"
+    },
+    {
+      "name": "WPC board",
+      "blurb": "Wood-plastic composite — termite-proof and genuinely waterproof",
+      "description": "A PVC-and-wood-flour composite that does not swell, rot or feed termites. It has largely replaced marine ply in bathroom vanities and balcony joinery, though it is softer and holds screws less firmly.",
+      "specs": {
+        "Density": "550–750 kg/m³",
+        "Water absorption": "Negligible",
+        "Termite": "Immune",
+        "Workability": "Cuts like wood"
+      },
+      "applications": [
+        "Bathroom vanities",
+        "Balcony joinery",
+        "Kitchen carcass",
+        "Wall panels"
+      ],
+      "thickness": "6, 12, 16, 18, 25 mm",
+      "size": "8×4 ft standard",
+      "warranty": "10–25 years",
+      "tier": "MID",
+      "priceMin": 85,
+      "priceMax": 150,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "wpc board"
+    },
+    {
+      "name": "PVC foam board",
+      "blurb": "Lightweight rigid foam sheet for wet zones and signage",
+      "description": "All plastic, zero moisture absorption, very light to handle. Good for bathroom shutters, service-duct covers and signage; not suitable where hinges and handles will see heavy daily load.",
+      "specs": {
+        "Density": "450–600 kg/m³",
+        "Water absorption": "Nil",
+        "Screw holding": "Low–moderate"
+      },
+      "applications": [
+        "Bathroom shutters",
+        "Duct covers",
+        "Signage",
+        "Wet-area panels"
+      ],
+      "thickness": "5, 10, 12, 18 mm",
+      "size": "8×4 ft standard",
+      "tier": "BUDGET",
+      "priceMin": 65,
+      "priceMax": 120,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Indoor",
+      "image": "pvc foam sheet"
+    },
+    {
+      "name": "OSB",
+      "blurb": "Oriented strand board — structural sheathing with a graphic face",
+      "description": "Large wood strands bonded in oriented layers make a strong, cheap structural sheet. In interiors it is used as an exposed finish in cafés, studios and industrial-look retail.",
+      "specs": {
+        "Grade": "OSB/2, OSB/3",
+        "Core": "Oriented wood strands",
+        "Structural": "Yes"
+      },
+      "applications": [
+        "Feature walls",
+        "Retail interiors",
+        "Sheathing",
+        "Loft floors"
+      ],
+      "thickness": "9, 12, 18 mm",
+      "size": "8×4 ft standard",
+      "tier": "MID",
+      "priceMin": 60,
+      "priceMax": 110,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "osb board"
+    },
+    {
+      "name": "Bamboo board",
+      "blurb": "Fast-renewable hardwood alternative with a distinctive linear grain",
+      "description": "Compressed bamboo strips give a board harder than most hardwoods, with a fine linear figure that finishes beautifully in oil. A strong sustainability story for worktops, shelving and table tops.",
+      "specs": {
+        "Hardness": "Harder than oak",
+        "Grain": "Vertical / horizontal / strand",
+        "Renewable": "3–5 year cycle"
+      },
+      "applications": [
+        "Worktops",
+        "Shelving",
+        "Table tops",
+        "Wall panels"
+      ],
+      "thickness": "12, 18, 25, 40 mm",
+      "size": "8×4 ft / 2440×1220 mm",
+      "warranty": "10 years",
+      "tier": "PREMIUM",
+      "priceMin": 180,
+      "priceMax": 380,
+      "priceUnit": "per sq.ft",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "bamboo board"
+    },
+    {
+      "name": "Decorative laminate (HPL)",
+      "blurb": "Standard 1 mm high-pressure laminate — the industry default",
+      "description": "Kraft paper layers cured under heat and pressure with a decorative face. The 1 mm sheet is the baseline finish for wardrobes, kitchens and panelling, available in thousands of designs across every major brand.",
+      "specs": {
+        "Construction": "Kraft core + decor + overlay",
+        "Standard": "IS 2046",
+        "Sheet": "8×4 ft",
+        "Post-forming": "Grades available"
+      },
+      "applications": [
+        "Wardrobes",
+        "Kitchens",
+        "Wall panelling",
+        "Office furniture"
+      ],
+      "finish": "Matte / gloss / textured",
+      "thickness": "0.8, 1.0 mm",
+      "size": "8×4 ft (2440×1220 mm)",
+      "standard": "IS 2046",
+      "warranty": "5–10 years",
+      "tier": "MID",
+      "priceMin": 850,
+      "priceMax": 2200,
+      "priceUnit": "per sheet",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "laminate sheet"
+    },
+    {
+      "name": "Solid colour laminate",
+      "blurb": "Flat, even colour with no pattern — the base of every modern palette",
+      "description": "Single-tone sheets in whites, greys, greiges and accent colours. The safest way to hold a scheme together across kitchen shutters, wardrobe fronts and loose furniture from different suppliers.",
+      "specs": {
+        "Decor": "Unicolour",
+        "Colour range": "200+ shades",
+        "Batch": "Order shade-matched"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Retail fixtures"
+      ],
+      "finish": "Matte / suede / gloss",
+      "colour": "Full unicolour range",
+      "thickness": "0.8, 1.0 mm",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 900,
+      "priceMax": 2400,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "colour laminate"
+    },
+    {
+      "name": "Wood-finish laminate",
+      "blurb": "Printed timber grain, from pale oak to dark walnut",
+      "description": "The most-sold decor family in India: real timber photography printed and embossed in register so the texture follows the grain. Gives the warmth of veneer at a fraction of the cost and with none of the polishing.",
+      "specs": {
+        "Decor": "Wood reproduction",
+        "Registration": "Embossed in register (EIR) options",
+        "Grain": "Oak, walnut, teak, ash"
+      },
+      "applications": [
+        "Wardrobes",
+        "TV units",
+        "Bedbacks",
+        "Kitchen shutters"
+      ],
+      "finish": "Woodgrain texture",
+      "texture": "Embossed in register",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 950,
+      "priceMax": 2600,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "wood laminate"
+    },
+    {
+      "name": "Stone & marble finish laminate",
+      "blurb": "Marble and stone reproductions for counters and cladding",
+      "description": "Book-matched marble and stone decors that read convincingly at arm's length. Used where a real slab is out of budget or out of weight limits — vanity fronts, feature walls and lift lobbies.",
+      "specs": {
+        "Decor": "Marble / granite / travertine",
+        "Match": "Book-match ranges available"
+      },
+      "applications": [
+        "Feature walls",
+        "Vanity fronts",
+        "Reception counters"
+      ],
+      "finish": "Matte / high-gloss",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 1100,
+      "priceMax": 3000,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "marble laminate"
+    },
+    {
+      "name": "Fabric-finish laminate",
+      "blurb": "Woven and linen textures for soft, tactile surfaces",
+      "description": "Textile decors with a matching embossed texture, giving panelling the softness of upholstery without the maintenance. Popular on bedbacks, wardrobe shutters and hospitality panelling.",
+      "specs": {
+        "Decor": "Linen / weave / jute",
+        "Texture": "Fabric emboss"
+      },
+      "applications": [
+        "Bedbacks",
+        "Wardrobes",
+        "Hospitality panelling"
+      ],
+      "finish": "Fabric texture",
+      "texture": "Woven emboss",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 1100,
+      "priceMax": 2800,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "fabric texture"
+    },
+    {
+      "name": "Metal-finish laminate",
+      "blurb": "Brushed brass, copper and steel looks without the metal",
+      "description": "Metallic decors — brushed gold, antique copper, gunmetal — printed on standard HPL. All the drama of a metal panel at a tenth of the weight and cost, though they show fingerprints unless specified anti-smudge.",
+      "specs": {
+        "Decor": "Brass / copper / steel / gunmetal",
+        "Care": "Anti-fingerprint variants available"
+      },
+      "applications": [
+        "Bar units",
+        "Feature panels",
+        "Retail fixtures"
+      ],
+      "finish": "Brushed metallic",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 1600,
+      "priceMax": 4200,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "brushed metal"
+    },
+    {
+      "name": "High-gloss laminate",
+      "blurb": "Mirror-level shine for kitchens and hall units",
+      "description": "A high-gloss overlay that reflects light and visually opens small rooms. Beautiful when new and unforgiving thereafter — every swirl mark shows, so pair it with anti-scratch grades and handle-less profiles.",
+      "specs": {
+        "Gloss level": "85–95 GU",
+        "Substrate": "Press on calibrated board",
+        "Care": "Microfibre only"
+      },
+      "applications": [
+        "Kitchen shutters",
+        "TV units",
+        "Wardrobes"
+      ],
+      "finish": "High gloss",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 1800,
+      "priceMax": 4500,
+      "priceUnit": "per sheet",
+      "scratch": false,
+      "use": "Indoor",
+      "image": "glossy panel"
+    },
+    {
+      "name": "Matte laminate",
+      "blurb": "Low-sheen finish that hides marks and reads contemporary",
+      "description": "The current default in premium residential work: a 5–15 gloss unit surface that softens light, hides dust and photographs well. Best paired with anti-fingerprint technology in dark shades.",
+      "specs": {
+        "Gloss level": "5–15 GU",
+        "Feel": "Smooth matte",
+        "Marks": "Hides dust well"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Panelling"
+      ],
+      "finish": "Matte",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 1000,
+      "priceMax": 2800,
+      "priceUnit": "per sheet",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "matte surface"
+    },
+    {
+      "name": "Suede-finish laminate",
+      "blurb": "Velvety, ultra-low-sheen touch surface",
+      "description": "A fine micro-texture that feels like suede under the hand and kills reflection almost entirely. Specify for bedrooms and studies where a hard shine would feel wrong.",
+      "specs": {
+        "Gloss level": "2–8 GU",
+        "Feel": "Velvet micro-texture"
+      },
+      "applications": [
+        "Bedrooms",
+        "Studies",
+        "Wardrobes"
+      ],
+      "finish": "Suede",
+      "texture": "Micro-texture",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 1100,
+      "priceMax": 3000,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "suede texture"
+    },
+    {
+      "name": "Textured laminate",
+      "blurb": "Deep 3D surface texture you can feel — wood pore, slate, ribbed",
+      "description": "Heavy embossing that reproduces sawn timber, riven slate or fine ribs. Adds shadow and depth to large flat runs and disguises the flatness that gives cheap joinery away.",
+      "specs": {
+        "Emboss depth": "Deep",
+        "Patterns": "Wood pore, slate, ribbed, canvas"
+      },
+      "applications": [
+        "Feature walls",
+        "Wardrobes",
+        "Reception fronts"
+      ],
+      "finish": "Textured",
+      "texture": "Deep emboss",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 1200,
+      "priceMax": 3200,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "textured panel"
+    },
+    {
+      "name": "Anti-fingerprint laminate",
+      "blurb": "Dark matte surfaces that stay clean-looking in daily use",
+      "description": "A surface treatment that stops skin oils leaving visible marks — essential on charcoal, navy and black matte shutters, which otherwise look smeared within a week of handover.",
+      "specs": {
+        "Treatment": "Anti-fingerprint coating",
+        "Best on": "Dark matte shades",
+        "Cleaning": "Dry microfibre"
+      },
+      "applications": [
+        "Dark kitchens",
+        "Handle-less shutters",
+        "Wardrobes"
+      ],
+      "finish": "Matte anti-fingerprint",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 1800,
+      "priceMax": 4500,
+      "priceUnit": "per sheet",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "black matte kitchen"
+    },
+    {
+      "name": "Scratch-resistant laminate",
+      "blurb": "Hardened overlay for counters and high-traffic surfaces",
+      "description": "An extra-hard overlay resists the abrasion that ruins ordinary laminate on worktops, study desks and reception counters. Look for the brand's abrasion class rather than a marketing claim.",
+      "specs": {
+        "Abrasion": "AC3–AC5 equivalent",
+        "Overlay": "Hardened",
+        "Standard": "IS 2046 / EN 438"
+      },
+      "applications": [
+        "Worktops",
+        "Desks",
+        "Reception counters",
+        "Commercial furniture"
+      ],
+      "finish": "Matte / textured",
+      "thickness": "1.0, 1.5 mm",
+      "size": "8×4 ft",
+      "standard": "EN 438",
+      "warranty": "7–10 years",
+      "tier": "PREMIUM",
+      "priceMin": 1600,
+      "priceMax": 4000,
+      "priceUnit": "per sheet",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "laminate worktop"
+    },
+    {
+      "name": "Fire-retardant laminate",
+      "blurb": "Class-rated surface for commercial and public interiors",
+      "description": "Meets flame-spread requirements for offices, hotels and hospitals where fire consultants sign off the interior finishes. Same decors as the standard range, with a certified core.",
+      "specs": {
+        "Rating": "Class 1 / EN 13501 B-s1,d0",
+        "Core": "FR kraft"
+      },
+      "applications": [
+        "Offices",
+        "Hotels",
+        "Hospitals",
+        "Public buildings"
+      ],
+      "finish": "Matte / textured",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "standard": "EN 13501",
+      "tier": "PREMIUM",
+      "priceMin": 2000,
+      "priceMax": 4800,
+      "priceUnit": "per sheet",
+      "fire": true,
+      "use": "Indoor",
+      "image": "office interior panel"
+    },
+    {
+      "name": "Exterior laminate",
+      "blurb": "UV-stable compact sheet for façades and balconies",
+      "description": "Weatherproof compact laminate engineered for direct sun and rain, with a warranted colour-fastness period. Used for façade cladding, balcony panels and external signage.",
+      "specs": {
+        "UV": "Colour-fast, warranted",
+        "Core": "Compact, self-supporting",
+        "Fixing": "Mechanical / rivet"
+      },
+      "applications": [
+        "Façade cladding",
+        "Balconies",
+        "External signage"
+      ],
+      "finish": "Matte",
+      "thickness": "6, 8, 10, 12 mm",
+      "size": "8×4 ft / 10×4 ft",
+      "warranty": "10–15 years",
+      "tier": "PREMIUM",
+      "priceMin": 320,
+      "priceMax": 750,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "use": "Outdoor",
+      "image": "facade cladding"
+    },
+    {
+      "name": "Compact laminate",
+      "blurb": "Self-supporting solid sheet — no substrate needed",
+      "description": "Full-thickness HPL that needs no board behind it, with a black or coloured core at the edges. The standard for toilet cubicles, lab counters, lockers and wet-area partitions.",
+      "specs": {
+        "Core": "Solid kraft, through-colour options",
+        "Self-supporting": "Yes",
+        "Standard": "EN 438-4"
+      },
+      "applications": [
+        "Toilet cubicles",
+        "Lockers",
+        "Lab counters",
+        "Wet areas"
+      ],
+      "finish": "Matte",
+      "thickness": "6, 8, 10, 12, 18 mm",
+      "size": "8×4 ft / 10×5 ft",
+      "standard": "EN 438-4",
+      "warranty": "10 years",
+      "tier": "PREMIUM",
+      "priceMin": 280,
+      "priceMax": 700,
+      "priceUnit": "per sq.ft",
+      "water": true,
+      "scratch": true,
+      "use": "Indoor & outdoor",
+      "image": "toilet cubicle"
+    },
+    {
+      "name": "Digital laminate",
+      "blurb": "Your artwork printed to sheet — murals, logos, custom decors",
+      "description": "Digitally printed HPL lets a client's artwork, a brand logo or a bespoke pattern become a durable surface. Minimum order quantities apply, so plan it into the drawing set early.",
+      "specs": {
+        "Print": "Digital, custom artwork",
+        "MOQ": "Typically 5–10 sheets",
+        "Lead time": "2–4 weeks"
+      },
+      "applications": [
+        "Feature walls",
+        "Retail branding",
+        "Kids' rooms"
+      ],
+      "finish": "Matte / gloss",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 2500,
+      "priceMax": 7000,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "printed wall panel"
+    },
+    {
+      "name": "Acrylic laminate",
+      "blurb": "Mirror-gloss acrylic face with depth no HPL can match",
+      "description": "A cast acrylic layer over a board substrate gives a deep, glassy reflection used on premium kitchens and wardrobes. Costs several times a gloss laminate and needs careful edge banding to look right.",
+      "specs": {
+        "Gloss": "95+ GU",
+        "Layer": "Cast acrylic",
+        "Edge": "Matching 2 mm band essential"
+      },
+      "applications": [
+        "Premium kitchens",
+        "Wardrobes",
+        "Vanity units"
+      ],
+      "finish": "High gloss",
+      "thickness": "1.25, 2.0 mm (on 18 mm board)",
+      "size": "8×4 ft",
+      "warranty": "5–10 years",
+      "tier": "PREMIUM",
+      "priceMin": 2800,
+      "priceMax": 6500,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "gloss kitchen"
+    },
+    {
+      "name": "Edge band",
+      "blurb": "PVC or ABS banding that finishes and protects every cut edge",
+      "description": "The detail that separates good joinery from bad: matched banding sealed to the board edge stops moisture ingress and chipping. Specify 0.8 mm for visible edges and 2 mm on shutters that take daily knocks.",
+      "specs": {
+        "Material": "PVC / ABS / acrylic",
+        "Widths": "22, 35, 45 mm",
+        "Application": "Hot-melt or laser edge"
+      },
+      "applications": [
+        "All board edges",
+        "Shutters",
+        "Worktops"
+      ],
+      "thickness": "0.45, 0.8, 1.0, 2.0 mm",
+      "tier": "BUDGET",
+      "priceMin": 6,
+      "priceMax": 45,
+      "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "edge banding"
+    },
+    {
+      "name": "Natural veneer",
+      "blurb": "Sliced from a real log — every leaf unique",
+      "description": "The genuine article: thin timber sliced from a log and laid on board. Colour and figure vary sheet to sheet, so order the full requirement from one bundle and plan the match on the drawing before cutting.",
+      "specs": {
+        "Source": "Sliced natural log",
+        "Match": "Book / slip / random",
+        "Finish": "Requires polishing on site"
+      },
+      "applications": [
+        "Wardrobes",
+        "Panelling",
+        "Doors",
+        "Bedbacks"
+      ],
+      "finish": "Requires PU or melamine polish",
+      "thickness": "0.5 mm on 4 mm / 6 mm ply",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 150,
+      "priceMax": 450,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "natural wood veneer"
+    },
+    {
+      "name": "Reconstituted veneer",
+      "blurb": "Engineered from fast-growing timber for a repeatable grain",
+      "description": "Fast-grown wood is dyed, laminated and re-sliced to a consistent grain, so sheet 40 matches sheet 1. The pragmatic choice for large runs, hotel rooms and anywhere the client cannot tolerate variation.",
+      "specs": {
+        "Source": "Engineered from poplar/ayous",
+        "Consistency": "High, batch-repeatable",
+        "Sustainability": "Fast-growing species"
+      },
+      "applications": [
+        "Hotels",
+        "Large runs",
+        "Office panelling"
+      ],
+      "thickness": "0.5 mm on 4 mm ply",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 110,
+      "priceMax": 260,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "engineered veneer"
+    },
+    {
+      "name": "Engineered veneer",
+      "blurb": "Designed grain patterns unavailable in nature",
+      "description": "Same technology as reconstituted veneer, used deliberately for graphic effect — extra-wide straight grain, tight ripple, colour-shifted greys. Gives a contemporary, controlled look no natural log will hold.",
+      "specs": {
+        "Pattern": "Designed / straight / ripple",
+        "Colours": "Natural and dyed"
+      },
+      "applications": [
+        "Contemporary joinery",
+        "Feature panels",
+        "Retail"
+      ],
+      "thickness": "0.5 mm on 4 mm ply",
+      "size": "8×4 ft",
+      "tier": "MID",
+      "priceMin": 120,
+      "priceMax": 300,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "grey wood grain"
+    },
+    {
+      "name": "Pre-finished veneer",
+      "blurb": "Factory-polished — no site polishing, no smell, no delay",
+      "description": "Arrives sealed and cured in a factory line, so the carpenter cuts, bands and installs with no polishing trade on site. Removes a week of dust and fumes from a live-in renovation.",
+      "specs": {
+        "Finish": "Factory UV / PU cured",
+        "Site work": "None beyond edge banding",
+        "Sheen": "Matte / satin"
+      },
+      "applications": [
+        "Live-in renovations",
+        "Fast-track jobs",
+        "Wardrobes"
+      ],
+      "finish": "Factory-cured matte or satin",
+      "thickness": "On 6 mm / 18 mm board",
+      "size": "8×4 ft",
+      "warranty": "5–7 years",
+      "tier": "PREMIUM",
+      "priceMin": 220,
+      "priceMax": 520,
+      "priceUnit": "per sq.ft",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "polished wood panel"
+    },
+    {
+      "name": "Teak veneer",
+      "blurb": "The Indian classic — warm gold-brown, ages beautifully",
+      "description": "Burma and African teak remain the default premium species in Indian homes, especially for main doors and pooja units. Rich golden brown when new, deepening with age and oil.",
+      "specs": {
+        "Species": "Tectona grandis",
+        "Colour": "Golden brown",
+        "Grain": "Straight to mildly wavy"
+      },
+      "applications": [
+        "Main doors",
+        "Pooja units",
+        "Traditional joinery"
+      ],
+      "colour": "Golden brown",
+      "texture": "Straight grain",
+      "tier": "PREMIUM",
+      "priceMin": 180,
+      "priceMax": 550,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "teak wood"
+    },
+    {
+      "name": "Oak veneer",
+      "blurb": "Open-pore, pale and contemporary — the current favourite",
+      "description": "European and American oak in natural, smoked and white-washed variants. The open pore reads beautifully in matte finishes and suits the pale Scandinavian palettes clients keep asking for.",
+      "specs": {
+        "Species": "Quercus",
+        "Cut": "Crown / quarter / rift",
+        "Pore": "Open"
+      },
+      "applications": [
+        "Wardrobes",
+        "Panelling",
+        "Kitchens",
+        "Bedbacks"
+      ],
+      "colour": "Pale honey to smoked",
+      "texture": "Open pore",
+      "tier": "PREMIUM",
+      "priceMin": 160,
+      "priceMax": 480,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "oak wood grain"
+    },
+    {
+      "name": "Walnut veneer",
+      "blurb": "Deep chocolate brown with dramatic figure",
+      "description": "American walnut brings depth and quiet luxury — the species to specify for a study, a bar or a formal living room. Expensive, and worth planning the layout around so the figure runs continuously.",
+      "specs": {
+        "Species": "Juglans nigra",
+        "Colour": "Chocolate brown",
+        "Figure": "Straight to burl"
+      },
+      "applications": [
+        "Studies",
+        "Bars",
+        "Formal living rooms",
+        "Doors"
+      ],
+      "colour": "Chocolate brown",
+      "tier": "PREMIUM",
+      "priceMin": 220,
+      "priceMax": 700,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "walnut wood"
+    },
+    {
+      "name": "Ash veneer",
+      "blurb": "Very pale, strong grain — excellent under stain",
+      "description": "Almost white with a pronounced grain that takes stain evenly, so it can be pushed grey, black or warm without losing figure. A designer's blank canvas.",
+      "specs": {
+        "Species": "Fraxinus",
+        "Colour": "Cream / pale",
+        "Stain": "Takes evenly"
+      },
+      "applications": [
+        "Stained joinery",
+        "Modern panelling",
+        "Furniture"
+      ],
+      "colour": "Pale cream",
+      "tier": "MID",
+      "priceMin": 140,
+      "priceMax": 380,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "ash wood grain"
+    },
+    {
+      "name": "Maple veneer",
+      "blurb": "Fine, near-uniform grain in a creamy blond",
+      "description": "Subtle and even — used where the timber should recede and the form should lead. Popular in minimal wardrobes and kids' rooms where a busy grain would be a distraction.",
+      "specs": {
+        "Species": "Acer",
+        "Colour": "Creamy blond",
+        "Grain": "Fine, uniform"
+      },
+      "applications": [
+        "Minimal joinery",
+        "Kids' rooms",
+        "Furniture"
+      ],
+      "colour": "Creamy blond",
+      "tier": "MID",
+      "priceMin": 130,
+      "priceMax": 340,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "maple wood"
+    },
+    {
+      "name": "Rosewood veneer",
+      "blurb": "Dark, richly figured Indian classic for statement joinery",
+      "description": "Sheesham and allied species deliver deep purple-brown tones with strong dark streaks. Traditional in Indian homes for door panels and heirloom furniture; check the source paperwork on protected species.",
+      "specs": {
+        "Species": "Dalbergia",
+        "Colour": "Purple-brown, streaked",
+        "Note": "Verify legal sourcing"
+      },
+      "applications": [
+        "Main doors",
+        "Heirloom furniture",
+        "Feature panels"
+      ],
+      "colour": "Dark purple-brown",
+      "tier": "PREMIUM",
+      "priceMin": 250,
+      "priceMax": 800,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "rosewood"
+    },
+    {
+      "name": "Mahogany veneer",
+      "blurb": "Warm reddish brown with a fine ribbon figure",
+      "description": "A traditional joinery timber with a red undertone that warms a room under yellow light. Suits classical detailing, panelled libraries and period-reference work.",
+      "specs": {
+        "Colour": "Reddish brown",
+        "Figure": "Ribbon / straight"
+      },
+      "applications": [
+        "Libraries",
+        "Classical panelling",
+        "Doors"
+      ],
+      "colour": "Reddish brown",
+      "tier": "PREMIUM",
+      "priceMin": 200,
+      "priceMax": 600,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "mahogany wood"
+    },
+    {
+      "name": "Ebony veneer",
+      "blurb": "Near-black timber for the strongest contrast in a scheme",
+      "description": "Dense, dark and expensive — used in slivers rather than sheets. A single ebony reveal or handle detail does more work than an entire wall of a cheaper species.",
+      "specs": {
+        "Colour": "Near black",
+        "Use": "Accents and inlays",
+        "Availability": "Limited"
+      },
+      "applications": [
+        "Inlays",
+        "Accents",
+        "Bar fronts"
+      ],
+      "colour": "Near black",
+      "tier": "PREMIUM",
+      "priceMin": 400,
+      "priceMax": 1200,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "black wood texture"
+    },
+    {
+      "name": "Smoked veneer",
+      "blurb": "Fumed timber — colour driven right through the sheet",
+      "description": "Ammonia fuming darkens the wood chemically rather than with stain, so the tone runs through the leaf and sanding will not expose a pale line. Gives smoked oak its characteristic depth.",
+      "specs": {
+        "Process": "Ammonia fuming",
+        "Depth": "Colour through the leaf",
+        "Species": "Usually oak"
+      },
+      "applications": [
+        "Contemporary joinery",
+        "Feature walls",
+        "Wardrobes"
+      ],
+      "colour": "Smoked grey-brown",
+      "tier": "PREMIUM",
+      "priceMin": 220,
+      "priceMax": 600,
+      "priceUnit": "per sq.ft",
+      "use": "Indoor",
+      "image": "smoked oak"
+    },
+    {
+      "name": "Acrylic sheet",
+      "blurb": "Cast acrylic panel with a glass-like reflection",
+      "description": "A solid cast acrylic layer bonded to board gives the deepest gloss available in modular joinery. Reads almost like lacquered glass, and unlike gloss laminate it can be polished if it scratches.",
+      "specs": {
+        "Gloss": "95+ GU",
+        "Repairable": "Can be re-polished",
+        "Edge": "2 mm matching band"
+      },
+      "applications": [
+        "Premium kitchens",
+        "Wardrobes",
+        "Vanity units"
+      ],
+      "finish": "High gloss",
+      "thickness": "1.0, 1.25 mm on 18 mm board",
+      "size": "8×4 ft",
+      "warranty": "7–10 years",
+      "tier": "PREMIUM",
+      "priceMin": 2800,
+      "priceMax": 6500,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "acrylic gloss panel"
+    },
+    {
+      "name": "PET sheet",
+      "blurb": "Recyclable gloss panel with better scratch behaviour than acrylic",
+      "description": "PET gives a comparable shine to acrylic with a harder, more scratch-tolerant face and a stronger recycling story. Increasingly specified where sustainability is on the client brief.",
+      "specs": {
+        "Material": "Polyethylene terephthalate",
+        "Recyclable": "Yes",
+        "Scratch": "Better than acrylic"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Commercial furniture"
+      ],
+      "finish": "High gloss / matte",
+      "thickness": "0.6, 1.0 mm",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 1600,
+      "priceMax": 3600,
+      "priceUnit": "per sheet",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "pet gloss board"
+    },
+    {
+      "name": "High-gloss panel (pre-laminated)",
+      "blurb": "Board that arrives finished on both faces, edges banded",
+      "description": "A ready-to-fit panel — gloss face, balanced back, matching 2 mm band. Removes the pressing and banding steps from a tight programme and guarantees a factory-flat surface.",
+      "specs": {
+        "Format": "Finished board",
+        "Edges": "Pre-banded options",
+        "Balance": "Backing layer included"
+      },
+      "applications": [
+        "Modular kitchens",
+        "Fast-track fit-outs",
+        "Wardrobes"
+      ],
+      "finish": "High gloss",
+      "thickness": "18 mm board",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 3500,
+      "priceMax": 8000,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "gloss cabinet door"
+    },
+    {
+      "name": "Anti-fingerprint panel",
+      "blurb": "Matte or gloss surface treated to shrug off smudges",
+      "description": "A nano-coating that stops fingerprints registering on dark surfaces. On a handle-less charcoal kitchen this is not a luxury — it is the difference between a photograph and a smear.",
+      "specs": {
+        "Treatment": "Nano anti-fingerprint",
+        "Best on": "Dark shades",
+        "Cleaning": "Dry microfibre"
+      },
+      "applications": [
+        "Handle-less kitchens",
+        "Dark wardrobes",
+        "Vanities"
+      ],
+      "finish": "Matte / gloss",
+      "thickness": "1.0 mm",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 2200,
+      "priceMax": 5000,
+      "priceUnit": "per sheet",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "matte black cabinet"
+    },
+    {
+      "name": "Matte acrylic",
+      "blurb": "The softness of suede with the depth of acrylic",
+      "description": "Acrylic's solid colour depth in a low-sheen finish — currently the most requested premium kitchen surface. Pairs well with fluted timber and stone counters.",
+      "specs": {
+        "Gloss level": "5–10 GU",
+        "Feel": "Soft touch",
+        "Repairable": "Light marks polish out"
+      },
+      "applications": [
+        "Premium kitchens",
+        "Wardrobes",
+        "Bedroom joinery"
+      ],
+      "finish": "Matte",
+      "thickness": "1.0, 1.25 mm",
+      "size": "8×4 ft",
+      "tier": "PREMIUM",
+      "priceMin": 3000,
+      "priceMax": 7000,
+      "priceUnit": "per sheet",
+      "scratch": true,
+      "use": "Indoor",
+      "image": "matte kitchen cabinet"
+    },
+    {
+      "name": "Metallic acrylic",
+      "blurb": "Metal-effect gloss for bars, retail and statement units",
+      "description": "Champagne, bronze and gunmetal acrylics with a mirrored metallic depth. Strong in small doses — a bar front or a single wardrobe bay — and overwhelming across a whole room.",
+      "specs": {
+        "Effect": "Metallic mirror",
+        "Shades": "Champagne, bronze, gunmetal"
+      },
+      "applications": [
+        "Bar units",
+        "Retail",
+        "Accent joinery"
+      ],
+      "finish": "Metallic gloss",
+      "tier": "PREMIUM",
+      "priceMin": 3500,
+      "priceMax": 8500,
+      "priceUnit": "per sheet",
+      "use": "Indoor",
+      "image": "metallic panel"
+    }
+  ]
+}

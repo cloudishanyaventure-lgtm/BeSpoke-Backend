@@ -41,11 +41,37 @@ public class Product {
     @Column(length = 60)
     private String roomType;
 
+    /** The shop's browse rail — a SHOP_CATEGORY option value ("Sofas & seating"). */
+    @Column(length = 120)
+    private String shopCategory;
+
+    /** The sub-type within it — a SHOP_SUBCATEGORY option value ("L-shaped sofa"). */
+    @Column(length = 120)
+    private String shopSubCategory;
+
     @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal price;
 
     @Column(length = 1000)
     private String imageUrl;
+
+    private Integer widthMm;
+    private Integer depthMm;
+    private Integer heightMm;
+    @Column(length = 1000)
+    private String modelUrl;
+    @Column(length = 7)
+    private String finishColor;
+
+    public Integer getWidthMm() { return widthMm; }
+    public Integer getDepthMm() { return depthMm; }
+    public Integer getHeightMm() { return heightMm; }
+    public String getModelUrl() { return modelUrl; }
+    public String getFinishColor() { return finishColor; }
+    public void setSpatialSpec(com.BeSpoke.dto.ProductSpatialSpec spec) {
+        widthMm = spec.widthMm(); depthMm = spec.depthMm(); heightMm = spec.heightMm();
+        modelUrl = spec.modelUrl(); finishColor = spec.finishColor();
+    }
 
     @Column(nullable = false)
     private boolean active = true;
@@ -105,6 +131,22 @@ public class Product {
 
     public void setRoomType(String roomType) {
         this.roomType = roomType;
+    }
+
+    public String getShopCategory() {
+        return shopCategory;
+    }
+
+    public void setShopCategory(String shopCategory) {
+        this.shopCategory = shopCategory;
+    }
+
+    public String getShopSubCategory() {
+        return shopSubCategory;
+    }
+
+    public void setShopSubCategory(String shopSubCategory) {
+        this.shopSubCategory = shopSubCategory;
     }
 
     public BigDecimal getPrice() {

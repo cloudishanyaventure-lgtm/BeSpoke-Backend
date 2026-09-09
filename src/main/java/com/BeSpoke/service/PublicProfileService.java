@@ -4,7 +4,6 @@ import com.BeSpoke.dto.PublicDesignerDto;
 import com.BeSpoke.dto.PublicStudioDto;
 import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.CompanyType;
-import com.BeSpoke.entity.KycStatus;
 import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.StaffProfile;
 import com.BeSpoke.entity.User;
@@ -22,8 +21,15 @@ import java.util.Set;
 
 /**
  * The public directory: studio, vendor and designer profiles for the marketing site.
- * Nothing is listed until its profile is complete — see
- * {@link CompanyService#missingProfileFields} and {@link #missingDesignerFields}.
+ *
+ * <p>Every live company is listed, and each card renders whatever that company has
+ * actually filled in — no cover, no logo, no photo and no styles still gets a card with
+ * its name and city on it. An empty directory helps nobody, and a studio that has just
+ * been onboarded needs to be findable before it has a portfolio to show.
+ * {@link CompanyService#missingProfileFields} and {@link #missingDesignerFields} survive
+ * as the "your card is thin" checklist inside the workspace; they no longer gate
+ * visibility. Note that KYC does not gate listing either — it still gates what matters,
+ * which is {@link com.BeSpoke.entity.Company#canTakeLeads} and selling on the shop.
  */
 @Service
 @Transactional(readOnly = true)
@@ -38,16 +44,13 @@ public class PublicProfileService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final StaffProfileRepository staffProfileRepository;
-    private final CompanyService companyService;
 
     public PublicProfileService(CompanyRepository companyRepository,
                                 UserRepository userRepository,
-                                StaffProfileRepository staffProfileRepository,
-                                CompanyService companyService) {
+                                StaffProfileRepository staffProfileRepository) {
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
         this.staffProfileRepository = staffProfileRepository;
-        this.companyService = companyService;
     }
 
     // ---- companies ----
@@ -61,19 +64,16 @@ public class PublicProfileService {
     }
 
     private List<PublicStudioDto> listed(CompanyType type) {
-        return companyRepository
-                .findByActiveTrueAndTypeAndKycStatusOrderByNameAsc(type, KycStatus.VERIFIED)
-                .stream()
-                .filter(c -> companyService.missingProfileFields(c).isEmpty())
+        return companyRepository.findByActiveTrueAndTypeOrderByNameAsc(type).stream()
                 .map(this::card)
                 .toList();
     }
 
-    /** Full profile by slug — the roster is the designers whose own profile is complete. */
+    /** Full profile by slug. `active` is the only gate — it is the deactivation switch. */
     public PublicStudioDto profile(String slug, CompanyType type) {
         Company company = companyRepository.findBySlug(slug)
                 .filter(c -> c.getType() == type)
-                .filter(companyService::listedPublicly)
+                .filter(Company::isActive)
                 .orElseThrow(() -> new NotFoundException("Profile not found"));
         User lead = lead(company);
         return PublicStudioDto.from(company, lead == null ? null : lead.getName(),
@@ -89,8 +89,22 @@ public class PublicProfileService {
                 teamSize(company), null);
     }
 
-    /** The top authority we front the card with: the director, else the most senior designer. */
+    /**
+     * Who fronts the company's card. The company's own choice wins — a studio with six
+     * designers decides which face customers meet. Falls back to the top authority
+     * (director, else the most senior designer) when nobody has been nominated, or when
+     * the nominee has since left or been deactivated.
+     */
     private User lead(Company company) {
+        User chosen = company.getFeaturedDesignerId() == null ? null
+                : userRepository.findById(company.getFeaturedDesignerId())
+                        .filter(User::isActive)
+                        .filter(u -> u.getCompany() != null
+                                && u.getCompany().getId().equals(company.getId()))
+                        .orElse(null);
+        if (chosen != null) {
+            return chosen;
+        }
         for (Role role : LEAD_ROLES) {
             User match = userRepository.findByCompanyAndRole(company, role).stream()
                     .filter(User::isActive).findFirst().orElse(null);
@@ -111,10 +125,8 @@ public class PublicProfileService {
     public List<PublicDesignerDto> designers() {
         List<PublicDesignerDto> all = new ArrayList<>();
         for (Company company : companyRepository
-                .findByActiveTrueAndTypeAndKycStatusOrderByNameAsc(CompanyType.DESIGN, KycStatus.VERIFIED)) {
-            if (companyService.missingProfileFields(company).isEmpty()) {
-                all.addAll(designersOf(company));
-            }
+                .findByActiveTrueAndTypeOrderByNameAsc(CompanyType.DESIGN)) {
+            all.addAll(designersOf(company));
         }
         return all;
     }
@@ -122,17 +134,20 @@ public class PublicProfileService {
     public PublicDesignerDto designer(Long userId) {
         User user = userRepository.findById(userId)
                 .filter(u -> u.isActive() && DESIGNER_ROLES.contains(u.getRole()))
-                .filter(u -> u.getCompany() != null && companyService.listedPublicly(u.getCompany()))
+                .filter(u -> u.getCompany() != null && u.getCompany().isActive())
                 .orElseThrow(() -> new NotFoundException("Designer not found"));
         StaffProfile profile = staffProfileRepository.findByUser(user)
                 .filter(StaffProfile::isActive)
                 .orElseThrow(() -> new NotFoundException("Designer not found"));
-        if (!missingDesignerFields(user, profile).isEmpty()) {
-            throw new NotFoundException("Designer not found");
-        }
         return toDto(user, profile);
     }
 
+    /**
+     * Active client-facing staff. A blank bio or a missing headshot no longer hides
+     * someone — the DTO carries nulls and the page simply omits what isn't there. The
+     * one thing still required is an active {@link StaffProfile}: that record is what
+     * makes them a person the company has put forward rather than just a login.
+     */
     private List<PublicDesignerDto> designersOf(Company company) {
         List<PublicDesignerDto> designers = new ArrayList<>();
         for (Role role : LEAD_ROLES) {
@@ -141,8 +156,7 @@ public class PublicProfileService {
                     continue;
                 }
                 StaffProfile profile = staffProfileRepository.findByUser(user).orElse(null);
-                if (profile == null || !profile.isActive()
-                        || !missingDesignerFields(user, profile).isEmpty()) {
+                if (profile == null || !profile.isActive()) {
                     continue;
                 }
                 designers.add(toDto(user, profile));
@@ -152,8 +166,9 @@ public class PublicProfileService {
     }
 
     /**
-     * Human names of the fields a designer must fill before their card goes live.
-     * Public and static-ish so the "complete your profile" banner reads the same rule.
+     * Human names of the public fields a designer has left blank. Advisory now, not a
+     * gate: the workspace shows it as "your card is thin", and the site shows the card
+     * either way with whatever they did fill.
      */
     public List<String> missingDesignerFields(User user, StaffProfile profile) {
         List<String> missing = new ArrayList<>();

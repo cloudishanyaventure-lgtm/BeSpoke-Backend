@@ -16,6 +16,13 @@ Environment=DB_USERNAME=postgres
 Environment=DB_PASSWORD=postgres
 Environment=JWT_SECRET=change-me-to-a-long-random-string-at-least-32-bytes
 Environment=CORS_ALLOWED_ORIGINS=http://localhost:3000
+# GCS bucket for uploaded images. Leave blank and they are written to
+# /opt/bespoke/uploads on this VM instead — where they are one `rm -rf` or one
+# rebuilt VM away from gone. See "Image uploads" in DEPLOY.md.
+Environment=STORAGE_BUCKET=
+# Only needed if this VM's own service account cannot write to the bucket
+# (see DEPLOY.md option B). Path to a service-account JSON on this machine.
+#Environment=GOOGLE_APPLICATION_CREDENTIALS=/opt/bespoke/gcs-key.json
 # ------------------------------------
 ExecStart=/usr/bin/java $JAVA_OPTS -jar /opt/bespoke/app.jar
 SuccessExitStatus=143

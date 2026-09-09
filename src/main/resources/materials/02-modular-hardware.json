@@ -1,0 +1,570 @@
+{
+  "slug": "modular-hardware",
+  "name": "Modular Hardware",
+  "tagline": "Hinges, drawers and channels — and the handles on top of them",
+  "description": "Hardware is where a kitchen quietly succeeds or fails. Boards last; it is the hinge that sags and the channel that grinds after two years. This section follows the way the major brands structure their own catalogues — hinges, drawer systems and channels, each specified by load, opening angle and closing behaviour — and finishes with the handles and knobs the client actually touches every day.",
+  "image": "cabinet hinge",
+  "brands": [
+    "Hettich",
+    "Häfele",
+    "Blum",
+    "Godrej",
+    "Kesseböhmer",
+    "Ebco",
+    "Dorset",
+    "Ozone",
+    "Kich",
+    "Sugatsune"
+  ],
+  "materials": [
+    {
+      "name": "Soft-close hinge",
+      "blurb": "Integrated damper — the shutter never slams",
+      "description": "A hydraulic damper built into the hinge cup slows the last few degrees of travel. Now the baseline expectation on any paid kitchen job; the cheap non-damped alternative is false economy.",
+      "specs": {
+        "Damping": "Integrated hydraulic",
+        "Cup": "35 mm",
+        "Cycles": "80,000+ tested",
+        "Adjustment": "3-way"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Vanities"
+      ],
+      "warranty": "5–10 years",
+      "tier": "MID",
+      "priceMin": 120,
+      "priceMax": 450,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "soft close hinge"
+    },
+    {
+      "name": "Concealed hinge",
+      "blurb": "Hidden inside the carcass — nothing visible when closed",
+      "description": "The standard European cup hinge, invisible with the door shut and adjustable in three planes after installation. Everything else in modular joinery is built around its 35 mm cup.",
+      "specs": {
+        "Cup": "35 mm",
+        "Overlay": "Full / half / inset",
+        "Adjustment": "Height, depth, side"
+      },
+      "applications": [
+        "All modular joinery"
+      ],
+      "tier": "BUDGET",
+      "priceMin": 60,
+      "priceMax": 220,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "concealed hinge"
+    },
+    {
+      "name": "Push-to-open hinge",
+      "blurb": "Handle-less operation — press the shutter and it opens",
+      "description": "A mechanical or magnetic latch releases the door on a light press, which is what makes a truly handle-less kitchen possible. Needs consistent gapping, so it demands better site accuracy than a handled scheme.",
+      "specs": {
+        "Mechanism": "Mechanical / magnetic",
+        "Gap": "Requires 2–3 mm consistent reveal",
+        "Pairs with": "Handle-less design"
+      },
+      "applications": [
+        "Handle-less kitchens",
+        "Minimal wardrobes",
+        "TV units"
+      ],
+      "tier": "MID",
+      "priceMin": 250,
+      "priceMax": 750,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "handleless cabinet"
+    },
+    {
+      "name": "90° hinge",
+      "blurb": "Restricted opening for tight corners and appliance clearances",
+      "description": "Limits the shutter to a right angle so it cannot foul an adjacent wall, appliance or window reveal. A detail worth catching at drawing stage rather than on site.",
+      "specs": {
+        "Opening": "90°",
+        "Use": "Restricted clearance"
+      },
+      "applications": [
+        "Corner units",
+        "Appliance housings",
+        "Tight reveals"
+      ],
+      "tier": "MID",
+      "priceMin": 180,
+      "priceMax": 520,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cabinet hardware"
+    },
+    {
+      "name": "110° hinge",
+      "blurb": "The everyday opening angle for standard shutters",
+      "description": "The volume seller: enough swing for comfortable access without the shutter projecting into a walkway. Specify it as the default and use wider angles only where drawers must clear.",
+      "specs": {
+        "Opening": "110°",
+        "Overlay": "Full / half / inset"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Storage"
+      ],
+      "tier": "BUDGET",
+      "priceMin": 70,
+      "priceMax": 260,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "kitchen hinge"
+    },
+    {
+      "name": "155° hinge",
+      "blurb": "Wide opening so internal drawers clear the shutter",
+      "description": "Needed wherever a pull-out basket or internal drawer sits behind a hinged door — at 110° the shutter blocks the run. Also used on corner and pantry units.",
+      "specs": {
+        "Opening": "155°",
+        "Use": "Internal drawers, pantry units"
+      },
+      "applications": [
+        "Pantry units",
+        "Internal drawers",
+        "Corner cabinets"
+      ],
+      "tier": "MID",
+      "priceMin": 250,
+      "priceMax": 700,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "pantry cabinet"
+    },
+    {
+      "name": "165° hinge",
+      "blurb": "Near-flat opening for bi-fold and blind-corner units",
+      "description": "Opens almost against the carcass, which is what a blind-corner or bi-fold arrangement needs to give full access. Heavier and dearer, so use it only where the geometry demands it.",
+      "specs": {
+        "Opening": "165°",
+        "Use": "Bi-fold, blind corner"
+      },
+      "applications": [
+        "Blind corners",
+        "Bi-fold shutters"
+      ],
+      "tier": "MID",
+      "priceMin": 300,
+      "priceMax": 850,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "corner cabinet"
+    },
+    {
+      "name": "Tandem drawer",
+      "blurb": "Concealed under-mount runners with full extension and soft close",
+      "description": "The runner sits under the drawer box and disappears from view, giving a clean interior and full access to the back. The current benchmark for a mid-to-premium kitchen.",
+      "specs": {
+        "Extension": "Full",
+        "Load": "30–50 kg",
+        "Runner": "Concealed under-mount",
+        "Closing": "Soft close"
+      },
+      "applications": [
+        "Kitchen drawers",
+        "Wardrobe internals",
+        "Vanities"
+      ],
+      "warranty": "10 years",
+      "tier": "PREMIUM",
+      "priceMin": 1800,
+      "priceMax": 6500,
+      "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "kitchen drawer"
+    },
+    {
+      "name": "Slim drawer system",
+      "blurb": "Thin metal sides that maximise usable width",
+      "description": "A slim steel side profile replaces a thick timber box, so more of the cabinet opening becomes storage. Looks precise and modern with a matching internal organiser.",
+      "specs": {
+        "Side": "Slim steel",
+        "Load": "30–40 kg",
+        "Closing": "Soft close"
+      },
+      "applications": [
+        "Kitchens",
+        "Vanities",
+        "Wardrobe internals"
+      ],
+      "tier": "PREMIUM",
+      "priceMin": 2200,
+      "priceMax": 7500,
+      "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "drawer system"
+    },
+    {
+      "name": "Double-wall drawer",
+      "blurb": "Steel-sided box that assembles fast and stays square",
+      "description": "The drawer box arrives as a metal system rather than built on site — quicker to install, dimensionally exact and easy to add railings or glass sides to.",
+      "specs": {
+        "Construction": "Double-wall steel",
+        "Load": "30–50 kg",
+        "Options": "Railing, glass side"
+      },
+      "applications": [
+        "Kitchens",
+        "Utility",
+        "Wardrobes"
+      ],
+      "tier": "PREMIUM",
+      "priceMin": 2000,
+      "priceMax": 7000,
+      "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "metal drawer"
+    },
+    {
+      "name": "Heavy-duty drawer",
+      "blurb": "Rated for 60–100 kg — grain storage and appliance drawers",
+      "description": "Reinforced runners for the drawers that get loaded hard: grain and pulse storage, tool drawers and pull-out appliance platforms. Check the rating against a full drawer, not an empty one.",
+      "specs": {
+        "Load": "60–100 kg",
+        "Extension": "Full",
+        "Runner": "Ball-bearing / under-mount"
+      },
+      "applications": [
+        "Grain storage",
+        "Utility",
+        "Workshops",
+        "Appliance drawers"
+      ],
+      "tier": "PREMIUM",
+      "priceMin": 2500,
+      "priceMax": 9000,
+      "priceUnit": "per set",
+      "use": "Indoor",
+      "image": "heavy duty drawer"
+    },
+    {
+      "name": "Under-mount channel",
+      "blurb": "Runner hidden beneath the drawer base",
+      "description": "Nothing visible from inside the drawer, so the box reads as one clean volume. Requires accurate carcass work — the tolerance for error is far smaller than with a side-mounted channel.",
+      "specs": {
+        "Mount": "Under drawer base",
+        "Extension": "Full",
+        "Closing": "Soft close"
+      },
+      "applications": [
+        "Premium kitchens",
+        "Vanities"
+      ],
+      "tier": "PREMIUM",
+      "priceMin": 900,
+      "priceMax": 3200,
+      "priceUnit": "per pair",
+      "use": "Indoor",
+      "image": "drawer runner"
+    },
+    {
+      "name": "Telescopic channel",
+      "blurb": "Ball-bearing side channel — the everyday workhorse",
+      "description": "The most common drawer runner in India: side-mounted, full extension, easy to fit and easy to replace. Good value where the drawer interior will not be on show.",
+      "specs": {
+        "Mount": "Side",
+        "Extension": "Full",
+        "Load": "35–45 kg",
+        "Lengths": "250–600 mm"
+      },
+      "applications": [
+        "Kitchens",
+        "Office furniture",
+        "Storage"
+      ],
+      "tier": "BUDGET",
+      "priceMin": 250,
+      "priceMax": 900,
+      "priceUnit": "per pair",
+      "use": "Indoor",
+      "image": "telescopic channel"
+    },
+    {
+      "name": "Soft-close channel",
+      "blurb": "Telescopic channel with a damper on the closing stroke",
+      "description": "Adds the damped final travel to a standard side channel — the cheapest way to give a budget kitchen the feel clients associate with premium hardware.",
+      "specs": {
+        "Mount": "Side",
+        "Closing": "Soft close",
+        "Load": "35–45 kg"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Storage"
+      ],
+      "tier": "MID",
+      "priceMin": 450,
+      "priceMax": 1400,
+      "priceUnit": "per pair",
+      "use": "Indoor",
+      "image": "soft close drawer"
+    },
+    {
+      "name": "Push-open channel",
+      "blurb": "Handle-less drawers that release on a press",
+      "description": "The drawer equivalent of a push-to-open hinge, needed to keep a handle-less run consistent. Combine with soft close so it does not fly back at the user.",
+      "specs": {
+        "Mechanism": "Press to release",
+        "Closing": "Soft close variants",
+        "Reveal": "2–3 mm consistent"
+      },
+      "applications": [
+        "Handle-less kitchens",
+        "Minimal furniture"
+      ],
+      "tier": "PREMIUM",
+      "priceMin": 1200,
+      "priceMax": 3800,
+      "priceUnit": "per pair",
+      "use": "Indoor",
+      "image": "handleless drawer"
+    },
+    {
+      "name": "Concealed channel",
+      "blurb": "Runner tucked into the drawer side, out of sight",
+      "description": "A middle path between the visible telescopic channel and a full under-mount system: cleaner than the former, cheaper than the latter, and forgiving of ordinary site accuracy.",
+      "specs": {
+        "Mount": "Concealed side",
+        "Extension": "Full / three-quarter"
+      },
+      "applications": [
+        "Wardrobe internals",
+        "Kitchens"
+      ],
+      "tier": "MID",
+      "priceMin": 700,
+      "priceMax": 2400,
+      "priceUnit": "per pair",
+      "use": "Indoor",
+      "image": "cabinet drawer"
+    },
+    {
+      "name": "Cabinet handle (D / bar)",
+      "blurb": "The standard pull, from 96 mm to 1200 mm centres",
+      "description": "A straightforward bar or D-pull in stainless, aluminium or brass. Get the centre spacing right against the shutter width — a handle that is too short makes a tall wardrobe door look stubby.",
+      "specs": {
+        "Centres": "96–1200 mm",
+        "Material": "SS / aluminium / brass",
+        "Fixing": "Two-point screw"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Vanities"
+      ],
+      "finish": "Brushed / matte black / brass",
+      "tier": "MID",
+      "priceMin": 150,
+      "priceMax": 2500,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cabinet bar handle"
+    },
+    {
+      "name": "Profile handle",
+      "blurb": "Continuous aluminium profile fixed along the shutter edge",
+      "description": "Runs the full width of the shutter and reads as a line rather than an object. Keeps a long kitchen run visually calm and is far more forgiving than push-to-open on site tolerances.",
+      "specs": {
+        "Length": "Cut to shutter width",
+        "Material": "Anodised aluminium",
+        "Mount": "Edge / surface"
+      },
+      "applications": [
+        "Kitchens",
+        "Wardrobes",
+        "Handle-less schemes"
+      ],
+      "finish": "Anodised silver / black / champagne",
+      "tier": "MID",
+      "priceMin": 250,
+      "priceMax": 1200,
+      "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "profile handle kitchen"
+    },
+    {
+      "name": "G-profile handle",
+      "blurb": "Recessed G-section that gives a grip without projecting",
+      "description": "The G-shape is fixed behind the shutter top edge so nothing sticks out into the room. The default handle-less detail for kitchens where push-to-open is judged too fussy.",
+      "specs": {
+        "Section": "G",
+        "Projection": "Nil",
+        "Material": "Aluminium"
+      },
+      "applications": [
+        "Handle-less kitchens",
+        "Base units"
+      ],
+      "finish": "Anodised / matte black",
+      "tier": "MID",
+      "priceMin": 300,
+      "priceMax": 1400,
+      "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "handleless kitchen profile"
+    },
+    {
+      "name": "Edge profile handle",
+      "blurb": "L or J section fitted to the shutter edge itself",
+      "description": "The profile becomes the shutter edge, so the joinery reads as a single plane. Best with matte finishes; a gloss edge profile shows every knock.",
+      "specs": {
+        "Section": "L / J",
+        "Fixing": "Screwed to shutter edge"
+      },
+      "applications": [
+        "Minimal kitchens",
+        "Wardrobes"
+      ],
+      "finish": "Anodised / black / gold",
+      "tier": "MID",
+      "priceMin": 280,
+      "priceMax": 1300,
+      "priceUnit": "per metre",
+      "use": "Indoor",
+      "image": "kitchen edge profile"
+    },
+    {
+      "name": "Knob",
+      "blurb": "Single-point pull for small shutters and drawers",
+      "description": "One screw, endless variety — ceramic, brass, wood, leather-wrapped. Right for small drawers and traditional schemes; wrong for anything heavy that needs two hands.",
+      "specs": {
+        "Fixing": "Single screw",
+        "Material": "Brass / ceramic / wood / SS",
+        "Diameter": "20–45 mm"
+      },
+      "applications": [
+        "Small drawers",
+        "Traditional furniture",
+        "Bathroom units"
+      ],
+      "tier": "BUDGET",
+      "priceMin": 80,
+      "priceMax": 1800,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "cabinet knob"
+    },
+    {
+      "name": "Leather handle",
+      "blurb": "Stitched leather strap — warm, tactile, hospitality-grade",
+      "description": "A leather pull softens a hard scheme and ages well if it is real hide rather than PU. Popular on bedroom joinery and boutique hospitality work.",
+      "specs": {
+        "Material": "Full-grain leather / PU",
+        "Fixing": "Screw-through with cap",
+        "Colours": "Tan, black, cognac"
+      },
+      "applications": [
+        "Bedroom joinery",
+        "Hospitality",
+        "Wardrobes"
+      ],
+      "finish": "Natural leather",
+      "tier": "PREMIUM",
+      "priceMin": 600,
+      "priceMax": 4500,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "leather handle"
+    },
+    {
+      "name": "Brass handle",
+      "blurb": "Solid brass in antique, satin or unlacquered finishes",
+      "description": "Real brass has weight in the hand that plated steel never fakes. Unlacquered brass will patina — a feature if the client is told, a complaint if they are not.",
+      "specs": {
+        "Material": "Solid brass",
+        "Finish": "Antique / satin / unlacquered",
+        "Note": "Unlacquered patinas over time"
+      },
+      "applications": [
+        "Statement joinery",
+        "Classic interiors",
+        "Bar units"
+      ],
+      "finish": "Antique / satin brass",
+      "tier": "PREMIUM",
+      "priceMin": 500,
+      "priceMax": 6000,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "brass handle"
+    },
+    {
+      "name": "Aluminium handle",
+      "blurb": "Light, corrosion-free and the cheapest clean-looking option",
+      "description": "Extruded and anodised aluminium keeps cost down without looking cheap, and it will not rust in a coastal flat. Softer than steel, so it dents if treated roughly.",
+      "specs": {
+        "Material": "Anodised aluminium",
+        "Weight": "Light",
+        "Corrosion": "Excellent"
+      },
+      "applications": [
+        "Kitchens",
+        "Coastal projects",
+        "Budget joinery"
+      ],
+      "finish": "Anodised",
+      "tier": "BUDGET",
+      "priceMin": 100,
+      "priceMax": 900,
+      "priceUnit": "per piece",
+      "water": true,
+      "use": "Indoor",
+      "image": "aluminium handle"
+    },
+    {
+      "name": "Stainless steel handle",
+      "blurb": "SS 304 pulls that survive kitchens and coastal air",
+      "description": "The dependable specification: 304-grade stainless resists kitchen grease, cleaning chemicals and salt air. Insist on 304 rather than 202, which will spot within a year near the sea.",
+      "specs": {
+        "Grade": "SS 304",
+        "Finish": "Brushed / mirror",
+        "Corrosion": "High resistance"
+      },
+      "applications": [
+        "Kitchens",
+        "Commercial",
+        "Coastal projects"
+      ],
+      "finish": "Brushed steel",
+      "warranty": "5–10 years",
+      "tier": "MID",
+      "priceMin": 200,
+      "priceMax": 2200,
+      "priceUnit": "per piece",
+      "water": true,
+      "use": "Indoor & outdoor",
+      "image": "stainless steel handle"
+    },
+    {
+      "name": "Invisible / recessed handle",
+      "blurb": "Machined pocket in the shutter — nothing added at all",
+      "description": "A finger recess routed into the shutter face or edge, so the joinery has no hardware on it whatsoever. Requires CNC work and a finish that will survive being touched in one spot forever.",
+      "specs": {
+        "Type": "Routed recess / inset pull",
+        "Fabrication": "CNC",
+        "Finish": "Must be durable at the touch point"
+      },
+      "applications": [
+        "Minimal joinery",
+        "Feature walls",
+        "Premium wardrobes"
+      ],
+      "tier": "PREMIUM",
+      "priceMin": 400,
+      "priceMax": 3500,
+      "priceUnit": "per piece",
+      "use": "Indoor",
+      "image": "recessed handle cabinet"
+    }
+  ]
+}

@@ -69,6 +69,16 @@ lead atomically (signing up IS the lead) and returns `{token, user, leadId}`.
 | POST | `/api/my/quotes/{id}/decision` | `{decision: APPROVED\|CHANGES_REQUESTED, comment?}` (quote must be SENT) |
 | GET | `/api/my/invoices` | Invoices + payments (drafts hidden) |
 | GET/POST | `/api/my/messages` | Thread with the studio; GET marks staff messages read |
+| GET | `/api/my/room-plans` | Customer-owned Room Lab concepts, newest first |
+| POST | `/api/my/room-plans` | Create a version-one Room Lab concept |
+| PUT | `/api/my/room-plans/{id}` | Optimistic-lock update; sends `version` and returns 409 when stale |
+
+### Notifications (authenticated)
+
+| GET | `/api/notifications` | Latest 100 user-scoped notifications |
+| GET | `/api/notifications/unread-count` | `{unread}` badge count |
+| POST | `/api/notifications/{id}/read` | Marks one notification read; cross-user ids return 404 |
+| POST | `/api/notifications/read-all` | Marks the current user's notifications read |
 
 ### Staff (ADMIN sees all; DESIGNER only their assigned leads/projects — others 404)
 
@@ -76,6 +86,7 @@ lead atomically (signing up IS the lead) and returns `{token, user, leadId}`.
 |---|---|---|
 | GET | `/api/leads?stage=&q=&assigned=` | Funnel list with score + formStatus |
 | GET | `/api/leads/{id}` | `{lead, form, activities, quotes}` |
+| GET | `/api/leads/{id}/room-plans` | Room Lab concepts saved by that lead's customer |
 | POST | `/api/leads/{id}/activities` | `{type: NOTE\|CALL\|MEETING, body}` |
 | PUT | `/api/leads/{id}/stage` | `{stage, reason?}`. Designers: CONTACTED..NEGOTIATION only. WON needs an assigned designer and auto-creates the project + 6 milestones; LOST logs the reason |
 | PUT | `/api/leads/{id}/follow-up` | `{at}` (null clears) |

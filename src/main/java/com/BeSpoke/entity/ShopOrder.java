@@ -23,6 +23,12 @@ import java.util.List;
 @Entity
 @Table(name = "shop_orders") // "orders" would clash with SQL ORDER
 public class ShopOrder {
+    @Column(length = 80) private String checkoutKey;
+    @Column(length = 64) private String checkoutFingerprint;
+    public String getCheckoutKey() { return checkoutKey; }
+    public String getCheckoutFingerprint() { return checkoutFingerprint; }
+    public void setCheckoutKey(String value) { checkoutKey = value; }
+    public void setCheckoutFingerprint(String value) { checkoutFingerprint = value; }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

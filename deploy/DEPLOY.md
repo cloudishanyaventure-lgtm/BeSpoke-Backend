@@ -94,6 +94,100 @@ curl http://EXTERNAL_IP:8080/   # hit any real endpoint from your API
 
 ---
 
+## Image uploads (GCS)
+
+Logos, covers, portfolio photos and drawings are uploaded through the CRM. With
+`STORAGE_BUCKET` unset they are written to `/opt/bespoke/uploads` on this VM —
+fine for a first look, but they are lost whenever the VM is rebuilt, and they are
+served off the API host rather than a CDN. Point them at a bucket instead.
+
+### 1. Create the bucket and make it publicly readable
+
+Uploaded images are shown to anonymous visitors on bespokedesign.in, so the
+objects have to be world-readable. `--uniform-bucket-level-access` is the modern
+default and is why the app sets **no** per-object ACLs — public read comes from
+this one IAM binding.
+
+```bash
+gcloud config set project YOUR_PROJECT_ID
+
+# Bucket names are globally unique. asia-south1 = Mumbai, closest to your users.
+gcloud storage buckets create gs://bespoke-uploads \
+  --location=asia-south1 --uniform-bucket-level-access
+
+# Anyone can read an object; nobody anonymous can write or list.
+gcloud storage buckets add-iam-policy-binding gs://bespoke-uploads \
+  --member=allUsers --role=roles/storage.objectViewer
+```
+
+### 2. Let the backend write to it
+
+**Option A — the VM's own service account (recommended, no key file).**
+A default GCE VM only gets *read-only* storage scope, so it must be widened
+once, which needs a stop/start:
+
+```bash
+SA=$(gcloud compute instances describe bespoke-vm \
+  --format='get(serviceAccounts[0].email)')
+
+gcloud storage buckets add-iam-policy-binding gs://bespoke-uploads \
+  --member="serviceAccount:$SA" --role=roles/storage.objectAdmin
+
+gcloud compute instances stop bespoke-vm
+gcloud compute instances set-service-account bespoke-vm \
+  --service-account="$SA" --scopes=cloud-platform
+gcloud compute instances start bespoke-vm
+```
+
+**Option B — a service-account key file** (use when the app runs anywhere that
+isn't a GCP instance):
+
+```bash
+gcloud iam service-accounts create bespoke-uploads --display-name="BeSpoke uploads"
+SA=bespoke-uploads@YOUR_PROJECT_ID.iam.gserviceaccount.com
+
+gcloud storage buckets add-iam-policy-binding gs://bespoke-uploads \
+  --member="serviceAccount:$SA" --role=roles/storage.objectAdmin
+
+gcloud iam service-accounts keys create gcs-key.json --iam-account="$SA"
+gcloud compute scp gcs-key.json bespoke-vm:~
+gcloud compute ssh bespoke-vm --command '
+  sudo mv ~/gcs-key.json /opt/bespoke/gcs-key.json &&
+  sudo chown bespoke:bespoke /opt/bespoke/gcs-key.json &&
+  sudo chmod 600 /opt/bespoke/gcs-key.json'
+```
+
+Then uncomment `GOOGLE_APPLICATION_CREDENTIALS` in `bespoke.service`.
+
+### 3. Switch it on
+
+```bash
+sudo nano /etc/systemd/system/bespoke.service   # STORAGE_BUCKET=bespoke-uploads
+sudo systemctl daemon-reload && sudo systemctl restart bespoke
+sudo journalctl -u bespoke | grep UPLOADS
+```
+
+That last line is the whole check. You want:
+
+```
+[UPLOADS] enabled — writing to gs://bespoke-uploads/uploads/
+```
+
+If instead you see `credentials could not be resolved`, step 2 didn't take —
+the app keeps working and falls back to local disk rather than failing uploads,
+so this log line is the only thing that tells you. If you see
+`app.storage.bucket is not set`, step 3 didn't take.
+
+Upload an image from the CRM and the URL stored against it should now read
+`https://storage.googleapis.com/bespoke-uploads/uploads/<uuid>.png` — open it in
+a private window to confirm it is genuinely public.
+
+> Images uploaded *before* this change are stored as URLs pointing at this VM.
+> They are not migrated; re-upload them, or copy `/opt/bespoke/uploads` into the
+> bucket and rewrite those DB values.
+
+---
+
 ## Redeploying after code changes
 
 ```bash

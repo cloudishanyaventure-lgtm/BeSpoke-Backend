@@ -19,4 +19,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     List<Company> findAllByOrderByCreatedAtDesc();
 
     List<Company> findByActiveTrueAndTypeAndKycStatusOrderByNameAsc(CompanyType type, KycStatus kycStatus);
+
+    /** Everyone of a type who is live. The public directory lists all of these. */
+    List<Company> findByActiveTrueAndTypeOrderByNameAsc(CompanyType type);
 }

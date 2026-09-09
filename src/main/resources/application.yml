@@ -2,14 +2,14 @@ spring:
   application:
     name: designconnect-backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/be_spoke
-    username: bespokeuser
-    password: Ritikrox@18
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/be_spoke}
+    username: ${DB_USERNAME:bespokeuser}
+    password: ${DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 6MB
+      max-file-size: 20MB
+      max-request-size: 21MB
   jpa:
     hibernate:
       # Hibernate owns the schema.
@@ -62,6 +62,18 @@ app:
     enabled: false
     from: "BeSpoke <noreply@bespokedesign.in>"
     app-url: "http://localhost:3000"
+    # Where BeSpoke's own notifications land (new partner signups). Read by humans,
+    # so it is contact@ — noreply@ above is only ever the From.
+    internal: "contact@bespokedesign.in"
+  inbox:
+    # Polls contact@bespokedesign.in over IMAP and turns each unread mail into a lead.
+    # Off locally: set app.inbox.enabled + password (contact@'s Google App Password) to try it.
+    enabled: false
+    host: imap.gmail.com
+    port: 993
+    username: "contact@bespokedesign.in"
+    password: ""
+    poll-ms: 120000
   google:
     # Dev: set GOOGLE_CLIENT_ID to try Google sign-in locally. Blank = hidden.
     client-id: ${GOOGLE_CLIENT_ID:}
@@ -69,3 +81,12 @@ app:
     # AES-256-GCM key for message bodies at rest (base64, exactly 32 bytes).
     # Dev default - production supplies CRYPTO_KEY (see application-prod.yml).
     key: "8Zq2mJ0xR7vT1cN5bK9wY3sD6fH4gL8pA2eU7iO0rQ4="
+  storage:
+    # Blank = write uploads to ./uploads on this machine, which is what you want
+    # locally. Set it to a GCS bucket name and uploads go there instead; credentials
+    # come from GOOGLE_APPLICATION_CREDENTIALS (a service-account JSON).
+    bucket: ""
+    # Only used by the local-disk path: the origin those files are reachable on.
+    # Stored image URLs must be absolute — they are read back by the public website,
+    # which is a different origin from this API.
+    public-base-url: "http://localhost:8080"

@@ -13,7 +13,10 @@ public record CreateProductRequest(
         @Size(max = 2000) String description,
         @NotBlank @Pattern(regexp = "DESIGNS|FURNITURE|MATERIALS") String category,
         @Size(max = 60) String roomType,
+        @Size(max = 120) String shopCategory,
+        @Size(max = 120) String shopSubCategory,
         @NotNull @Positive BigDecimal price,
-        @Size(max = 1000) String imageUrl
+        @Size(max = 1000) String imageUrl,
+        @jakarta.validation.Valid ProductSpatialSpec spatial
 ) {
 }

@@ -37,17 +37,20 @@ public class InvoiceService {
     private final ProjectRepository projectRepository;
     private final ProjectMilestoneRepository projectMilestoneRepository;
     private final LeadActivityRepository leadActivityRepository;
+    private final MailService mailService;
 
     public InvoiceService(InvoiceRepository invoiceRepository,
                           InvoicePaymentRepository invoicePaymentRepository,
                           ProjectRepository projectRepository,
                           ProjectMilestoneRepository projectMilestoneRepository,
-                          LeadActivityRepository leadActivityRepository) {
+                          LeadActivityRepository leadActivityRepository,
+                          MailService mailService) {
         this.invoiceRepository = invoiceRepository;
         this.invoicePaymentRepository = invoicePaymentRepository;
         this.projectRepository = projectRepository;
         this.projectMilestoneRepository = projectMilestoneRepository;
         this.leadActivityRepository = leadActivityRepository;
+        this.mailService = mailService;
     }
 
     /** Studio scoping: directors touch only their own company's invoices; admins everything. */
@@ -98,6 +101,12 @@ public class InvoiceService {
         invoice = invoiceRepository.save(invoice);
         leadActivityRepository.save(new LeadActivity(invoice.getProject().getLead(), admin,
                 ActivityType.SYSTEM, "Invoice " + invoice.getNumber() + " sent"));
+        if (invoice.getProject().getClient() != null) {
+            // totalOf, not getAmount(): the customer must read the same GST-inclusive
+            // figure in the mail that /my/payments shows them.
+            mailService.invoiceSent(invoice.getProject().getClient(), invoice.getNumber(),
+                    InvoiceDto.totalOf(invoice).toPlainString(), invoice.getDueDate());
+        }
         return toDto(invoice);
     }
 

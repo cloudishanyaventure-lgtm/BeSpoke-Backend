@@ -52,7 +52,7 @@ public class TeamChatService {
         Company company = requireCompany(actor);
         List<TeamContactDto> contacts = new ArrayList<>();
         for (User user : userRepository.findByCompanyOrderByCreatedAtDesc(company)) {
-            if (user.getId().equals(actor.getId()) || !user.getRole().isStaff()) {
+            if (user.getId().equals(actor.getId()) || !WorkHierarchy.activeColleague(actor, user)) {
                 continue;
             }
             contacts.add(new TeamContactDto(
@@ -97,7 +97,7 @@ public class TeamChatService {
 
     /** Team chat belongs to a company: customers and platform accounts have no team. */
     private Company requireCompany(User actor) {
-        if (!actor.getRole().isStaff() || actor.getCompany() == null) {
+        if (!WorkHierarchy.activeColleague(actor, actor)) {
             throw new ForbiddenException("Team chat is only for company staff");
         }
         return actor.getCompany();
@@ -111,8 +111,7 @@ public class TeamChatService {
         }
         User other = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Colleague not found"));
-        if (other.getCompany() == null || !other.getCompany().getId().equals(company.getId())
-                || !other.getRole().isStaff()) {
+        if (!WorkHierarchy.activeColleague(actor, other)) {
             throw new NotFoundException("Colleague not found");
         }
         return other;

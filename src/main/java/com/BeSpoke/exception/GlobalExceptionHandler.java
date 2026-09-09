@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, Object>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
-        return body(HttpStatus.BAD_REQUEST, "File exceeds the 5MB size limit");
+        return body(HttpStatus.BAD_REQUEST, "File exceeds the upload limit (images: 5MB; 3D models: 20MB)");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -76,6 +76,11 @@ public class GlobalExceptionHandler {
         body.put("error", "Validation failed");
         body.put("fieldErrors", fieldErrors);
         return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<Map<String, Object>> handleConcurrentUpdate(Exception ex) {
+        return body(HttpStatus.CONFLICT, "This record changed on another device. Reload before saving again.");
     }
 
     @ExceptionHandler(Exception.class)

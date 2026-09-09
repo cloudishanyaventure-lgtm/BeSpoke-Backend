@@ -72,7 +72,10 @@ public class VendorService {
                 ProductCategory.valueOf(request.category()), request.price());
         product.setDescription(request.description());
         product.setRoomType(request.roomType());
+        product.setShopCategory(request.shopCategory());
+        product.setShopSubCategory(request.shopSubCategory());
         product.setImageUrl(request.imageUrl());
+        if (request.spatial() != null) product.setSpatialSpec(request.spatial());
         product = productRepository.save(product);
         auditService.log(actor, vendor, "PRODUCT_ADDED",
                 "Product \"" + product.getName() + "\" added to the shop");
@@ -98,6 +101,12 @@ public class VendorService {
         if (request.roomType() != null) {
             product.setRoomType(request.roomType());
         }
+        if (request.shopCategory() != null) {
+            product.setShopCategory(request.shopCategory());
+        }
+        if (request.shopSubCategory() != null) {
+            product.setShopSubCategory(request.shopSubCategory());
+        }
         if (request.price() != null) {
             product.setPrice(request.price());
         }
@@ -107,6 +116,7 @@ public class VendorService {
         if (request.active() != null) {
             product.setActive(request.active());
         }
+        if (request.spatial() != null) product.setSpatialSpec(request.spatial());
         product = productRepository.save(product);
         auditService.log(actor, vendor, "PRODUCT_UPDATED",
                 "Product \"" + product.getName() + "\" updated" + (product.isActive() ? "" : " (inactive)"));
@@ -134,8 +144,14 @@ public class VendorService {
         if (current == OrderStatus.DELIVERED || current == OrderStatus.CANCELLED) {
             throw new BadRequestException("Order is already " + current.name().toLowerCase());
         }
-        if (target != OrderStatus.CANCELLED && target.ordinal() <= current.ordinal()) {
-            throw new BadRequestException("Order status can only move forward");
+        OrderStatus next = switch (current) {
+            case NEW -> OrderStatus.CONFIRMED;
+            case CONFIRMED -> OrderStatus.SHIPPED;
+            case SHIPPED -> OrderStatus.DELIVERED;
+            default -> null;
+        };
+        if (target != OrderStatus.CANCELLED && target != next) {
+            throw new BadRequestException("The next order status is " + next);
         }
         order.setStatus(target);
         order = shopOrderRepository.save(order);

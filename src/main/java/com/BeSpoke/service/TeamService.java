@@ -256,6 +256,7 @@ public class TeamService {
                 user.getRole().name(), user.getCity(),
                 profile != null ? profile.getTitle() : null,
                 profile != null ? profile.getDept().name() : null,
+                user.getAvatarUrl(),
                 user.isActive(), openLeads, activeProjects,
                 user.getCompany() != null ? user.getCompany().getName() : null);
     }

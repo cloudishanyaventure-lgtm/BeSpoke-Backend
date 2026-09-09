@@ -44,6 +44,13 @@ import java.util.List;
 @Component
 public class SeedRunner implements CommandLineRunner {
 
+    @org.springframework.beans.factory.annotation.Value("${app.seed.demo-enabled:true}")
+    private boolean demoEnabled;
+    @org.springframework.beans.factory.annotation.Value("${app.bootstrap.admin-email:}")
+    private String bootstrapEmail;
+    @org.springframework.beans.factory.annotation.Value("${app.bootstrap.admin-password:}")
+    private String bootstrapPassword;
+
     private static final Logger log = LoggerFactory.getLogger(SeedRunner.class);
 
     private final UserRepository userRepository;
@@ -85,11 +92,34 @@ public class SeedRunner implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        // Preserve the existing constraint while accepting the work hub's new states.
+        jdbcTemplate.execute("ALTER TABLE staff_tasks DROP CONSTRAINT IF EXISTS staff_tasks_status_check");
+        jdbcTemplate.execute("ALTER TABLE staff_tasks ADD CONSTRAINT staff_tasks_status_check CHECK (status IN ('OPEN','IN_PROGRESS','BLOCKED','DONE'))");
         // ddl-auto:update never rewrites enum check constraints, so drop the
         // stale users_role_check before touching role values. The V2 renames
         // and column defaults are plain idempotent SQL.
         jdbcTemplate.execute("ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check");
         jdbcTemplate.update("UPDATE users SET role='SALES_MANAGER' WHERE role='SALES'");
+        // Same story for the two enums whose values were replaced wholesale: a DB created
+        // before the funnel rewrite still enforces the old LeadStatus/OrderStatus lists and
+        // rejects every new lead. Drop first, then remap the rows onto the new names.
+        jdbcTemplate.execute("ALTER TABLE leads DROP CONSTRAINT IF EXISTS leads_status_check");
+        jdbcTemplate.execute("ALTER TABLE leads DROP CONSTRAINT IF EXISTS leads_source_check");
+        jdbcTemplate.execute("ALTER TABLE shop_orders DROP CONSTRAINT IF EXISTS shop_orders_status_check");
+        int movedLeads = jdbcTemplate.update("UPDATE leads SET status = CASE status"
+                + " WHEN 'ENQUIRY' THEN 'NEW_INQUIRY' WHEN 'UNASSIGNED_PAID' THEN 'NEW_INQUIRY'"
+                + " WHEN 'ASSIGNED' THEN 'CONTACTED' WHEN 'APPROVED' THEN 'CONTACTED'"
+                + " WHEN 'IN_PROGRESS' THEN 'WON' WHEN 'COMPLETED' THEN 'WON'"
+                + " WHEN 'REJECTED' THEN 'LOST' END"
+                + " WHERE status IN ('ENQUIRY','UNASSIGNED_PAID','ASSIGNED','APPROVED',"
+                + "'IN_PROGRESS','COMPLETED','REJECTED')");
+        int movedOrders = jdbcTemplate.update("UPDATE shop_orders SET status ="
+                + " CASE status WHEN 'CREATED' THEN 'NEW' WHEN 'PAID' THEN 'CONFIRMED' END"
+                + " WHERE status IN ('CREATED','PAID')");
+        if (movedLeads > 0 || movedOrders > 0) {
+            log.info("Migrated {} lead(s) and {} order(s) off the pre-funnel status names",
+                    movedLeads, movedOrders);
+        }
         jdbcTemplate.update("UPDATE companies SET type='DESIGN' WHERE type IS NULL");
         // Grandfather pre-V2 companies; new companies are created with an explicit PENDING.
         jdbcTemplate.update("UPDATE companies SET kyc_status='VERIFIED' WHERE kyc_status IS NULL");
@@ -117,10 +147,27 @@ public class SeedRunner implements CommandLineRunner {
         if (policies > 0) {
             log.info("Published {} policy document(s) — editable at /admin/policies", policies);
         }
-        seedTeam();
-        ensureSuperAdmin();
-        migrateLegacyDataToDefaultStudio();
+        if (demoEnabled) {
+            seedTeam();
+            ensureSuperAdmin();
+            migrateLegacyDataToDefaultStudio();
+        } else {
+            bootstrapProductionAdmin();
+        }
         seedRoomCatalog();
+    }
+
+    private void bootstrapProductionAdmin() {
+        if (userRepository.countByRoleAndActiveTrue(Role.SUPER_ADMIN) > 0) return;
+        String email = bootstrapEmail.trim().toLowerCase(java.util.Locale.ROOT);
+        if (!email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+") || bootstrapPassword.length() < 16) {
+            throw new IllegalStateException("First startup requires BOOTSTRAP_ADMIN_EMAIL and BOOTSTRAP_ADMIN_PASSWORD (at least 16 characters)");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalStateException("Bootstrap email belongs to an existing account; choose a new administrator email");
+        }
+        staff("Platform administrator", email, bootstrapPassword, Role.SUPER_ADMIN, null, null, null);
+        log.info("Created initial platform administrator; bootstrap credentials can now be removed from the environment");
     }
 
     /**

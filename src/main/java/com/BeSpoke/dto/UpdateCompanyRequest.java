@@ -23,6 +23,17 @@ public record UpdateCompanyRequest(
         List<String> styles,
         List<String> portfolioUrls,
         @Size(max = 20) String accentColor,
+        List<String> vendorCategories,
+        @Size(max = 30) String gstin,
+        @Size(max = 30) String pan,
+        @Size(max = 30) String cin,
+        @Size(max = 255) String registeredName,
+        @Size(max = 500) String officeAddress,
+        /** The GST address. Ignored when gstSameAsOffice is true — officeAddress is copied. */
+        @Size(max = 500) String gstAddress,
+        Boolean gstSameAsOffice,
+        /** Who fronts the public Designers tab; must be active staff of this company. */
+        Long featuredDesignerId,
         Boolean active
 ) {
 }

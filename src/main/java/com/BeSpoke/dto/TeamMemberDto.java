@@ -13,6 +13,8 @@ public record TeamMemberDto(
         String city,
         String title,
         String dept,
+        /** Their public headshot — the featured-designer picker shows faces, not just names. */
+        String avatarUrl,
         boolean active,
         Long openLeads,
         Long activeProjects,

@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+    // Lock the user row alone: eager nullable company/reporting joins cannot be locked in PostgreSQL.
+    @org.springframework.data.jpa.repository.Query(value = "select id from users where id = :id for update", nativeQuery = true)
+    Optional<Long> lockForCheckout(@org.springframework.data.repository.query.Param("id") Long id);
 
     Optional<User> findByEmail(String email);
 
