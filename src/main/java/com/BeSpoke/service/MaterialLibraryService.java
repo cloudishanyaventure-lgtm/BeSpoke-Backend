@@ -55,11 +55,21 @@ public class MaterialLibraryService {
         List<MaterialCategory> categories = includeInactive
                 ? categoryRepository.findAllByOrderBySortOrderAscNameAsc()
                 : categoryRepository.findByActiveTrueOrderBySortOrderAscNameAsc();
+        // Three queries total, not two per category — this endpoint is public.
+        java.util.Map<Long, Long> counts = materialRepository.countActiveByCategory().stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        row -> (Long) row[0], row -> (Long) row[1]));
+        java.util.Map<String, List<MaterialBrandDto>> brandsBySlug = new java.util.HashMap<>();
+        for (var brand : brandRepository.findActiveWithCategories()) {
+            for (var brandCategory : brand.getCategories()) {
+                brandsBySlug.computeIfAbsent(brandCategory.getSlug(), k -> new ArrayList<>())
+                        .add(MaterialBrandDto.brief(brand));
+            }
+        }
         return categories.stream()
                 .map(c -> MaterialCategoryDto.from(c,
-                        materialRepository.countByCategoryIdAndActiveTrue(c.getId()),
-                        brandRepository.findByCategorySlug(c.getSlug()).stream()
-                                .map(MaterialBrandDto::brief).toList()))
+                        counts.getOrDefault(c.getId(), 0L),
+                        brandsBySlug.getOrDefault(c.getSlug(), List.of())))
                 .toList();
     }
 

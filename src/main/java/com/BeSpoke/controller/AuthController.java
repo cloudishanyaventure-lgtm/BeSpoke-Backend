@@ -66,6 +66,22 @@ public class AuthController {
                 request.email(), request.code(), request.password()));
     }
 
+    /** DPDP account deletion, step 1 — same generic 200 whether or not the email exists. */
+    @PostMapping("/account-deletion/request")
+    public ResponseEntity<Map<String, String>> requestAccountDeletion(
+            @Valid @RequestBody OtpRequest request) {
+        authService.requestAccountDeletion(request.email());
+        return ResponseEntity.ok(Map.of("message", "If that email exists, we've sent a code."));
+    }
+
+    /** Step 2 — the code proves ownership; the account is deactivated and anonymised. */
+    @PostMapping("/account-deletion/confirm")
+    public ResponseEntity<Map<String, String>> confirmAccountDeletion(
+            @Valid @RequestBody OtpVerifyRequest request) {
+        authService.confirmAccountDeletion(request.email(), request.code());
+        return ResponseEntity.ok(Map.of("message", "Your account has been deleted."));
+    }
+
     @PostMapping("/google")
     public ResponseEntity<AuthResponse> google(@Valid @RequestBody GoogleLoginRequest request) {
         return ResponseEntity.ok(

@@ -55,6 +55,7 @@ public class QuoteService {
     @Transactional
     public QuoteDto create(User actor, CreateQuoteRequest request) {
         Lead lead = leadService.scopedLead(actor, request.leadId());
+        leadRepository.lockRow(lead.getId());
         int version = quoteRepository.findFirstByLeadOrderByVersionDesc(lead)
                 .map(q -> q.getVersion() + 1).orElse(1);
         Quote quote = new Quote();
@@ -99,6 +100,7 @@ public class QuoteService {
     @Transactional
     public QuoteDto revise(User admin, Long quoteId) {
         Quote source = requireQuote(admin, quoteId);
+        leadRepository.lockRow(source.getLead().getId());
         int version = quoteRepository.findFirstByLeadOrderByVersionDesc(source.getLead())
                 .map(q -> q.getVersion() + 1).orElse(source.getVersion() + 1);
         Quote copy = new Quote();
@@ -154,6 +156,8 @@ public class QuoteService {
         if (quote.getStatus() != QuoteStatus.SENT) {
             throw new ConflictException("This quote is not awaiting a decision");
         }
+        if(quote.getValidUntil()!=null && quote.getValidUntil().isBefore(java.time.LocalDate.now()))throw new ConflictException("This proposal expired. Ask your studio for a new version");
+        if(quoteRepository.findFirstByLeadOrderByVersionDesc(lead).filter(q->q.getId().equals(quote.getId())).isEmpty())throw new ConflictException("A newer proposal exists");
         quote.setDecidedAt(Instant.now());
         if ("APPROVED".equals(request.decision())) {
             quote.setStatus(QuoteStatus.APPROVED);

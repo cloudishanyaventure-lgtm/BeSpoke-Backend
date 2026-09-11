@@ -80,18 +80,20 @@ public class InvoiceService {
             }
             invoice.setMilestone(milestone);
         }
-        invoice.setNumber(nextNumber());
+        invoice.setNumber("DRAFT-"+java.util.UUID.randomUUID());
         invoice.setTitle(request.title().trim());
         invoice.setAmount(request.amount());
         invoice.setGstPct(request.gstPct());
         invoice.setDueDate(request.dueDate());
         invoice.setStatus(InvoiceStatus.DRAFT);
-        invoice = invoiceRepository.save(invoice);
+        invoice = invoiceRepository.saveAndFlush(invoice);
+        invoice.setNumber("INV-"+java.time.Year.now()+"-"+String.format("%06d",invoice.getId()));
         return toDto(invoice);
     }
 
     @Transactional
     public InvoiceDto send(User admin, Long invoiceId) {
+        invoiceRepository.lockRow(invoiceId).orElseThrow(()->new NotFoundException("Invoice not found"));
         Invoice invoice = requireInvoice(invoiceId);
         checkScope(admin, invoice.getProject());
         if (invoice.getStatus() != InvoiceStatus.DRAFT) {
@@ -112,8 +114,20 @@ public class InvoiceService {
 
     @Transactional
     public InvoiceDto recordPayment(User admin, Long invoiceId, RecordPaymentRequest request) {
+        invoiceRepository.lockRow(invoiceId).orElseThrow(()->new NotFoundException("Invoice not found"));
         Invoice invoice = requireInvoice(invoiceId);
         checkScope(admin, invoice.getProject());
+        if(request.idempotencyKey()!=null&&!request.idempotencyKey().isBlank()){
+            var previous=invoicePaymentRepository.findByInvoiceAndIdempotencyKey(invoice,request.idempotencyKey());
+            if(previous.isPresent()){
+                var p=previous.get();
+                if(p.getAmount().compareTo(request.amount())!=0 || !p.getMode().name().equals(request.mode()) || !java.util.Objects.equals(p.getReference(),request.reference()))
+                    throw new ConflictException("Payment retry does not match the original request");
+                return toDto(invoice);
+            }
+        }
+        BigDecimal existingPaid=invoicePaymentRepository.findByInvoiceOrderByPaidAtAsc(invoice).stream().map(InvoicePayment::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
+        if(request.amount().compareTo(InvoiceDto.totalOf(invoice).subtract(existingPaid))>0)throw new BadRequestException("Payment exceeds the outstanding balance");
         if (invoice.getStatus() == InvoiceStatus.DRAFT) {
             throw new ConflictException("Send the invoice before recording payments");
         }
@@ -122,6 +136,7 @@ public class InvoiceService {
         }
         InvoicePayment payment = new InvoicePayment();
         payment.setInvoice(invoice);
+        payment.setIdempotencyKey(request.idempotencyKey());
         payment.setAmount(request.amount());
         payment.setMode(PaymentMode.valueOf(request.mode()));
         payment.setReference(request.reference());
@@ -139,6 +154,11 @@ public class InvoiceService {
         leadActivityRepository.save(new LeadActivity(invoice.getProject().getLead(), admin,
                 ActivityType.SYSTEM, "Payment of ₹" + request.amount().toPlainString()
                 + " recorded against " + invoice.getNumber()));
+        if (invoice.getProject().getClient() != null) {
+            mailService.paymentReceived(invoice.getProject().getClient(), invoice.getNumber(),
+                    request.amount().toPlainString(),
+                    InvoiceDto.totalOf(invoice).subtract(paid).max(BigDecimal.ZERO).toPlainString());
+        }
         return toDto(invoice);
     }
 
@@ -173,17 +193,4 @@ public class InvoiceService {
                 .orElseThrow(() -> new NotFoundException("Invoice not found"));
     }
 
-    /** "INV-" + zero-padded sequence, continuing from the latest issued number. */
-    private String nextNumber() {
-        int next = invoiceRepository.findFirstByOrderByIdDesc()
-                .map(invoice -> {
-                    try {
-                        return Integer.parseInt(invoice.getNumber().replace("INV-", "")) + 1;
-                    } catch (NumberFormatException ex) {
-                        return (int) invoiceRepository.count() + 1;
-                    }
-                })
-                .orElse(1);
-        return String.format("INV-%04d", next);
-    }
 }

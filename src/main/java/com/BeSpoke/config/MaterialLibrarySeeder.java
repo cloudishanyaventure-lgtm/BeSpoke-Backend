@@ -37,6 +37,7 @@ import java.util.Map;
  * category file in ships new content.
  */
 @Component
+@org.springframework.core.annotation.Order(2) // after SeedRunner, before SqlMigrationRunner(10)
 public class MaterialLibrarySeeder implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(MaterialLibrarySeeder.class);

@@ -31,6 +31,7 @@ import java.util.List;
 public class RequirementService {
 
     private final LeadRepository leadRepository;
+    private final CustomerContextService context;
     private final RequirementFormRepository requirementFormRepository;
     private final QuoteRepository quoteRepository;
     private final LeadActivityRepository leadActivityRepository;
@@ -38,12 +39,14 @@ public class RequirementService {
     private final MailService mailService;
 
     public RequirementService(LeadRepository leadRepository,
+                              CustomerContextService context,
                               RequirementFormRepository requirementFormRepository,
                               QuoteRepository quoteRepository,
                               LeadActivityRepository leadActivityRepository,
                               ScoreService scoreService,
                               MailService mailService) {
         this.leadRepository = leadRepository;
+        this.context=context;
         this.requirementFormRepository = requirementFormRepository;
         this.quoteRepository = quoteRepository;
         this.leadActivityRepository = leadActivityRepository;
@@ -52,8 +55,7 @@ public class RequirementService {
     }
 
     public Lead myLead(User customer) {
-        return leadRepository.findFirstByCustomerOrderByCreatedAtDesc(customer)
-                .orElseThrow(() -> new NotFoundException("No lead found for your account"));
+        return context.selected(customer);
     }
 
     @Transactional(readOnly = true)

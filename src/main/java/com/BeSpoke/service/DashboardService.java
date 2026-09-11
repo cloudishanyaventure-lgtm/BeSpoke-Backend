@@ -103,14 +103,17 @@ public class DashboardService {
                 .map(InvoicePayment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // Reuse the batch fetch above instead of one query per invoice.
+        java.util.Map<Long, BigDecimal> paidByInvoice = payments.stream()
+                .collect(java.util.stream.Collectors.groupingBy(p -> p.getInvoice().getId(),
+                        java.util.stream.Collectors.reducing(BigDecimal.ZERO,
+                                InvoicePayment::getAmount, BigDecimal::add)));
         BigDecimal outstanding = BigDecimal.ZERO;
         for (Invoice invoice : allInvoices) {
             if (invoice.getStatus() != InvoiceStatus.SENT) {
                 continue;
             }
-            BigDecimal paid = invoicePaymentRepository.findByInvoiceOrderByPaidAtAsc(invoice).stream()
-                    .map(InvoicePayment::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal paid = paidByInvoice.getOrDefault(invoice.getId(), BigDecimal.ZERO);
             outstanding = outstanding.add(
                     com.BeSpoke.dto.InvoiceDto.totalOf(invoice).subtract(paid));
         }

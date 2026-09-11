@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 /**
  * Floor and space are mandatory (§9) so every drawing lines up with the brief.
  * {@code title} may be blank when {@code requirementRoomId} is given — the service then
- * derives "&lt;room&gt; — &lt;floor&gt;" plus a (v2), (v3)… revision suffix.
+ * derives "&lt;room&gt; — &lt;floor&gt;". previousRevisionId creates a new numbered version.
  */
 public record CreateDrawingRequest(
         @Size(max = 200) String title,
@@ -14,6 +14,7 @@ public record CreateDrawingRequest(
         @NotBlank @Size(max = 120) String spaceLabel,
         @NotBlank @Size(max = 1000) String fileUrl,
         @Size(max = 1000) String notes,
-        Long requirementRoomId
+        Long requirementRoomId,
+        Long previousRevisionId
 ) {
 }

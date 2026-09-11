@@ -42,6 +42,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // Authorization must follow today's role/company, not yesterday's token claims.
                 users.findByEmail(email).filter(com.BeSpoke.entity.User::isActive)
                         .filter(u -> !u.getRole().isStaff() || com.BeSpoke.service.WorkHierarchy.activeColleague(u, u))
+                        // A password reset evicts every session issued before it.
+                        .filter(u -> u.getCredentialsChangedAt() == null
+                                || claims.getIssuedAt() == null
+                                || !claims.getIssuedAt().toInstant().isBefore(u.getCredentialsChangedAt()))
                         .ifPresent(user -> {
                             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                                     email, null, List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));

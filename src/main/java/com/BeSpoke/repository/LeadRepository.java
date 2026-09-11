@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LeadRepository extends JpaRepository<Lead, Long> {
+    @org.springframework.data.jpa.repository.Query(value="select id from leads where id=:id for update",nativeQuery=true)
+    Optional<Long> lockRow(@org.springframework.data.repository.query.Param("id")Long id);
 
     Optional<Lead> findFirstByCustomerOrderByCreatedAtDesc(User customer);
 
@@ -40,4 +42,8 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
     List<Lead> findByCompanyOrderByCreatedAtDesc(Company company);
 
     long countByCompanyAndStatusNotIn(Company company, Collection<LeadStatus> excluded);
+
+    long countByCompanyIsNullAndStatusNot(LeadStatus status);
+
+    long countByStatusNotIn(Collection<LeadStatus> excluded);
 }

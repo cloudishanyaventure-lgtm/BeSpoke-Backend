@@ -211,6 +211,41 @@ public class MailService {
                                         + " stays exactly as it is.")));
     }
 
+    /** DPDP account deletion: the code that confirms the request really came from the owner. */
+    public void accountDeletionCode(User user, String code) {
+        send(user.getEmail(), "Confirm deletion of your BeSpoke account",
+                "Hi " + user.getName() + ",\n\n"
+                        + "We received a request to delete your BeSpoke account. Your"
+                        + " confirmation code is: " + code + " . It expires in 10 minutes.\n\n"
+                        + "If you didn't ask for this, ignore this email — nothing happens"
+                        + " without the code.\n\n"
+                        + "— BeSpoke",
+                page("Your account-deletion confirmation code, valid for 10 minutes.",
+                        "Account deletion",
+                        h("Confirm it's you,", user.getName() + "."),
+                        p("Enter this code to permanently delete your BeSpoke account."
+                                + " This cannot be undone.")
+                                + code(code, "Expires in 10 minutes")
+                                + note("If you didn't ask for this, ignore this email —"
+                                        + " your account stays exactly as it is.")));
+    }
+
+    /** Sent to the original address after the account row has been anonymised. */
+    public void accountDeleted(String email, String name) {
+        send(email, "Your BeSpoke account has been deleted",
+                "Hi " + name + ",\n\n"
+                        + "Your BeSpoke account and its personal data have been deleted."
+                        + " Records we must keep for legal or accounting reasons (such as"
+                        + " invoices) are retained without your login details.\n\n"
+                        + "— BeSpoke",
+                page("Your account has been deleted.",
+                        "Account deleted",
+                        h("Goodbye,", name + "."),
+                        p("Your account and personal data are gone. Records we must keep for"
+                                + " legal or accounting reasons are retained without your"
+                                + " login details. You're welcome back any time.")));
+    }
+
     public void passwordChanged(User user) {
         send(user.getEmail(), "Your BeSpoke password was changed",
                 "Hi " + user.getName() + ",\n\n"
@@ -516,6 +551,26 @@ public class MailService {
                                 + button(appUrl + "/my/payments", "View invoice")));
     }
 
+    public void paymentReceived(User customer, String number, String amount, String outstanding) {
+        notifyInApp(customer, "Payment received",
+                "₹" + amount + " received against invoice " + number + ".", "/my/payments");
+        send(customer.getEmail(), "Payment received — invoice " + number,
+                "Hi " + customer.getName() + ",\n\n"
+                        + "We've recorded a payment of ₹" + amount + " against invoice " + number + ".\n"
+                        + "Outstanding balance: ₹" + outstanding + ".\n"
+                        + appUrl + "/my/payments\n\n"
+                        + "— BeSpoke",
+                page("Payment of ₹" + amount + " received.",
+                        "Payment received",
+                        h("Payment", "received"),
+                        p("Thank you — your payment has been recorded. Your ledger reflects it"
+                                + " already, along with anything still outstanding.")
+                                + facts("Invoice", number,
+                                        "Received", "₹ " + amount,
+                                        "Outstanding", "₹ " + outstanding)
+                                + button(appUrl + "/my/payments", "View payment ledger")));
+    }
+
     public void orderPlaced(User customer, String vendorName, String total) {
         notifyInApp(customer, "Order placed", "Your order with " + vendorName + " has been placed.", "/my/orders");
         send(customer.getEmail(), "Your BeSpoke order is confirmed",
@@ -599,7 +654,7 @@ public class MailService {
 
     /** Called by DrawingService when a drawing is approved (V3 §5). */
     public void drawingApproved(User customer, String title) {
-        notifyInApp(customer, "Design ready for your approval", title, "/my/designs");
+        // DrawingService persists the in-app notification with the design transaction.
         send(customer.getEmail(), "A new design is ready to view",
                 "Hi " + customer.getName() + ",\n\n"
                         + "\"" + title + "\" has been approved and is ready to view.\n"

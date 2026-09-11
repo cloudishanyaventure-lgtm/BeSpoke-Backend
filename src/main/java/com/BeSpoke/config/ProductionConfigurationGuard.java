@@ -23,7 +23,9 @@ public class ProductionConfigurationGuard {
         }
         if (env.getProperty("app.seed.demo-enabled", Boolean.class, true))
             throw new IllegalStateException("Demo account seeding must be disabled in production");
-        required(env, "app.storage.bucket");
+        // No bucket check: this VM keeps ~/uploads across deploys (only the jar is
+        // replaced), so local-disk storage is a supported setup, not a misconfiguration.
+        // FileStorageService already logs a loud [UPLOADS] warning when it is in use.
         required(env, "spring.datasource.password");
         String origins = required(env, "app.cors.allowed-origins");
         for (String origin : origins.split(",", -1)) {

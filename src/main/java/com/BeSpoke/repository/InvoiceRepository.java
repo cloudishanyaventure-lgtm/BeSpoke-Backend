@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
+    @org.springframework.data.jpa.repository.Query(value="select id from invoices where id=:id for update",nativeQuery=true)
+    java.util.Optional<Long> lockRow(@org.springframework.data.repository.query.Param("id") Long id);
 
     List<Invoice> findByProjectOrderByCreatedAtAsc(Project project);
 

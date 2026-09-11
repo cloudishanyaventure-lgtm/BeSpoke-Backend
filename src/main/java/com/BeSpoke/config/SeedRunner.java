@@ -42,6 +42,7 @@ import java.util.List;
  * team, one design studio, one vendor with products, and the room catalog.
  */
 @Component
+@org.springframework.core.annotation.Order(1) // before SqlMigrationRunner(10)
 public class SeedRunner implements CommandLineRunner {
 
     @org.springframework.beans.factory.annotation.Value("${app.seed.demo-enabled:true}")

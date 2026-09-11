@@ -31,15 +31,22 @@ import java.util.Objects;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final com.BeSpoke.repository.DrawingRepository drawings;
+    private final com.BeSpoke.repository.LeadActivityRepository activities;
+    private final NotificationService notifications;
     private final ProjectMilestoneRepository projectMilestoneRepository;
     private final InvoiceRepository invoiceRepository;
     private final InvoicePaymentRepository invoicePaymentRepository;
 
     public ProjectService(ProjectRepository projectRepository,
+                          com.BeSpoke.repository.DrawingRepository drawings,
+                          com.BeSpoke.repository.LeadActivityRepository activities,
+                          NotificationService notifications,
                           ProjectMilestoneRepository projectMilestoneRepository,
                           InvoiceRepository invoiceRepository,
                           InvoicePaymentRepository invoicePaymentRepository) {
         this.projectRepository = projectRepository;
+        this.drawings=drawings;this.activities=activities;this.notifications=notifications;
         this.projectMilestoneRepository = projectMilestoneRepository;
         this.invoiceRepository = invoiceRepository;
         this.invoicePaymentRepository = invoicePaymentRepository;
@@ -59,6 +66,7 @@ public class ProjectService {
         if (current.getRole().isPlatform()) {
             return true;
         }
+        if (current.getCompany()==null || project.getLead().getCompany()==null || !current.getCompany().getId().equals(project.getLead().getCompany().getId())) return false;
         if (current.getRole().seesWholeCompany()) {
             Company owner = project.getLead().getCompany();
             return owner != null && current.getCompany() != null
@@ -81,7 +89,10 @@ public class ProjectService {
             projects = current.getCompany() == null ? List.of()
                     : projectRepository.findByLead_CompanyOrderByCreatedAtDesc(current.getCompany());
         } else {
-            projects = projectRepository.findByDesignerOrderByCreatedAtDesc(current);
+            // Both halves of canSee: assigned designer AND sales owner — a
+            // consultant must see their own client's project through delivery.
+            projects = projectRepository
+                    .findByDesignerOrLead_SalesOwnerOrderByCreatedAtDesc(current, current);
         }
         return projects.stream().filter(p -> canSee(current, p))
                 .map(p -> toDto(p, finance, false)).toList();
@@ -97,7 +108,17 @@ public class ProjectService {
         boolean admin = current.getRole().seesFinance();
         if (request.stage() != null) {
             try {
-                project.setStage(ProjectStage.valueOf(request.stage().toUpperCase(Locale.ROOT)));
+                ProjectStage target=ProjectStage.valueOf(request.stage().toUpperCase(Locale.ROOT));
+                if(target!=project.getStage() && target.ordinal()>ProjectStage.DESIGN_APPROVAL.ordinal()){
+                    var latest=drawings.findByLeadOrderByCreatedAtDesc(project.getLead()).stream().filter(d->d.getSupersededAt()==null).toList();
+                    if(latest.isEmpty() || latest.stream().anyMatch(d->d.getStatus()!=com.BeSpoke.entity.DrawingStatus.FINAL))
+                        throw new com.BeSpoke.exception.ConflictException("Complete customer design approval before procurement or execution");
+                }
+                if(target!=project.getStage()){
+                    activities.save(new com.BeSpoke.entity.LeadActivity(project.getLead(),current,com.BeSpoke.entity.ActivityType.SYSTEM,"Project stage: "+project.getStage()+" → "+target));
+                    notifications.publish(project.getClient(),"Project stage updated",target.getDisplayName(),"/my/workspace");
+                }
+                project.setStage(target);
             } catch (IllegalArgumentException ex) {
                 throw new BadRequestException("Unknown project stage: " + request.stage());
             }
@@ -118,6 +139,7 @@ public class ProjectService {
         if (request.targetDate() != null) {
             project.setTargetDate(request.targetDate());
         }
+        if(project.getStartDate()!=null && project.getTargetDate()!=null && project.getTargetDate().isBefore(project.getStartDate())) throw new BadRequestException("Target date must follow the start date");
         projectRepository.save(project);
         return toDetail(project, admin);
     }
@@ -130,6 +152,8 @@ public class ProjectService {
         List<Long> keptIds = requests.stream().map(MilestoneRequest::id).filter(Objects::nonNull).toList();
         for (ProjectMilestone milestone : existing) {
             if (!keptIds.contains(milestone.getId())) {
+                if(invoiceRepository.findByProjectOrderByCreatedAtAsc(project).stream().anyMatch(i->i.getMilestone()!=null&&i.getMilestone().getId().equals(milestone.getId())))
+                    throw new com.BeSpoke.exception.ConflictException("A billed milestone cannot be removed");
                 projectMilestoneRepository.delete(milestone);
             }
         }
@@ -148,7 +172,14 @@ public class ProjectService {
             milestone.setTitle(request.title().trim());
             milestone.setPlannedDate(request.plannedDate());
             milestone.setActualDate(request.actualDate());
-            milestone.setDone(Boolean.TRUE.equals(request.done()));
+            boolean done=Boolean.TRUE.equals(request.done());
+            if(done && milestone.getActualDate()==null)milestone.setActualDate(java.time.LocalDate.now());
+            if(!done)milestone.setActualDate(null);
+            if(done!=milestone.isDone()){
+                activities.save(new com.BeSpoke.entity.LeadActivity(project.getLead(),current,com.BeSpoke.entity.ActivityType.SYSTEM,"Milestone "+milestone.getTitle()+": "+(done?"completed":"reopened")));
+                notifications.publish(project.getClient(),"Project milestone updated",milestone.getTitle()+": "+(done?"completed":"reopened"),"/my/workspace");
+            }
+            milestone.setDone(done);
             milestone.setSortOrder(request.sortOrder() != null ? request.sortOrder() : order);
             projectMilestoneRepository.save(milestone);
             order++;

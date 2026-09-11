@@ -19,6 +19,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findByDesignerOrderByCreatedAtDesc(User designer);
 
+    /** Assigned-only roles: their designs plus the leads they own commercially. */
+    List<Project> findByDesignerOrLead_SalesOwnerOrderByCreatedAtDesc(User designer, User salesOwner);
+
     List<Project> findByClientOrderByCreatedAtDesc(User client);
 
     /** Active = work has actually started: a payment recorded or a drawing on the lead. */

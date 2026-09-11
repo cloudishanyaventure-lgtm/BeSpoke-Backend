@@ -44,24 +44,30 @@ public class DrawingService {
     private final LeadActivityRepository leadActivityRepository;
     private final RequirementFormRepository requirementFormRepository;
     private final LeadService leadService;
-    private final RequirementService requirementService;
     private final AuditService auditService;
     private final MailService mailService;
+    private final DocumentService documents;
+    private final NotificationService notifications;
+    private final com.BeSpoke.repository.UserRepository users;
 
     public DrawingService(DrawingRepository drawingRepository,
                           LeadActivityRepository leadActivityRepository,
                           RequirementFormRepository requirementFormRepository,
                           LeadService leadService,
-                          RequirementService requirementService,
                           AuditService auditService,
-                          MailService mailService) {
+                          MailService mailService,
+                          DocumentService documents,
+                          NotificationService notifications,
+                          com.BeSpoke.repository.UserRepository users) {
         this.drawingRepository = drawingRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.requirementFormRepository = requirementFormRepository;
         this.leadService = leadService;
-        this.requirementService = requirementService;
         this.auditService = auditService;
         this.mailService = mailService;
+        this.documents = documents;
+        this.notifications = notifications;
+        this.users = users;
     }
 
     public List<DrawingDto> list(User staff, Long leadId) {
@@ -70,11 +76,12 @@ public class DrawingService {
                 .stream().map(DrawingDto::from).toList();
     }
 
-    /** Customer view: every drawing of my lead, all statuses — the live pipeline. */
+    /** Shared designs across all of the customer's leads; internal drafts stay private. */
     public List<DrawingDto> myDrawings(User customer) {
-        Lead lead = requirementService.myLead(customer);
-        return drawingRepository.findByLeadOrderByCreatedAtDesc(lead)
-                .stream().map(DrawingDto::from).toList();
+        requireCustomer(customer);
+        return drawingRepository.findByLead_CustomerAndStatusInOrderByCreatedAtDesc(customer,
+                        List.of(DrawingStatus.APPROVED, DrawingStatus.FINAL, DrawingStatus.CHANGES_REQUESTED))
+                .stream().map(DrawingDto::forCustomer).toList();
     }
 
     /** The lead's PRD rooms — the picker the upload form offers instead of free text. */
@@ -87,27 +94,54 @@ public class DrawingService {
 
     @Transactional
     public DrawingDto create(User actor, Long leadId, CreateDrawingRequest request) {
+        requireUploader(actor);
         Lead lead = leadService.scopedLead(actor, leadId);
+        Drawing previous = null;
+        if (request.previousRevisionId() != null) {
+            previous = scopedDrawing(actor, request.previousRevisionId());
+            if (!previous.getLead().getId().equals(leadId)) throw new NotFoundException("Drawing not found");
+            requireLatest(previous);
+            if (previous.getStatus() != DrawingStatus.CHANGES_REQUESTED && previous.getStatus() != DrawingStatus.FINAL
+                    && !(previous.getStatus() == DrawingStatus.WIP && previous.getRejectionReason() != null)) {
+                throw new ConflictException("Request changes or complete review before uploading a new version");
+            }
+        }
         String floor = trimToNull(request.floorLabel());
         String space = trimToNull(request.spaceLabel());
         if (floor == null || space == null) {
             throw new BadRequestException("Floor and space are required on every drawing");
         }
         String title = trimToNull(request.title());
-        if (request.requirementRoomId() != null) {
+        if (previous != null) {
+            // Room IDs can change when the brief is edited; retain the original space association.
+            title = previous.getTitle();
+            floor = previous.getFloorLabel();
+            space = previous.getSpaceLabel();
+        } else if (request.requirementRoomId() != null) {
             RequirementRoom room = prdRoom(lead, request.requirementRoomId());
             if (title == null) {
-                title = derivedTitle(lead, room);
+                title = derivedTitle(room);
             }
         } else if (title == null) {
             throw new BadRequestException("Title is required, or pick a space from the brief");
         }
         Drawing drawing = new Drawing(lead, title, request.fileUrl(), actor.getName());
+        drawing.setDocument(documents.designAsset(actor,leadId,request.fileUrl()));
         drawing.setFloorLabel(floor);
         drawing.setSpaceLabel(space);
         drawing.setNotes(request.notes());
-        drawing.setRequirementRoomId(request.requirementRoomId());
-        return DrawingDto.from(drawingRepository.save(drawing));
+        drawing.setRequirementRoomId(previous == null ? request.requirementRoomId() : previous.getRequirementRoomId());
+        drawing.setUploadedBy(actor);
+        if (previous != null) {
+            drawing.setPreviousRevision(previous);
+            drawing.setRevisionNumber(previous.getRevisionNumber() + 1);
+            previous.setSupersededAt(Instant.now());
+            // Flush the optimistic lock before inserting the unique successor.
+            drawingRepository.saveAndFlush(previous);
+        }
+        drawingRepository.saveAndFlush(drawing);
+        record(drawing, actor, "DRAWING_CREATED", "Uploaded " + label(drawing) + " as WIP");
+        return DrawingDto.from(drawing);
     }
 
     /**
@@ -144,17 +178,23 @@ public class DrawingService {
 
     @Transactional
     public DrawingDto submit(User actor, Long drawingId) {
+        requireUploader(actor);
         Drawing drawing = scopedDrawing(actor, drawingId);
+        requireLatest(drawing);
         if (drawing.getStatus() != DrawingStatus.WIP) {
             throw new BadRequestException("Only WIP drawings can be submitted");
         }
+        if (drawing.getRejectionReason() != null) {
+            throw new ConflictException("Upload a new version to address the review feedback");
+        }
         drawing.setSubmittedAt(Instant.now());
-        drawing.setRejectionReason(null);
-        if (actor.getRole().canApproveDrawings()) {
+        if (actor.getRole().canApproveDrawings() || actor.getRole().isPlatform()) {
             // Self-approve: the submitter is an approver, no second pair of eyes needed.
             doApprove(drawing, actor);
         } else {
             drawing.setStatus(DrawingStatus.PENDING_APPROVAL);
+            record(drawing, actor, "DRAWING_SUBMITTED", label(drawing) + ": WIP → PENDING_APPROVAL");
+            notifyReviewers(drawing);
         }
         return DrawingDto.from(drawingRepository.save(drawing));
     }
@@ -163,6 +203,7 @@ public class DrawingService {
     public DrawingDto approve(User actor, Long drawingId) {
         requireApprover(actor);
         Drawing drawing = scopedDrawing(actor, drawingId);
+        requireLatest(drawing);
         if (drawing.getStatus() != DrawingStatus.PENDING_APPROVAL) {
             throw new BadRequestException("Only drawings pending approval can be approved");
         }
@@ -174,16 +215,15 @@ public class DrawingService {
     public DrawingDto reject(User actor, Long drawingId, String reason) {
         requireApprover(actor);
         Drawing drawing = scopedDrawing(actor, drawingId);
+        requireLatest(drawing);
         if (drawing.getStatus() != DrawingStatus.PENDING_APPROVAL) {
             throw new BadRequestException("Only drawings pending approval can be rejected");
         }
+        reason = requireReason(reason);
         drawing.setStatus(DrawingStatus.WIP);
-        drawing.setRejectionReason(reason.trim());
-        leadActivityRepository.save(new LeadActivity(drawing.getLead(), actor, ActivityType.SYSTEM,
-                "Drawing \"" + drawing.getTitle() + "\" rejected by " + actor.getName()));
-        auditService.log(actor, drawing.getLead().getCompany(), "DRAWING_REJECTED",
-                "Drawing \"" + drawing.getTitle() + "\" on lead #" + drawing.getLead().getId()
-                        + " rejected: " + reason.trim());
+        drawing.setRejectionReason(reason);
+        record(drawing, actor, "DRAWING_REJECTED", label(drawing) + ": PENDING_APPROVAL → WIP: " + reason);
+        notifyStudio(drawing, actor, "Design needs revision", label(drawing) + ": " + reason);
         return DrawingDto.from(drawingRepository.save(drawing));
     }
 
@@ -191,60 +231,143 @@ public class DrawingService {
     public DrawingDto finalize(User actor, Long drawingId) {
         requireApprover(actor);
         Drawing drawing = scopedDrawing(actor, drawingId);
+        requireLatest(drawing);
+        if (drawing.getLead().getCustomer() != null) {
+            throw new ForbiddenException("The customer must approve this design from their account");
+        }
         if (drawing.getStatus() != DrawingStatus.APPROVED) {
-            throw new BadRequestException("Only approved drawings can be finalized");
+            throw new ConflictException("Only approved drawings can be finalized");
         }
         drawing.setStatus(DrawingStatus.FINAL);
+        drawing.setFinalizedBy(actor);
+        drawing.setFinalizedAt(Instant.now());
+        record(drawing, actor, "DRAWING_FINALIZED", label(drawing) + ": APPROVED → FINAL (walk-in sign-off)");
+        notifyStudio(drawing, actor, "Design finalized", label(drawing) + " was finalized for a walk-in customer.");
         return DrawingDto.from(drawingRepository.save(drawing));
     }
 
-    /** Customer sign-off: an APPROVED ("sent to customer") drawing becomes FINAL. */
     @Transactional
     public DrawingDto customerApprove(User customer, Long drawingId) {
         Drawing drawing = customerDrawing(customer, drawingId);
-        if (drawing.getStatus() != DrawingStatus.APPROVED) {
-            throw new ConflictException("Only drawings sent to you for approval can be approved");
+        requireLatest(drawing);
+        // A retried successful decision must not duplicate its history or notifications.
+        if (drawing.getStatus() == DrawingStatus.FINAL && drawing.getCustomerApprovedAt() != null) {
+            return DrawingDto.forCustomer(drawing);
         }
+        requireAwaitingCustomer(drawing);
+        Instant now = Instant.now();
         drawing.setStatus(DrawingStatus.FINAL);
-        drawing.setCustomerApprovedAt(Instant.now());
-        leadActivityRepository.save(new LeadActivity(drawing.getLead(), customer, ActivityType.SYSTEM,
-                "Drawing \"" + drawing.getTitle() + "\" approved by the customer"));
-        return DrawingDto.from(drawingRepository.save(drawing));
+        drawing.setCustomerApprovedAt(now);
+        drawing.setCustomerDecidedBy(customer);
+        drawing.setCustomerDecidedAt(now);
+        record(drawing, customer, "DRAWING_CUSTOMER_APPROVED", label(drawing) + ": APPROVED → FINAL by customer #" + customer.getId());
+        notifyStudio(drawing, customer, "Customer approved a design", label(drawing) + " is approved by " + customer.getName() + ".");
+        return DrawingDto.forCustomer(drawingRepository.save(drawing));
     }
 
-    /** Customer sends an APPROVED drawing back to WIP with the reason on it. */
     @Transactional
     public DrawingDto customerRequestChanges(User customer, Long drawingId, String reason) {
+        reason = requireReason(reason);
         Drawing drawing = customerDrawing(customer, drawingId);
-        if (drawing.getStatus() != DrawingStatus.APPROVED) {
-            throw new ConflictException("Changes can only be requested on drawings sent to you for approval");
+        requireLatest(drawing);
+        if (drawing.getStatus() == DrawingStatus.CHANGES_REQUESTED && reason.equals(drawing.getRejectionReason())) {
+            return DrawingDto.forCustomer(drawing);
         }
-        drawing.setStatus(DrawingStatus.WIP);
-        drawing.setRejectionReason(reason.trim());
-        leadActivityRepository.save(new LeadActivity(drawing.getLead(), customer, ActivityType.SYSTEM,
-                "Customer requested changes on \"" + drawing.getTitle() + "\": " + reason.trim()));
-        return DrawingDto.from(drawingRepository.save(drawing));
+        requireAwaitingCustomer(drawing);
+        drawing.setStatus(DrawingStatus.CHANGES_REQUESTED);
+        drawing.setRejectionReason(reason);
+        drawing.setCustomerDecidedBy(customer);
+        drawing.setCustomerDecidedAt(Instant.now());
+        record(drawing, customer, "DRAWING_CHANGES_REQUESTED", label(drawing) + ": APPROVED → CHANGES_REQUESTED: " + reason);
+        notifyStudio(drawing, customer, "Customer requested design changes", label(drawing) + ": " + reason);
+        return DrawingDto.forCustomer(drawingRepository.save(drawing));
     }
 
-    /** 404 hides drawings that are not on the customer's own lead. */
     private Drawing customerDrawing(User customer, Long drawingId) {
-        Lead lead = requirementService.myLead(customer);
+        requireCustomer(customer);
         Drawing drawing = drawingRepository.findById(drawingId)
                 .orElseThrow(() -> new NotFoundException("Drawing not found"));
-        if (!drawing.getLead().getId().equals(lead.getId())) {
+        User owner = drawing.getLead().getCustomer();
+        if (owner == null || !owner.getId().equals(customer.getId()) || !drawing.isCustomerVisible()) {
             throw new NotFoundException("Drawing not found");
         }
         return drawing;
+    }
+
+    private static void requireCustomer(User user) {
+        if (user.getRole() != Role.CUSTOMER) throw new ForbiddenException("Customer account required");
+    }
+
+    private static void requireAwaitingCustomer(Drawing drawing) {
+        if (drawing.getStatus() != DrawingStatus.APPROVED) {
+            throw new ConflictException("Only designs awaiting your approval can receive a decision");
+        }
+    }
+
+    private static void requireLatest(Drawing drawing) {
+        if (drawing.getSupersededAt() != null) throw new ConflictException("A newer version exists. Reload the designs before continuing.");
+    }
+
+    private static String requireReason(String reason) {
+        if (reason == null || reason.isBlank() || reason.trim().length() > 500)
+            throw new BadRequestException("Describe the changes in 1–500 characters");
+        return reason.trim();
+    }
+
+    private static void requireUploader(User actor) {
+        if (!(actor.getRole().isPlatform() || actor.getRole().canApproveDrawings()
+                || actor.getRole() == Role.DESIGNER || actor.getRole() == Role.PROJECT_MANAGER))
+            throw new ForbiddenException("Your role cannot upload drawings");
+    }
+
+    private static String label(Drawing drawing) {
+        return "Design #" + drawing.getId() + " “" + drawing.getTitle() + "” V" + drawing.getRevisionNumber();
+    }
+
+    private void record(Drawing drawing, User actor, String action, String detail) {
+        leadActivityRepository.save(new LeadActivity(drawing.getLead(), actor, ActivityType.SYSTEM, detail));
+        auditService.log(actor, drawing.getLead().getCompany(), action,
+                "Lead #" + drawing.getLead().getId() + ": " + detail);
+    }
+
+    private void notifyReviewers(Drawing drawing) {
+        if (drawing.getLead().getCompany() == null) return;
+        String role = DrawingDto.pendingWith(drawing);
+        users.findByCompanyAndRole(drawing.getLead().getCompany(), Role.valueOf(role)).stream()
+                .filter(User::isActive)
+                .filter(user -> leadService.canSee(user, drawing.getLead()))
+                .forEach(user -> notifications.publish(user, "Design ready for studio review", label(drawing),
+                        "/studio/leads/" + drawing.getLead().getId()));
+    }
+
+    private void notifyStudio(Drawing drawing, User actor, String title, String body) {
+        java.util.Map<Long, User> recipients = new java.util.LinkedHashMap<>();
+        for (User user : new User[]{drawing.getUploadedBy(), drawing.getLead().getAssignedDesigner()}) {
+            if (user != null) recipients.put(user.getId(), user);
+        }
+        // Directors receive unassigned/legacy drawings; do not broadcast customer feedback to the company.
+        if (recipients.values().stream().noneMatch(user -> eligibleRecipient(user, drawing)) && drawing.getLead().getCompany() != null) {
+            users.findByCompanyAndRole(drawing.getLead().getCompany(), Role.DIRECTOR)
+                    .forEach(user -> recipients.put(user.getId(), user));
+        }
+        recipients.values().stream().filter(user -> !user.getId().equals(actor.getId()))
+                .filter(user -> eligibleRecipient(user, drawing))
+                .forEach(user -> notifications.publish(user, title, body, "/studio/leads/" + drawing.getLead().getId()));
+    }
+
+    private boolean eligibleRecipient(User user, Drawing drawing) {
+        return user.isActive() && leadService.canSee(user, drawing.getLead())
+                && (user.getRole().isPlatform() || (user.getCompany() != null && user.getCompany().isActive()
+                && user.getCompany().effectiveEnabledRoles().contains(user.getRole())));
     }
 
     private void doApprove(Drawing drawing, User actor) {
         drawing.setStatus(DrawingStatus.APPROVED);
         drawing.setApprovedByName(actor.getName());
         drawing.setApprovedAt(Instant.now());
-        leadActivityRepository.save(new LeadActivity(drawing.getLead(), actor, ActivityType.SYSTEM,
-                "Drawing \"" + drawing.getTitle() + "\" approved by " + actor.getName()));
-        auditService.log(actor, drawing.getLead().getCompany(), "DRAWING_APPROVED",
-                "Drawing \"" + drawing.getTitle() + "\" on lead #" + drawing.getLead().getId() + " approved");
+        record(drawing, actor, "DRAWING_APPROVED", label(drawing) + ": studio review → APPROVED by " + actor.getName());
+        notifications.publish(drawing.getLead().getCustomer(), "A design is ready for your review",
+                label(drawing) + " is ready. Approve it or request changes.", "/my/designs");
         notifyCustomer(drawing);
     }
 
@@ -281,12 +404,11 @@ public class DrawingService {
                 .orElseThrow(() -> new BadRequestException("That space is not on this lead's brief"));
     }
 
-    /** "Kitchen — 1st Floor", or "Kitchen" with no floor, plus " (v2)" per existing revision. */
-    private String derivedTitle(Lead lead, RequirementRoom room) {
+    /** "Kitchen — 1st Floor", or "Kitchen" with no floor, without a version suffix; revisionNumber is stored separately. */
+    private String derivedTitle(RequirementRoom room) {
         String floor = trimToNull(room.getFloor());
         String title = floor == null ? room.getLabel() : room.getLabel() + " — " + floor;
-        long existing = drawingRepository.countByLeadAndRequirementRoomId(lead, room.getId());
-        return existing == 0 ? title : title + " (v" + (existing + 1) + ")";
+        return title;
     }
 
     private static String trimToNull(String value) {

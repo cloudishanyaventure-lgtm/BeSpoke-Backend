@@ -24,8 +24,8 @@ import java.util.List;
 
 /**
  * Drawing WIP → approval pipeline. Uploader roles create/submit, approver
- * roles (canApproveDrawings) approve/reject/finalize, the customer watches
- * the whole pipeline at /api/my/drawings.
+ * roles (canApproveDrawings) approve/reject/finalize, the customer reviews
+ * shared versions at /api/my/drawings.
  */
 @RestController
 @RequestMapping("/api")
@@ -103,7 +103,7 @@ public class DrawingController {
         return drawingService.finalize(me(authentication), id);
     }
 
-    /** Customer: all drawings of my lead — URL security scopes /api/my/** to CUSTOMER. */
+    /** Customer: shared drawings of all owned leads — URL security scopes /api/my/** to CUSTOMER. */
     @GetMapping("/my/drawings")
     public List<DrawingDto> myDrawings(Authentication authentication) {
         return drawingService.myDrawings(me(authentication));
@@ -115,7 +115,7 @@ public class DrawingController {
         return drawingService.customerApprove(me(authentication), id);
     }
 
-    /** Customer sends an APPROVED drawing back to WIP with a reason. */
+    /** Customer records CHANGES_REQUESTED on the shared version. */
     @PostMapping("/my/drawings/{id}/request-changes")
     public DrawingDto customerRequestChanges(Authentication authentication,
                                              @PathVariable Long id,

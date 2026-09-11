@@ -28,14 +28,27 @@ public record DrawingDto(
         String rejectionReason,
         String pendingWith,
         Long requirementRoomId,
-        Instant createdAt
+        Instant createdAt,
+        int revisionNumber,
+        Long previousRevisionId,
+        Instant supersededAt,
+        Instant customerDecidedAt,
+        Long customerDecidedById,
+        String customerDecidedByName,
+        String finalizedByName,
+        Instant finalizedAt,
+        boolean canFinalize
 ) {
 
     /** Approval chain, most junior approver first. */
     private static final List<Role> APPROVAL_CHAIN =
             List.of(Role.DESIGN_MANAGER, Role.PRINCIPAL_ARCHITECT, Role.DIRECTOR);
 
-    public static DrawingDto from(Drawing drawing) {
+    public static DrawingDto from(Drawing drawing) { return from(drawing, false); }
+
+    public static DrawingDto forCustomer(Drawing drawing) { return from(drawing, true); }
+
+    private static DrawingDto from(Drawing drawing, boolean customer) {
         return new DrawingDto(
                 drawing.getId(),
                 drawing.getLead().getId(),
@@ -46,14 +59,24 @@ public record DrawingDto(
                 drawing.getNotes(),
                 drawing.getStatus().name(),
                 drawing.getUploadedByName(),
-                drawing.getSubmittedAt(),
-                drawing.getApprovedByName(),
+                customer ? drawing.getApprovedAt() : drawing.getSubmittedAt(),
+                customer ? null : drawing.getApprovedByName(),
                 drawing.getApprovedAt(),
                 drawing.getCustomerApprovedAt(),
-                drawing.getRejectionReason(),
-                pendingWith(drawing),
+                customer && drawing.getStatus() != DrawingStatus.CHANGES_REQUESTED ? null : drawing.getRejectionReason(),
+                customer ? null : pendingWith(drawing),
                 drawing.getRequirementRoomId(),
-                drawing.getCreatedAt()
+                drawing.getCreatedAt(),
+                drawing.getRevisionNumber(),
+                drawing.getPreviousRevision() == null ? null : drawing.getPreviousRevision().getId(),
+                drawing.getSupersededAt(),
+                drawing.getCustomerDecidedAt(),
+                drawing.getCustomerDecidedBy() == null ? null : drawing.getCustomerDecidedBy().getId(),
+                drawing.getCustomerDecidedBy() == null ? null : drawing.getCustomerDecidedBy().getName(),
+                customer ? null : drawing.getFinalizedBy() == null ? null : drawing.getFinalizedBy().getName(),
+                drawing.getFinalizedAt(),
+                !customer && drawing.getLead().getCustomer() == null && drawing.getStatus() == DrawingStatus.APPROVED
+                        && drawing.getSupersededAt() == null
         );
     }
 

@@ -124,3 +124,13 @@ lead atomically (signing up IS the lead) and returns `{token, user, leadId}`.
 - **Project stages:** DESIGN_BRIEF, CONCEPT_DESIGN, DESIGN_APPROVAL, PROCUREMENT, EXECUTION, SNAG_HANDOVER (also the six default milestones on WON).
 - **Invoice status:** DRAFT/SENT/PAID persisted; PARTIALLY_PAID and OVERDUE derived from payments/dueDate.
 - **Messages:** one thread per lead; it carries into the project after WON.
+
+## Design version workflow (September 2026)
+
+Existing PostgreSQL installations must apply [`2026-09-11-design-revisions.sql`](../docs/sql/2026-09-11-design-revisions.sql) before this backend starts.
+
+`POST /api/leads/{id}/drawings` accepts optional `previousRevisionId`. New designs are V1; revisions preserve the predecessor and increment `revisionNumber`. Only the latest version can proceed through review. Rejected files require a new version.
+
+`GET /api/my/drawings` returns shared designs from every customer-owned lead. Internal drafts/review routing are excluded. Customer decisions change APPROVED to FINAL or CHANGES_REQUESTED; identical retries do not duplicate events. Responses include version/predecessor, superseded timestamp, decision actor/timestamp and separate walk-in finalization attribution. Staff finalization is restricted to leads without customer accounts.
+
+See [the current implementation record](../docs/MASTER_PLATFORM_IMPLEMENTATION.md) for validation and remaining platform work, including private document storage.

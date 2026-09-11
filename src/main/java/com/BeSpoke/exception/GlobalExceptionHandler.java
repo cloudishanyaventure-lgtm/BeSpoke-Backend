@@ -17,6 +17,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     private ResponseEntity<Map<String, Object>> body(HttpStatus status, String message) {
         Map<String, Object> body = new LinkedHashMap<>();
@@ -85,6 +86,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        return body(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong: " + ex.getMessage());
+        log.error("Unhandled API error", ex);
+        return body(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong. Please try again.");
     }
 }

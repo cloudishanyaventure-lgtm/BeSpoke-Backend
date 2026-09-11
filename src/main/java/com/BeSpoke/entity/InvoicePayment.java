@@ -35,6 +35,9 @@ public class InvoicePayment {
     private PaymentMode mode;
 
     private String reference;
+    @Column(length=80) private String idempotencyKey;
+    public String getIdempotencyKey(){return idempotencyKey;}
+    public void setIdempotencyKey(String key){idempotencyKey=key;}
 
     @Column(nullable = false)
     private LocalDate paidAt;

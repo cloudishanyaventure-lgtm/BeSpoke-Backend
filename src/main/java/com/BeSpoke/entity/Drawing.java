@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 
@@ -47,6 +49,12 @@ public class Drawing {
     @Column(nullable = false, length = 1000)
     private String fileUrl;
 
+    @jakarta.persistence.OneToOne
+    @JoinColumn(name="document_id", unique=true)
+    private ProjectDocument document;
+    public ProjectDocument getDocument(){return document;}
+    public void setDocument(ProjectDocument value){document=value;}
+
     @Column(length = 1000)
     private String notes;
 
@@ -67,6 +75,32 @@ public class Drawing {
     /** When the customer signed off (APPROVED → FINAL). */
     private Instant customerApprovedAt;
 
+    @ManyToOne
+    private User customerDecidedBy;
+    private Instant customerDecidedAt;
+
+    @ManyToOne
+    private User uploadedBy;
+
+    @ManyToOne
+    private User finalizedBy;
+    private Instant finalizedAt;
+
+    /** One successor per version; old content and decision records are retained. */
+    @ManyToOne
+    @JoinColumn(name = "previous_revision_id", unique = true)
+    private Drawing previousRevision;
+
+    @Column(nullable = false)
+    @ColumnDefault("1")
+    private int revisionNumber = 1;
+    private Instant supersededAt;
+
+    @Version
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private long rowVersion;
+
     @Column(length = 500)
     private String rejectionReason;
 
@@ -81,6 +115,28 @@ public class Drawing {
         this.title = title;
         this.fileUrl = fileUrl;
         this.uploadedByName = uploadedByName;
+    }
+
+    public User getCustomerDecidedBy() { return customerDecidedBy; }
+    public void setCustomerDecidedBy(User value) { customerDecidedBy = value; }
+    public Instant getCustomerDecidedAt() { return customerDecidedAt; }
+    public void setCustomerDecidedAt(Instant value) { customerDecidedAt = value; }
+    public User getUploadedBy() { return uploadedBy; }
+    public void setUploadedBy(User value) { uploadedBy = value; }
+    public User getFinalizedBy() { return finalizedBy; }
+    public void setFinalizedBy(User value) { finalizedBy = value; }
+    public Instant getFinalizedAt() { return finalizedAt; }
+    public void setFinalizedAt(Instant value) { finalizedAt = value; }
+    public Drawing getPreviousRevision() { return previousRevision; }
+    public void setPreviousRevision(Drawing value) { previousRevision = value; }
+    public int getRevisionNumber() { return revisionNumber; }
+    public void setRevisionNumber(int value) { revisionNumber = value; }
+    public Instant getSupersededAt() { return supersededAt; }
+    public void setSupersededAt(Instant value) { supersededAt = value; }
+    public long getRowVersion() { return rowVersion; }
+    public boolean isCustomerVisible() {
+        return status == DrawingStatus.APPROVED || status == DrawingStatus.FINAL
+                || status == DrawingStatus.CHANGES_REQUESTED;
     }
 
     public Long getId() {

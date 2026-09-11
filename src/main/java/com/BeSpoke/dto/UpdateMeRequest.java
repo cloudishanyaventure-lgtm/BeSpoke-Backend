@@ -12,7 +12,12 @@ public record UpdateMeRequest(
         @Size(max = 30) String phone,
         @Size(max = 120) String city,
         // Public designer card (staff only; ignored for customers with no staff profile).
-        @Size(max = 1000) String avatarUrl,
+        // Rendered on the unauthenticated site, so only https or our own /uploads path.
+        @Size(max = 1000)
+        // Blank clears the avatar (MeController), hence the empty alternative.
+        @jakarta.validation.constraints.Pattern(regexp = "^\\s*$|^(https://|/uploads/).*",
+                message = "Avatar must be an https URL or an uploaded image")
+        String avatarUrl,
         @Size(max = 2000) String bio,
         @Min(0) @Max(70) Integer yearsExperience,
         List<String> styles

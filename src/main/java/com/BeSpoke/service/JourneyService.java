@@ -127,7 +127,9 @@ public class JourneyService {
             routeHistory.add(new JourneyDto.RouteEventDto("ACCEPTED", lead.getAcceptedAt(), companyName));
         }
 
-        List<Drawing> drawings = drawingRepository.findByLeadOrderByCreatedAtDesc(lead);
+        List<Drawing> drawings = drawingRepository.findByLead_CustomerAndStatusInOrderByCreatedAtDesc(customer,
+                        List.of(DrawingStatus.APPROVED, DrawingStatus.FINAL, DrawingStatus.CHANGES_REQUESTED)).stream()
+                .filter(d -> d.getSupersededAt() == null).toList();
         JourneyDto.DrawingCountsDto drawingCounts = new JourneyDto.DrawingCountsDto(
                 drawings.stream().filter(d -> d.getStatus() == DrawingStatus.WIP).count(),
                 drawings.stream().filter(d -> d.getStatus() == DrawingStatus.PENDING_APPROVAL).count(),

@@ -69,6 +69,9 @@ public class User {
     @ColumnDefault("0")
     private int otpAttempts = 0;
 
+    /** Tokens issued before this instant are dead; stamped on password reset. */
+    private Instant credentialsChangedAt;
+
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
 
@@ -192,6 +195,14 @@ public class User {
 
     public void setOtpAttempts(int otpAttempts) {
         this.otpAttempts = otpAttempts;
+    }
+
+    public Instant getCredentialsChangedAt() {
+        return credentialsChangedAt;
+    }
+
+    public void setCredentialsChangedAt(Instant credentialsChangedAt) {
+        this.credentialsChangedAt = credentialsChangedAt;
     }
 
     public Instant getCreatedAt() {

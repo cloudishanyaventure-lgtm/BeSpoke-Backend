@@ -79,6 +79,7 @@ public class LeadService {
     private final ProjectService projectService;
     private final AuditService auditService;
     private final MailService mailService;
+    private final NotificationService notifications;
 
     public LeadService(LeadRepository leadRepository,
                        LeadActivityRepository leadActivityRepository,
@@ -91,7 +92,8 @@ public class LeadService {
                        ScoreService scoreService,
                        ProjectService projectService,
                        AuditService auditService,
-                       MailService mailService) {
+                       MailService mailService,
+                       NotificationService notifications) {
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.requirementFormRepository = requirementFormRepository;
@@ -104,6 +106,7 @@ public class LeadService {
         this.projectService = projectService;
         this.auditService = auditService;
         this.mailService = mailService;
+        this.notifications = notifications;
     }
 
     /**
@@ -117,7 +120,9 @@ public class LeadService {
         if (role.isPlatform()) {
             return true;
         }
-        if (current.getCompany() != null && current.getCompany().getType() != CompanyType.DESIGN) {
+        if (current.getCompany() == null || lead.getCompany() == null
+                || !current.getCompany().getId().equals(lead.getCompany().getId())
+                || current.getCompany().getType() != CompanyType.DESIGN) {
             return false;
         }
         if (role == Role.DESIGNER || role == Role.PROJECT_MANAGER) {
@@ -149,7 +154,10 @@ public class LeadService {
         if (role.isPlatform()) {
             return leadRepository.findAllByOrderByCreatedAtDesc();
         }
-        if (current.getCompany() != null && current.getCompany().getType() != CompanyType.DESIGN) {
+        // Vendor companies have no leads; per-lead company matching is canSee's job —
+        // every branch below already queries within the user's own book.
+        if (current.getCompany() == null
+                || current.getCompany().getType() != CompanyType.DESIGN) {
             return List.of();
         }
         if (role == Role.DESIGNER || role == Role.PROJECT_MANAGER) {
@@ -293,6 +301,14 @@ public class LeadService {
                 "Project \"" + project.getName() + "\" created"));
     }
 
+    /** Platform dashboard counters: unrouted pool + all still-open leads. */
+    public java.util.Map<String, Long> platformStats() {
+        return java.util.Map.of(
+                "pool", leadRepository.countByCompanyIsNullAndStatusNot(LeadStatus.LOST),
+                "open", leadRepository.countByStatusNotIn(
+                        EnumSet.of(LeadStatus.WON, LeadStatus.LOST)));
+    }
+
     @Transactional
     public LeadSummaryDto setFollowUp(User current, Long leadId, LocalDate at) {
         Lead lead = scopedLead(current, leadId);
@@ -311,6 +327,10 @@ public class LeadService {
         leadRepository.save(lead);
         leadActivityRepository.save(new LeadActivity(lead, actor, ActivityType.SYSTEM,
                 "Assigned to " + designer.getName()));
+        if (!designer.getId().equals(actor.getId())) {
+            notifications.publish(designer, "New lead assigned to you",
+                    lead.getContactName(), "/studio/leads/" + lead.getId());
+        }
         return toSummary(lead);
     }
 
@@ -324,6 +344,10 @@ public class LeadService {
         leadRepository.save(lead);
         leadActivityRepository.save(new LeadActivity(lead, actor, ActivityType.SYSTEM,
                 "Sales owner set to " + owner.getName()));
+        if (!owner.getId().equals(actor.getId())) {
+            notifications.publish(owner, "You now own a lead",
+                    lead.getContactName(), "/studio/leads/" + lead.getId());
+        }
         return toSummary(lead);
     }
 

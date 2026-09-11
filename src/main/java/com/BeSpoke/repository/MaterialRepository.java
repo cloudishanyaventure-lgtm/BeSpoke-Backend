@@ -22,6 +22,11 @@ public interface MaterialRepository
 
     long countByCategoryIdAndActiveTrue(Long categoryId);
 
+    /** [categoryId, count] pairs — one query for every category card at once. */
+    @Query("select m.category.id, count(m) from Material m where m.active = true"
+            + " group by m.category.id")
+    List<Object[]> countActiveByCategory();
+
     List<Material> findByCategoryIdOrderBySortOrderAscNameAsc(Long categoryId);
 
     /** Same category, different item — the "similar products" rail on the detail pane. */

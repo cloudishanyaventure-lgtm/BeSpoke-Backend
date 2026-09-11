@@ -23,6 +23,10 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "leads")
 public class Lead {
+    @jakarta.persistence.Version
+    @org.hibernate.annotations.ColumnDefault("0")
+    @Column(nullable=false)
+    private long rowVersion;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

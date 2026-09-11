@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface InvoicePaymentRepository extends JpaRepository<InvoicePayment, Long> {
+    java.util.Optional<InvoicePayment> findByInvoiceAndIdempotencyKey(Invoice invoice,String idempotencyKey);
 
     List<InvoicePayment> findByInvoiceOrderByPaidAtAsc(Invoice invoice);
 

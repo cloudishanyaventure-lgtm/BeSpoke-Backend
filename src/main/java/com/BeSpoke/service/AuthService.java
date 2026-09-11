@@ -53,6 +53,7 @@ public class AuthService {
     private final StaffProfileRepository staffProfileRepository;
     private final MailService mailService;
     private final GoogleTokenVerifier googleTokenVerifier;
+    private final AuditService auditService;
 
     public AuthService(UserRepository userRepository,
                        LeadRepository leadRepository,
@@ -63,8 +64,10 @@ public class AuthService {
                        JwtService jwtService,
                        StaffProfileRepository staffProfileRepository,
                        MailService mailService,
-                       GoogleTokenVerifier googleTokenVerifier) {
+                       GoogleTokenVerifier googleTokenVerifier,
+                       AuditService auditService) {
         this.googleTokenVerifier = googleTokenVerifier;
+        this.auditService = auditService;
         this.userRepository = userRepository;
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
@@ -153,8 +156,17 @@ public class AuthService {
 
     private static final Duration OTP_TTL = Duration.ofMinutes(10);
 
+    /** A code issued less than this long ago is not reissued — stops mail-bombing an address. */
+    private static final Duration OTP_REISSUE_AFTER = Duration.ofMinutes(1);
+
     /** Issues a fresh one-time code and mails it via {@code send}. */
     private void issueCode(User user, java.util.function.BiConsumer<User, String> send) {
+        if (user.getOtpExpiresAt() != null
+                && user.getOtpExpiresAt().isAfter(Instant.now().plus(OTP_TTL).minus(OTP_REISSUE_AFTER))) {
+            // Recently issued and still valid: silently keep the existing code, so the
+            // generic 200 stays indistinguishable and SMTP quota can't be burned.
+            return;
+        }
         String code = String.format("%06d", RANDOM.nextInt(1_000_000));
         user.setOtpCode(code);
         user.setOtpExpiresAt(Instant.now().plus(OTP_TTL));
@@ -230,9 +242,49 @@ public class AuthService {
     public AuthResponse resetPassword(String email, String code, String newPassword) {
         User user = consumeCode(email, code, true);
         user.setPasswordHash(passwordEncoder.encode(newPassword));
+        // Truncated to seconds because JWT iat is second-precision: the session issued
+        // below must survive its own reset while every earlier token dies.
+        user.setCredentialsChangedAt(Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
         user = userRepository.save(user);
         mailService.passwordChanged(user);
         return session(user);
+    }
+
+    /**
+     * DPDP account deletion, step 1: mail a confirmation code. Customer accounts only —
+     * staff accounts belong to their company and are managed by its director. Silent for
+     * unknown emails, same as requestOtp, so the endpoint can't probe accounts.
+     */
+    @Transactional
+    public void requestAccountDeletion(String email) {
+        userRepository.findByEmail(email.toLowerCase().trim())
+                .filter(User::isActive)
+                .filter(u -> u.getRole() == Role.CUSTOMER)
+                .ifPresent(user -> issueCode(user, mailService::accountDeletionCode));
+    }
+
+    /**
+     * Step 2: code verified → the login is gone for good. Live personal data (name,
+     * email, phone, city, avatar) is erased and the address freed for a future signup;
+     * leads/invoices/messages keep their own business-record snapshots. Any session
+     * still holding a token dies via credentialsChangedAt.
+     */
+    @Transactional
+    public void confirmAccountDeletion(String email, String code) {
+        User user = consumeCode(email, code, false);
+        String originalEmail = user.getEmail();
+        String originalName = user.getName();
+        user.setActive(false);
+        user.setName("Deleted customer");
+        user.setEmail("deleted-" + user.getId() + "@removed.bespokedesign.in");
+        user.setPhone(null);
+        user.setCity(null);
+        user.setAvatarUrl(null);
+        user.setCredentialsChangedAt(Instant.now());
+        userRepository.save(user);
+        auditService.log(user, null, "ACCOUNT_DELETED",
+                "Customer account #" + user.getId() + " deleted at the owner's request");
+        mailService.accountDeleted(originalEmail, originalName);
     }
 
     /**

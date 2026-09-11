@@ -87,6 +87,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/materials/**").permitAll()
                         .requestMatchers("/api/materials/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
                         .requestMatchers("/uploads/**").permitAll()
+                        // Generic uploads are a staff tool (profiles, products, company pages);
+                        // customers never call it, so don't hand them an image host.
+                        .requestMatchers("/api/uploads/**").hasAnyRole(STAFF_ROLES)
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()
                         // Customer portal + shop checkout.
@@ -122,6 +125,13 @@ public class SecurityConfig {
                                 "/api/messages/**", "/api/tasks/**", "/api/tasks",
                                 "/api/dashboard", "/api/audit")
                         .hasAnyRole(STAFF_ROLES)
+                        // Shared customer+staff surfaces: ownership is enforced in the service
+                        // layer (DocumentService.scoped, ProjectWorkspaceService); this matcher
+                        // exists so the route is deliberately claimed, not caught by anyRequest.
+                        .requestMatchers("/api/documents/**", "/api/project-documents/**",
+                                "/api/project-documents", "/api/project-workspace/**",
+                                "/api/project-workspace")
+                        .authenticated()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

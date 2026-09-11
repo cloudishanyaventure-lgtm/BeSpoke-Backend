@@ -17,4 +17,9 @@ public interface MaterialBrandRepository extends JpaRepository<MaterialBrand, Lo
     @Query("select b from MaterialBrand b join b.categories c"
             + " where c.slug = :slug and b.active = true order by b.name")
     List<MaterialBrand> findByCategorySlug(@Param("slug") String slug);
+
+    /** One query for the whole catalogue page — categories() groups these in memory. */
+    @Query("select distinct b from MaterialBrand b left join fetch b.categories"
+            + " where b.active = true order by b.name")
+    List<MaterialBrand> findActiveWithCategories();
 }

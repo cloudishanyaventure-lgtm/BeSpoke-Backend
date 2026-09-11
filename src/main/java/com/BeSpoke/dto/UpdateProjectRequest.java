@@ -1,5 +1,7 @@
 package com.BeSpoke.dto;
 
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -7,7 +9,7 @@ import java.time.LocalDate;
 public record UpdateProjectRequest(
         String stage,
         String health,
-        BigDecimal budget,
+        @PositiveOrZero BigDecimal budget,
         LocalDate startDate,
         LocalDate targetDate
 ) {

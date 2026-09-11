@@ -62,6 +62,13 @@ public class LeadController {
         return leadService.list(me(authentication), stage, q, assigned);
     }
 
+    /** Platform dashboard counters — spares the admin page loading every lead. */
+    @GetMapping("/stats")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+    public java.util.Map<String, Long> stats() {
+        return leadService.platformStats();
+    }
+
     @GetMapping("/{id}")
     public LeadDetailDto detail(Authentication authentication, @PathVariable Long id) {
         return leadService.detail(me(authentication), id);
@@ -140,6 +147,7 @@ public class LeadController {
 
     /** Staff PRD editor — replaces the brief's rooms, skipping the customer quote lock. */
     @PutMapping("/{id}/prd/rooms")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
     public RequirementFormDto replacePrdRooms(Authentication authentication,
                                               @PathVariable Long id,
                                               @Valid @RequestBody List<RoomRequest> rooms) {
@@ -149,6 +157,7 @@ public class LeadController {
 
     /** Staff PRD editor — the brief's scalar sections, same fields as the customer wizard. */
     @PutMapping("/{id}/prd/form")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
     public RequirementFormDto upsertPrdForm(Authentication authentication,
                                             @PathVariable Long id,
                                             @Valid @RequestBody RequirementFormRequest request) {
@@ -158,6 +167,7 @@ public class LeadController {
 
     /** Marks the brief complete when the studio captured it — stops the customer being asked again. */
     @PostMapping("/{id}/prd/submit")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
     public RequirementFormDto submitPrd(Authentication authentication, @PathVariable Long id) {
         User staff = me(authentication);
         return requirementService.staffSubmit(leadService.scopedLead(staff, id), staff);
@@ -165,6 +175,7 @@ public class LeadController {
 
     /** Studio's final sign-off on the brief — locks it for everyone. */
     @PostMapping("/{id}/prd/approve")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
     public RequirementFormDto approvePrd(Authentication authentication, @PathVariable Long id) {
         User staff = me(authentication);
         return requirementService.studioApprove(leadService.scopedLead(staff, id), staff);

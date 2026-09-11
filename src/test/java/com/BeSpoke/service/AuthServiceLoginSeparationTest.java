@@ -36,8 +36,10 @@ class AuthServiceLoginSeparationTest {
     private final MailService mail = mock(MailService.class);
     private final GoogleTokenVerifier google = mock(GoogleTokenVerifier.class);
 
+    private final AuditService audit = mock(AuditService.class);
+
     private final AuthService auth = new AuthService(users, null, null, null, null,
-            encoder, jwt, profiles, mail, google);
+            encoder, jwt, profiles, mail, google, audit);
 
     private User user(Role role) {
         User u = new User("Someone", "someone@bespoke.in", "hash", role);
@@ -111,6 +113,50 @@ class AuthServiceLoginSeparationTest {
         auth.resetPassword("someone@bespoke.in", code, "brand-new-pass");
         assertThrows(BadRequestException.class,
                 () -> auth.resetPassword("someone@bespoke.in", code, "another-pass"));
+    }
+
+    @Test
+    void aPasswordResetEvictsOlderSessions() {
+        User staff = user(Role.DESIGNER);
+        auth.forgotPassword("someone@bespoke.in");
+        auth.resetPassword("someone@bespoke.in", staff.getOtpCode(), "brand-new-pass");
+        // Stamped, and truncated to seconds so the fresh session's own second-precision
+        // iat survives its own reset.
+        org.junit.jupiter.api.Assertions.assertNotNull(staff.getCredentialsChangedAt());
+        assertEquals(0, staff.getCredentialsChangedAt().getNano());
+    }
+
+    @Test
+    void aFreshCodeIsNotReissuedWithinAMinute() {
+        User customer = user(Role.CUSTOMER);
+        auth.requestOtp("someone@bespoke.in");
+        String first = customer.getOtpCode();
+        auth.requestOtp("someone@bespoke.in");
+        assertEquals(first, customer.getOtpCode());
+        verify(mail, org.mockito.Mockito.times(1)).loginOtp(any(), anyString());
+    }
+
+    @Test
+    void accountDeletionAnonymisesAndDeactivates() {
+        User customer = user(Role.CUSTOMER);
+        auth.requestAccountDeletion("someone@bespoke.in");
+        verify(mail).accountDeletionCode(any(), anyString());
+        auth.confirmAccountDeletion("someone@bespoke.in", customer.getOtpCode());
+
+        org.junit.jupiter.api.Assertions.assertFalse(customer.isActive());
+        org.junit.jupiter.api.Assertions.assertNull(customer.getPhone());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                customer.getEmail().startsWith("deleted-"));
+        org.junit.jupiter.api.Assertions.assertNotNull(customer.getCredentialsChangedAt());
+        // The goodbye mail goes to the address they signed up with, not the tombstone.
+        verify(mail).accountDeleted("someone@bespoke.in", "Someone");
+    }
+
+    @Test
+    void staffCannotDeleteTheirAccountThemselves() {
+        user(Role.DESIGNER);
+        auth.requestAccountDeletion("someone@bespoke.in");
+        verify(mail, never()).accountDeletionCode(any(), anyString());
     }
 
     @Test
