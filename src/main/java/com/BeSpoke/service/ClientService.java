@@ -108,24 +108,28 @@ public class ClientService {
         return new ClientDetailDto(toDto(client, finance), leads, projects, quotes, invoices);
     }
 
-    /** Contact book scope: admin all, company-wide roles their studio's customers, designers their own. */
+    /**
+     * Contact book scope. Derived from {@link LeadService#visibleLeads} rather than
+     * rebuilt here: the Leads list and this one are two views of the same book, and when
+     * each worked out visibility for itself they disagreed — a consultant who owned a
+     * lead as its sales owner (not its designer) watched it leave Leads once the brief
+     * landed and never arrive in Customers. One query, one answer, no gap to fall into.
+     */
     private List<User> visibleClients(User current) {
-        if (current.getRole().isPlatform()) {
-            return allCustomers();
-        }
-        if (current.getRole().seesWholeCompany()) {
-            if (current.getCompany() == null) {
-                return List.of();
+        Map<Long, User> clients = new LinkedHashMap<>();
+        for (Lead lead : leadService.visibleLeads(current)) {
+            if (briefIsIn(lead)) {
+                clients.putIfAbsent(lead.getCustomer().getId(), lead.getCustomer());
             }
-            Map<Long, User> clients = new LinkedHashMap<>();
-            for (Lead lead : leadRepository.findByCompanyOrderByCreatedAtDesc(current.getCompany())) {
-                if (briefIsIn(lead)) {
-                    clients.putIfAbsent(lead.getCustomer().getId(), lead.getCustomer());
-                }
-            }
-            return new ArrayList<>(clients.values());
         }
-        return designerClients(current);
+        // A project you run keeps its client in your book whatever its brief looks like —
+        // work that is already under way never drops out of the contact list.
+        for (Project project : projectRepository.findByDesignerOrderByCreatedAtDesc(current)) {
+            if (project.getClient() != null) {
+                clients.putIfAbsent(project.getClient().getId(), project.getClient());
+            }
+        }
+        return new ArrayList<>(clients.values());
     }
 
     /**
@@ -139,30 +143,6 @@ public class ClientService {
                 && requirementFormRepository.findByLead(lead)
                         .map(form -> form.getStatus() != RequirementFormStatus.DRAFT)
                         .orElse(false);
-    }
-
-    /** Platform admins see every customer on the platform, the same way they see the whole pool. */
-    private List<User> allCustomers() {
-        return userRepository.findAllByOrderByCreatedAtDesc().stream()
-                .filter(user -> user.getRole() == Role.CUSTOMER)
-                .toList();
-    }
-
-    /** Customers a designer serves: owners of their assigned leads or of projects they run. */
-    private List<User> designerClients(User designer) {
-        // Key by id: User has no equals/hashCode override and instances come from separate queries.
-        Map<Long, User> clients = new LinkedHashMap<>();
-        for (Lead lead : leadRepository.findByAssignedDesignerOrderByCreatedAtDesc(designer)) {
-            if (briefIsIn(lead)) {
-                clients.putIfAbsent(lead.getCustomer().getId(), lead.getCustomer());
-            }
-        }
-        for (Project project : projectRepository.findByDesignerOrderByCreatedAtDesc(designer)) {
-            if (project.getClient() != null) {
-                clients.putIfAbsent(project.getClient().getId(), project.getClient());
-            }
-        }
-        return new ArrayList<>(clients.values());
     }
 
     private ClientDto toDto(User client, boolean finance) {

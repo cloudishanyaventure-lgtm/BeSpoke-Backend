@@ -92,6 +92,33 @@ class LeadConversionTest {
         assertEquals(1, clientService.list(director).size(), "they are in Customers now");
     }
 
+    @Test void whoeverCanSeeTheLeadSeesTheCustomerItBecomes() {
+        // The consultant owns this lead as its sales owner and is not its designer. Both
+        // lists are the same book: a lead that leaves theirs has to arrive in the other.
+        User consultant = new User("Puneet", "consultant@conversion.test", "unused", Role.CUSTOMER_CONSULTANT);
+        consultant.setCompany(studio);
+        consultant = users.save(consultant);
+        User designer = new User("Laxmi", "designer@conversion.test", "unused", Role.DESIGNER);
+        designer.setCompany(studio);
+        designer = users.save(designer);
+
+        LeadSummaryDto captured = capture("Kapil Agarwal", "kapil@home.test", "9800000013");
+        Lead lead = leads.findById(captured.id()).orElseThrow();
+        lead.setSalesOwner(consultant);
+        lead.setAssignedDesigner(designer);
+        leads.save(lead);
+        assertTrue(leadService.list(consultant, null, null, null).stream()
+                .anyMatch(l -> l.id().equals(captured.id())), "the consultant works this lead");
+
+        captureDraftBrief(captured.id());
+        requirementService.staffSubmit(leads.findById(captured.id()).orElseThrow(), director);
+
+        assertEquals(1, clientService.list(consultant).size(),
+                "so the customer it became is in their contact book too");
+        assertEquals(1, clientService.list(designer).size(), "and in the designer's");
+        assertEquals(1, clientService.list(director).size(), "and the director's");
+    }
+
     @Test void aSignedUpCustomerIsStillALeadUntilTheirBriefIsIn() {
         // A website signup owns an account from the minute they register — but with no
         // brief there is nothing to design, so they belong to Leads, not Customers.
