@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 
 public record QuoteItemDto(
         Long id,
-        String category,
         String description,
         BigDecimal qty,
         BigDecimal rate,
@@ -18,7 +17,7 @@ public record QuoteItemDto(
         BigDecimal net = item.getQty().multiply(item.getRate());
         BigDecimal lineTotal = net.add(net.multiply(BigDecimal.valueOf(item.getGstPct()))
                 .divide(BigDecimal.valueOf(100)));
-        return new QuoteItemDto(item.getId(), item.getCategory().name(), item.getDescription(),
+        return new QuoteItemDto(item.getId(), item.getDescription(),
                 item.getQty(), item.getRate(), item.getGstPct(), lineTotal);
     }
 }

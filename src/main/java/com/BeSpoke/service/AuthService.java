@@ -129,6 +129,38 @@ public class AuthService {
         return new AuthResponse(null, UserDto.from(user), lead.getId());
     }
 
+    /**
+     * The account half of {@link #register} for a lead captured without one (walk-in,
+     * phone, enquiry, email). Called when the funnel first moves: from CONTACTED onwards
+     * the contact book, the portal, messages, drawings and invoices all need a CUSTOMER to
+     * hang off. Returns null when there is nothing safe to mint — no email on the lead, or
+     * the address already belongs to a staff account.
+     */
+    @Transactional
+    public User customerForLead(Lead lead) {
+        String email = lead.getContactEmail() == null ? "" : lead.getContactEmail().toLowerCase().trim();
+        if (email.isEmpty()) {
+            return null;
+        }
+        User existing = userRepository.findByEmail(email).orElse(null);
+        if (existing != null) {
+            // Same person enquiring twice gets one account; a staff address is left alone.
+            return existing.getRole() == Role.CUSTOMER ? existing : null;
+        }
+        User customer = new User(lead.getContactName().trim(), email,
+                passwordEncoder.encode(generatePassword()), Role.CUSTOMER);
+        // A phone already held by another account is dropped rather than failing the stage
+        // change — it stays readable on the lead either way.
+        String phone = com.BeSpoke.repository.UserRepository.normalisePhone(lead.getContactPhone());
+        if (phone != null && !userRepository.existsByPhone(phone)) {
+            customer.setPhone(phone);
+        }
+        customer.setCity(lead.getCity());
+        customer = userRepository.save(customer);
+        mailService.customerSignedUp(customer);
+        return customer;
+    }
+
     private static String generatePassword() {
         StringBuilder password = new StringBuilder(10);
         for (int i = 0; i < 10; i++) {
@@ -159,8 +191,23 @@ public class AuthService {
     /** A code issued less than this long ago is not reissued — stops mail-bombing an address. */
     private static final Duration OTP_REISSUE_AFTER = Duration.ofMinutes(1);
 
+    /** The fixed code a review account signs in with. Never mailed, never expires. */
+    private static final String REVIEW_CODE = "000000";
+
+    /** How long a review account's fixed code stays valid — effectively forever. */
+    private static final Duration REVIEW_CODE_TTL = Duration.ofDays(3650);
+
     /** Issues a fresh one-time code and mails it via {@code send}. */
     private void issueCode(User user, java.util.function.BiConsumer<User, String> send) {
+        if (user.isInternal()) {
+            // Store-review accounts: app-store reviewers cannot read our mail and their
+            // credentials must survive every release, so the code is fixed and unmailed.
+            user.setOtpCode(REVIEW_CODE);
+            user.setOtpExpiresAt(Instant.now().plus(REVIEW_CODE_TTL));
+            user.setOtpAttempts(0);
+            userRepository.save(user);
+            return;
+        }
         if (user.getOtpExpiresAt() != null
                 && user.getOtpExpiresAt().isAfter(Instant.now().plus(OTP_TTL).minus(OTP_REISSUE_AFTER))) {
             // Recently issued and still valid: silently keep the existing code, so the
@@ -183,10 +230,19 @@ public class AuthService {
         User user = userRepository.findByEmail(email.toLowerCase().trim())
                 .filter(User::isActive)
                 .filter(u -> staffSide == (u.getRole() != Role.CUSTOMER))
-                .filter(u -> u.getOtpCode() != null
+                // A review account's code is fixed and always live, so it works even if the
+                // app never called /otp/request first.
+                .filter(u -> u.isInternal()
+                        || (u.getOtpCode() != null
                         && u.getOtpExpiresAt() != null
-                        && u.getOtpExpiresAt().isAfter(Instant.now()))
+                        && u.getOtpExpiresAt().isAfter(Instant.now())))
                 .orElseThrow(() -> new BadRequestException("Invalid or expired code"));
+        if (user.isInternal()) {
+            if (!REVIEW_CODE.equals(code.trim())) {
+                throw new BadRequestException("Invalid or expired code");
+            }
+            return user;  // never burned, never counted — the reviewer signs in again next release
+        }
         if (!user.getOtpCode().equals(code.trim())) {
             user.setOtpAttempts(user.getOtpAttempts() + 1);
             if (user.getOtpAttempts() >= 5) {

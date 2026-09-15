@@ -21,6 +21,8 @@ public record LeadSummaryDto(
         Instant createdAt,
         String formStatus,
         boolean hasCustomerAccount,
+        /** The customer account behind this lead, once the funnel converted it. */
+        Long customerId,
         Long companyId,
         String companyName,
         UserRefDto salesOwner,
@@ -52,6 +54,7 @@ public record LeadSummaryDto(
                 lead.getCreatedAt(),
                 formStatus,
                 lead.getCustomer() != null,
+                lead.getCustomer() != null ? lead.getCustomer().getId() : null,
                 lead.getCompany() != null ? lead.getCompany().getId() : null,
                 lead.getCompany() != null ? lead.getCompany().getName() : null,
                 UserRefDto.from(lead.getSalesOwner()),

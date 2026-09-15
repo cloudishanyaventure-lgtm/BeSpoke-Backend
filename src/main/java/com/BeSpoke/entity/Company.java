@@ -156,6 +156,18 @@ public class Company {
     @Column(name = "image_url", length = 1000)
     private List<String> portfolioUrls = new ArrayList<>();
 
+    /**
+     * Which room each portfolio photo belongs to ("Kitchen", "Master bedroom"), keyed by
+     * its URL so the photo list above — and every page already reading it — is untouched.
+     * A photo with no entry here shows under the profile's general portfolio.
+     */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "company_portfolio_sections", joinColumns = @JoinColumn(name = "company_id"))
+    @jakarta.persistence.MapKeyColumn(name = "image_url", length = 500)
+    @Column(name = "section", length = 120)
+    private java.util.Map<String, String> portfolioSections = new java.util.LinkedHashMap<>();
+
     /** Empty set == all applicable roles enabled (grandfathering trick). */
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -284,6 +296,14 @@ public class Company {
 
     public List<String> getPortfolioUrls() {
         return portfolioUrls;
+    }
+
+    public java.util.Map<String, String> getPortfolioSections() {
+        return portfolioSections;
+    }
+
+    public void setPortfolioSections(java.util.Map<String, String> portfolioSections) {
+        this.portfolioSections = portfolioSections;
     }
 
     public void setPortfolioUrls(List<String> portfolioUrls) {

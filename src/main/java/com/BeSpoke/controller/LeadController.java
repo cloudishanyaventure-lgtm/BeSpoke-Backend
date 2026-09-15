@@ -13,6 +13,7 @@ import com.BeSpoke.dto.RequirementFormRequest;
 import com.BeSpoke.dto.RoomRequest;
 import com.BeSpoke.dto.RouteLeadRequest;
 import com.BeSpoke.dto.StageChangeRequest;
+import com.BeSpoke.dto.UpdateLeadContactRequest;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.service.CurrentUserService;
 import com.BeSpoke.service.LeadService;
@@ -37,6 +38,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/leads")
 public class LeadController {
+
+    /**
+     * Everyone who actually works a lead — including the consultant or sales exec who makes
+     * the first call and takes the brief down over the phone. Visibility is still the
+     * service layer's job; this only keeps customers and vendors out.
+     */
+    private static final String WORKS_THE_LEAD = "hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR',"
+            + "'PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER',"
+            + "'SALES_MANAGER','CUSTOMER_CONSULTANT','SALES_EXECUTIVE')";
 
     private final LeadService leadService;
     private final RequirementService requirementService;
@@ -87,6 +97,15 @@ public class LeadController {
                                       @PathVariable Long id,
                                       @Valid @RequestBody StageChangeRequest request) {
         return leadService.changeStage(me(authentication), id, request);
+    }
+
+    /** Staff filling in contact details the customer never completed; mirrors onto their account. */
+    @PutMapping("/{id}/contact")
+    @PreAuthorize(WORKS_THE_LEAD)
+    public LeadSummaryDto updateContact(Authentication authentication,
+                                        @PathVariable Long id,
+                                        @Valid @RequestBody UpdateLeadContactRequest request) {
+        return leadService.updateContact(me(authentication), id, request);
     }
 
     @PutMapping("/{id}/follow-up")
@@ -147,7 +166,7 @@ public class LeadController {
 
     /** Staff PRD editor — replaces the brief's rooms, skipping the customer quote lock. */
     @PutMapping("/{id}/prd/rooms")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
+    @PreAuthorize(WORKS_THE_LEAD)
     public RequirementFormDto replacePrdRooms(Authentication authentication,
                                               @PathVariable Long id,
                                               @Valid @RequestBody List<RoomRequest> rooms) {
@@ -157,7 +176,7 @@ public class LeadController {
 
     /** Staff PRD editor — the brief's scalar sections, same fields as the customer wizard. */
     @PutMapping("/{id}/prd/form")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
+    @PreAuthorize(WORKS_THE_LEAD)
     public RequirementFormDto upsertPrdForm(Authentication authentication,
                                             @PathVariable Long id,
                                             @Valid @RequestBody RequirementFormRequest request) {
@@ -167,7 +186,7 @@ public class LeadController {
 
     /** Marks the brief complete when the studio captured it — stops the customer being asked again. */
     @PostMapping("/{id}/prd/submit")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
+    @PreAuthorize(WORKS_THE_LEAD)
     public RequirementFormDto submitPrd(Authentication authentication, @PathVariable Long id) {
         User staff = me(authentication);
         return requirementService.staffSubmit(leadService.scopedLead(staff, id), staff);
@@ -175,7 +194,7 @@ public class LeadController {
 
     /** Studio's final sign-off on the brief — locks it for everyone. */
     @PostMapping("/{id}/prd/approve")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')")
+    @PreAuthorize(WORKS_THE_LEAD)
     public RequirementFormDto approvePrd(Authentication authentication, @PathVariable Long id) {
         User staff = me(authentication);
         return requirementService.studioApprove(leadService.scopedLead(staff, id), staff);

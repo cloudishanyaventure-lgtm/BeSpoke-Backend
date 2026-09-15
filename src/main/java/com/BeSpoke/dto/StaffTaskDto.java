@@ -23,6 +23,10 @@ public record StaffTaskDto(
         Instant createdAt,
         String visibility,
         String priority,
+        Long leadId,
+        String leadName,
+        Long customerId,
+        String customerName,
         boolean canUpdate
 ) {
     public static StaffTaskDto from(StaffTask task) {
@@ -41,6 +45,11 @@ public record StaffTaskDto(
                 task.getDueDate(),
                 task.getStatus().name(),
                 task.getCompletedAt(),
-                task.getCreatedAt(), task.getVisibility().name(), task.getPriority().name(), canUpdate);
+                task.getCreatedAt(), task.getVisibility().name(), task.getPriority().name(),
+                task.getLead() != null ? task.getLead().getId() : null,
+                task.getLead() != null ? task.getLead().getContactName() : null,
+                task.getCustomer() != null ? task.getCustomer().getId() : null,
+                task.getCustomer() != null ? task.getCustomer().getName() : null,
+                canUpdate);
     }
 }

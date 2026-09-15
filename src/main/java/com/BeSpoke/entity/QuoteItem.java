@@ -2,8 +2,6 @@ package com.BeSpoke.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,10 +23,6 @@ public class QuoteItem {
     @JoinColumn(name = "quote_id", nullable = false)
     private Quote quote;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private QuoteItemCategory category;
-
     @Column(nullable = false, length = 500)
     private String description;
 
@@ -44,10 +38,9 @@ public class QuoteItem {
     public QuoteItem() {
     }
 
-    public QuoteItem(Quote quote, QuoteItemCategory category, String description,
+    public QuoteItem(Quote quote, String description,
                      BigDecimal qty, BigDecimal rate, int gstPct) {
         this.quote = quote;
-        this.category = category;
         this.description = description;
         this.qty = qty;
         this.rate = rate;
@@ -68,14 +61,6 @@ public class QuoteItem {
 
     public void setQuote(Quote quote) {
         this.quote = quote;
-    }
-
-    public QuoteItemCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(QuoteItemCategory category) {
-        this.category = category;
     }
 
     public String getDescription() {

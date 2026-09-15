@@ -22,6 +22,8 @@ public record UpdateCompanyRequest(
         @Min(1900) @Max(2100) Integer foundedYear,
         List<String> styles,
         List<String> portfolioUrls,
+        /** Photo URL → the section it belongs under. Replaces the whole map. */
+        java.util.Map<String, String> portfolioSections,
         @Size(max = 20) String accentColor,
         List<String> vendorCategories,
         @Size(max = 30) String gstin,

@@ -99,7 +99,7 @@ public class SecurityConfig {
                         // Vendor workspace (service layer 404s non-vendor companies).
                         .requestMatchers("/api/vendor/**").hasAnyRole(VENDOR_ROLES)
                         // Financials: invoices for finance roles, quotes also for the funnel roles.
-                        .requestMatchers("/api/invoices/**")
+                        .requestMatchers("/api/invoices/**", "/api/payments", "/api/payments/**")
                         .hasAnyRole("SUPER_ADMIN", "ADMIN", "DIRECTOR", "ACCOUNT_MANAGER")
                         .requestMatchers("/api/quotes/**")
                         .hasAnyRole("SUPER_ADMIN", "ADMIN", "DIRECTOR", "ACCOUNT_MANAGER",

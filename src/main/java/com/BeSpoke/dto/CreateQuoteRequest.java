@@ -12,6 +12,9 @@ import java.util.List;
 public record CreateQuoteRequest(
         @NotNull Long leadId,
         @NotBlank @Size(max = 255) String title,
+        /** One category for the whole proposal. */
+        @NotBlank @jakarta.validation.constraints.Pattern(
+                regexp = "DESIGN_AND_DRAWINGS|DESIGN_AND_PMC|TURNKEY|MODULAR") String category,
         LocalDate validUntil,
         @NotEmpty @Valid List<QuoteItemRequest> items
 ) {

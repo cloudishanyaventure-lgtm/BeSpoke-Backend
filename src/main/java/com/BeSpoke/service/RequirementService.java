@@ -37,6 +37,7 @@ public class RequirementService {
     private final LeadActivityRepository leadActivityRepository;
     private final ScoreService scoreService;
     private final MailService mailService;
+    private final LeadService leadService;
 
     public RequirementService(LeadRepository leadRepository,
                               CustomerContextService context,
@@ -44,7 +45,8 @@ public class RequirementService {
                               QuoteRepository quoteRepository,
                               LeadActivityRepository leadActivityRepository,
                               ScoreService scoreService,
-                              MailService mailService) {
+                              MailService mailService,
+                              LeadService leadService) {
         this.leadRepository = leadRepository;
         this.context=context;
         this.requirementFormRepository = requirementFormRepository;
@@ -52,6 +54,7 @@ public class RequirementService {
         this.leadActivityRepository = leadActivityRepository;
         this.scoreService = scoreService;
         this.mailService = mailService;
+        this.leadService = leadService;
     }
 
     public Lead myLead(User customer) {
@@ -138,6 +141,9 @@ public class RequirementService {
         form = requirementFormRepository.save(form);
         leadActivityRepository.save(new LeadActivity(lead, staff, ActivityType.SYSTEM,
                 "Requirements captured by " + staff.getName() + " on the customer's behalf"));
+        // A completed brief is a real project: the walk-in the studio typed in becomes a
+        // customer here, with the portal login to read it back, without waiting on a stage.
+        leadService.convertToCustomer(lead, staff);
         rescore(lead, form);
         return RequirementFormDto.from(form);
     }
@@ -197,6 +203,7 @@ public class RequirementService {
         form = requirementFormRepository.save(form);
         leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
                 "Requirements captured — customer submitted the requirement form"));
+        leadService.convertToCustomer(lead, customer);
         rescore(lead, form);
         // MailService swallows failures; the submit never breaks on a mail error.
         mailService.briefSubmitted(customer);

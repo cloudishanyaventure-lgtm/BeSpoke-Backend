@@ -10,7 +10,7 @@ import com.BeSpoke.entity.Lead;
 import com.BeSpoke.entity.LeadActivity;
 import com.BeSpoke.entity.Quote;
 import com.BeSpoke.entity.QuoteItem;
-import com.BeSpoke.entity.QuoteItemCategory;
+import com.BeSpoke.entity.QuoteCategory;
 import com.BeSpoke.entity.QuoteStatus;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
@@ -62,6 +62,7 @@ public class QuoteService {
         quote.setLead(lead);
         quote.setVersion(version);
         quote.setTitle(request.title().trim());
+        quote.setCategory(QuoteCategory.valueOf(request.category()));
         quote.setValidUntil(request.validUntil());
         quote.setStatus(QuoteStatus.DRAFT);
         applyItems(quote, request.items());
@@ -76,6 +77,7 @@ public class QuoteService {
             throw new ConflictException("Only DRAFT quotes can be edited — use revise to create a new version");
         }
         quote.setTitle(request.title().trim());
+        quote.setCategory(QuoteCategory.valueOf(request.category()));
         quote.setValidUntil(request.validUntil());
         applyItems(quote, request.items());
         return QuoteDto.from(quoteRepository.save(quote));
@@ -107,10 +109,11 @@ public class QuoteService {
         copy.setLead(source.getLead());
         copy.setVersion(version);
         copy.setTitle(source.getTitle());
+        copy.setCategory(source.getCategory());
         copy.setValidUntil(source.getValidUntil());
         copy.setStatus(QuoteStatus.DRAFT);
         for (QuoteItem item : source.getItems()) {
-            copy.getItems().add(new QuoteItem(copy, item.getCategory(), item.getDescription(),
+            copy.getItems().add(new QuoteItem(copy, item.getDescription(),
                     item.getQty(), item.getRate(), item.getGstPct()));
         }
         copy = quoteRepository.save(copy);
@@ -192,8 +195,8 @@ public class QuoteService {
     private void applyItems(Quote quote, List<QuoteItemRequest> items) {
         quote.getItems().clear();
         for (QuoteItemRequest item : items) {
-            quote.getItems().add(new QuoteItem(quote, QuoteItemCategory.valueOf(item.category()),
-                    item.description().trim(), item.qty(), item.rate(), item.gstPct()));
+            quote.getItems().add(new QuoteItem(quote, item.description().trim(),
+                    item.qty(), item.rate(), item.gstPct()));
         }
     }
 }

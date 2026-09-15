@@ -18,11 +18,15 @@ public class StaffTaskService {
     private final TaskCommentRepository comments;
     private final CryptoService crypto;
     private final NotificationService notifications;
+    private final LeadRepository leads;
+    private final LeadService leadService;
 
     public StaffTaskService(StaffTaskRepository tasks, UserRepository users, MailService mail,
-                            TaskCommentRepository comments, CryptoService crypto, NotificationService notifications) {
+                            TaskCommentRepository comments, CryptoService crypto, NotificationService notifications,
+                            LeadRepository leads, LeadService leadService) {
         this.tasks = tasks; this.users = users; this.mail = mail;
         this.comments = comments; this.crypto = crypto; this.notifications = notifications;
+        this.leads = leads; this.leadService = leadService;
     }
     public record Person(Long userId, String name, String role, boolean canAssign) {}
     public List<Person> people(User actor) {
@@ -45,6 +49,8 @@ public class StaffTaskService {
             throw new ForbiddenException("Assign work to yourself or someone below you in the reporting hierarchy");
         StaffTask task = new StaffTask(company, request.title().trim(), assignee, actor);
         task.setDetails(request.details()); task.setDueDate(request.dueDate());
+        if (request.leadId() != null) task.setLead(leadService.scopedLead(actor, request.leadId()));
+        if (request.customerId() != null) task.setCustomer(scopedCustomer(actor, request.customerId()));
         try {
             task.setVisibility(request.visibility() == null ? StaffTask.Visibility.PRIVATE : StaffTask.Visibility.valueOf(request.visibility()));
             task.setPriority(request.priority() == null ? StaffTask.Priority.NORMAL : StaffTask.Priority.valueOf(request.priority()));
@@ -100,6 +106,15 @@ public class StaffTaskService {
         requireCompany(actor);
         return tasks.countByAssigneeAndStatusNot(actor, StaffTask.Status.DONE);
     }
+    /** A customer is only pickable when the actor can see at least one of their leads. */
+    private User scopedCustomer(User actor, Long customerId) {
+        User customer = users.findById(customerId).filter(u -> u.getRole() == Role.CUSTOMER)
+                .orElseThrow(() -> new BadRequestException("Choose a customer from your own book"));
+        if (leads.findByCustomerOrderByCreatedAtDesc(customer).stream().noneMatch(l -> leadService.canSee(actor, l)))
+            throw new BadRequestException("Choose a customer from your own book");
+        return customer;
+    }
+
     private Company requireCompany(User actor) {
         if (!WorkHierarchy.activeColleague(actor, actor)) throw new ForbiddenException("An active staff account and company are required");
         return actor.getCompany();

@@ -28,7 +28,8 @@ public class StaffTask {
 
     public enum Status { OPEN, IN_PROGRESS, BLOCKED, DONE }
     public enum Visibility { PUBLIC, PRIVATE }
-    public enum Priority { LOW, NORMAL, HIGH, URGENT }
+    /** LOW/NORMAL/HIGH are legacy values kept so old rows still read; the form offers the last four. */
+    public enum Priority { LOW, NORMAL, HIGH, URGENT, ESCALATION, SITE_VISIT, COMPLETE_BY_TODAY }
 
     // Nullable for existing installations: historical work must stay private.
     @Enumerated(EnumType.STRING)
@@ -64,6 +65,16 @@ public class StaffTask {
     @ManyToOne(optional = false)
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;
+
+    /** Optional: the lead this work is about, picked in the brief. */
+    @ManyToOne
+    @JoinColumn(name = "lead_id")
+    private Lead lead;
+
+    /** Optional: the customer this work is about, picked in the brief. */
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private User customer;
 
     private LocalDate dueDate;
 
@@ -128,6 +139,22 @@ public class StaffTask {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Lead getLead() {
+        return lead;
+    }
+
+    public void setLead(Lead lead) {
+        this.lead = lead;
+    }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
     }
 
     public LocalDate getDueDate() {

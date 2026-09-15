@@ -58,6 +58,16 @@ public class User {
     @Column(nullable = false)
     private boolean active = true;
 
+    /**
+     * Review/demo account: sign-in codes are never mailed, the code is always
+     * {@code 000000} and it never expires. Play Store and App Store reviewers
+     * cannot receive our OTP mail, and their credentials must keep working
+     * across releases. Set this on the review account only.
+     */
+    @Column(name = "internal_account", nullable = false)
+    @ColumnDefault("false")
+    private boolean internal = false;
+
     /** One-time email login code; cleared on use. */
     @Column(length = 6)
     private String otpCode;
@@ -167,6 +177,14 @@ public class User {
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isInternal() {
+        return internal;
+    }
+
+    public void setInternal(boolean internal) {
+        this.internal = internal;
     }
 
     public void setActive(boolean active) {

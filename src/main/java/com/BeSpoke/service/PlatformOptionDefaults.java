@@ -124,6 +124,11 @@ final class PlatformOptionDefaults {
                 "Mid-century modern", "Industrial", "Bohemian", "Traditional Indian", "Japandi",
                 "Art deco", "Rustic / farmhouse");
 
+        // Rooms a studio files its portfolio photos under — each section shows only its
+        // own photos on the public profile.
+        plain(lists, "PORTFOLIO_SECTION", "Master bedroom", "Living room", "Kitchen",
+                "Washroom", "Study room", "Terrace garden");
+
         coded(lists, "PROPERTY_TYPE",
                 entry("APARTMENT", "Apartment"),
                 entry("BUILDER_FLOOR", "Builder floor"),

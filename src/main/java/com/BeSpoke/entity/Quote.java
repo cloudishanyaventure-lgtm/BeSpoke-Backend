@@ -46,6 +46,11 @@ public class Quote {
     @Column(nullable = false)
     private QuoteStatus status = QuoteStatus.DRAFT;
 
+    /** Nullable only for quotes raised before the category moved off the line items. */
+    @Enumerated(EnumType.STRING)
+    @Column(length = 40)
+    private QuoteCategory category;
+
     private LocalDate validUntil;
 
     private Instant sentAt;
@@ -103,6 +108,14 @@ public class Quote {
 
     public void setStatus(QuoteStatus status) {
         this.status = status;
+    }
+
+    public QuoteCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(QuoteCategory category) {
+        this.category = category;
     }
 
     public LocalDate getValidUntil() {

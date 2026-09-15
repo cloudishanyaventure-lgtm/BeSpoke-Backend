@@ -8,6 +8,7 @@ import com.BeSpoke.dto.LeadDetailDto;
 import com.BeSpoke.dto.LeadSummaryDto;
 import com.BeSpoke.dto.QuoteDto;
 import com.BeSpoke.dto.StageChangeRequest;
+import com.BeSpoke.dto.UpdateLeadContactRequest;
 import com.BeSpoke.entity.ActivityType;
 import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.CompanyType;
@@ -19,6 +20,7 @@ import com.BeSpoke.entity.Project;
 import com.BeSpoke.entity.ProjectMilestone;
 import com.BeSpoke.entity.ProjectStage;
 import com.BeSpoke.entity.RequirementForm;
+import com.BeSpoke.entity.RequirementFormStatus;
 import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
@@ -80,6 +82,7 @@ public class LeadService {
     private final AuditService auditService;
     private final MailService mailService;
     private final NotificationService notifications;
+    private final AuthService authService;
 
     public LeadService(LeadRepository leadRepository,
                        LeadActivityRepository leadActivityRepository,
@@ -93,7 +96,8 @@ public class LeadService {
                        ProjectService projectService,
                        AuditService auditService,
                        MailService mailService,
-                       NotificationService notifications) {
+                       NotificationService notifications,
+                       AuthService authService) {
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.requirementFormRepository = requirementFormRepository;
@@ -107,6 +111,7 @@ public class LeadService {
         this.auditService = auditService;
         this.mailService = mailService;
         this.notifications = notifications;
+        this.authService = authService;
     }
 
     /**
@@ -252,6 +257,7 @@ public class LeadService {
                 && !(role.isPlatform() || role == Role.DIRECTOR || role == Role.SALES_MANAGER)) {
             throw new ForbiddenException("Only a director or sales manager may close a lead");
         }
+        requireBriefFor(lead, target);
         if (target == LeadStatus.WON) {
             // Bypass: solo/small studios with the DESIGNER role disabled can win without one.
             boolean designerEnabled = lead.getCompany() == null
@@ -260,6 +266,10 @@ public class LeadService {
                 throw new BadRequestException("Assign a designer before marking this lead as won");
             }
             lead.setWonAt(Instant.now());
+        }
+        // The funnel moving is one of the two conversions. LOST converts nobody.
+        if (target != LeadStatus.LOST) {
+            convertToCustomer(lead, current);
         }
         lead.setStatus(target);
         leadRepository.save(lead);
@@ -273,6 +283,59 @@ public class LeadService {
             createProjectForWonLead(lead);
         }
         return toSummary(lead);
+    }
+
+    /**
+     * A lead becomes a customer the moment there is something real to work with: the
+     * funnel moves it out of the pool, or its design brief is completed. Both routes call
+     * this, so "converted" means one thing — the account exists, the lead points at it,
+     * and the person shows up under Customers with a portal login of their own.
+     *
+     * <p>Returns null when there is nothing to convert: no email on the lead, or the
+     * address belongs to a staff account. Idempotent — an already-converted lead is left
+     * exactly as it is.
+     */
+    @Transactional
+    public User convertToCustomer(Lead lead, User actor) {
+        if (lead.getCustomer() != null) {
+            return lead.getCustomer();
+        }
+        User customer = authService.customerForLead(lead);
+        if (customer == null) {
+            return null;
+        }
+        lead.setCustomer(customer);
+        lead.setUpdatedAt(Instant.now());
+        leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, actor, ActivityType.SYSTEM,
+                "Converted to customer · " + customer.getEmail()));
+        return customer;
+    }
+
+    /**
+     * The funnel's two paperwork gates: a lead is only "contacted" once the design brief
+     * is captured, and a proposal only goes out once the PRD is filled and the customer
+     * has signed it off. Nothing is chased on a stage a studio was never allowed to skip.
+     */
+    private void requireBriefFor(Lead lead, LeadStatus target) {
+        if (target != LeadStatus.CONTACTED && target != LeadStatus.PROPOSAL_SENT) {
+            return;
+        }
+        RequirementForm form = requirementFormRepository.findByLead(lead).orElse(null);
+        if (target == LeadStatus.CONTACTED) {
+            if (form == null || form.getStatus() == RequirementFormStatus.DRAFT) {
+                throw new BadRequestException(
+                        "Capture the design brief and mark it complete before moving this lead to Contacted");
+            }
+            return;
+        }
+        if (form == null || form.getRooms().isEmpty()) {
+            throw new BadRequestException("Fill the PRD before sending a proposal");
+        }
+        if (form.getStatus() != RequirementFormStatus.APPROVED
+                && form.getStatus() != RequirementFormStatus.LOCKED) {
+            throw new BadRequestException("The customer has not approved the PRD yet");
+        }
     }
 
     /** APARTMENT → "Apartment", BUILDER_FLOOR → "Builder floor"; null → "Home". */
@@ -307,6 +370,66 @@ public class LeadService {
                 "pool", leadRepository.countByCompanyIsNullAndStatusNot(LeadStatus.LOST),
                 "open", leadRepository.countByStatusNotIn(
                         EnumSet.of(LeadStatus.WON, LeadStatus.LOST)));
+    }
+
+    /**
+     * Staff completing the profile the customer did not: an email enquiry arrives with no
+     * phone and no city, a walk-in gets typed in a hurry. The lead is the record of record,
+     * so what is filled here is mirrored onto the customer's account when there is one —
+     * there is no second place to enter it. Blank fields leave the existing value alone.
+     */
+    @Transactional
+    public LeadSummaryDto updateContact(User current, Long leadId, UpdateLeadContactRequest request) {
+        Lead lead = scopedLead(current, leadId);
+        User customer = lead.getCustomer();
+        lead.setContactName(request.name().trim());
+        if (isSet(request.email())) {
+            String email = request.email().toLowerCase(Locale.ROOT).trim();
+            if (customer != null && !customer.getEmail().equalsIgnoreCase(email)) {
+                // The address is the customer's sign-in identity; changing it here would
+                // orphan the account. Support moves it, not the funnel.
+                throw new BadRequestException("This lead has a customer account — its email cannot be changed here");
+            }
+            lead.setContactEmail(email);
+        }
+        if (isSet(request.phone())) {
+            lead.setContactPhone(request.phone().trim());
+        }
+        if (isSet(request.city())) {
+            lead.setCity(request.city().trim());
+        }
+        if (isSet(request.propertyType())) {
+            lead.setPropertyType(request.propertyType().trim());
+        }
+        if (isSet(request.budgetBand())) {
+            lead.setBudgetBand(request.budgetBand().trim());
+        }
+        if (customer != null) {
+            customer.setName(lead.getContactName());
+            String phone = com.BeSpoke.repository.UserRepository.normalisePhone(lead.getContactPhone());
+            if (phone != null && !phone.equals(customer.getPhone())) {
+                if (userRepository.existsByPhone(phone)) {
+                    throw new BadRequestException("An account with this phone number already exists");
+                }
+                customer.setPhone(phone);
+            }
+            if (isSet(lead.getCity())) {
+                customer.setCity(lead.getCity());
+            }
+            userRepository.save(customer);
+        }
+        lead.setUpdatedAt(Instant.now());
+        // Budget and property type feed the score, so a corrected capture re-ranks the lead.
+        scoreService.rescore(lead, requirementFormRepository.findByLead(lead)
+                .map(RequirementForm::getStatus).orElse(null));
+        leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, current, ActivityType.SYSTEM,
+                "Contact details updated"));
+        return toSummary(lead);
+    }
+
+    private static boolean isSet(String value) {
+        return value != null && !value.isBlank();
     }
 
     @Transactional

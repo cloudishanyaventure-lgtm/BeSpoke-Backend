@@ -33,7 +33,8 @@ class StaffTaskServiceTest {
     private final MailService mail = mock(MailService.class);
 
     private final StaffTaskService service = new StaffTaskService(tasks, users, mail,
-            mock(com.BeSpoke.repository.TaskCommentRepository.class), mock(CryptoService.class), mock(NotificationService.class));
+            mock(com.BeSpoke.repository.TaskCommentRepository.class), mock(CryptoService.class), mock(NotificationService.class),
+            mock(com.BeSpoke.repository.LeadRepository.class), mock(LeadService.class));
 
     private final Company studio = company(1L, "Studio Nine");
     private final Company rival = company(2L, "Another Studio");

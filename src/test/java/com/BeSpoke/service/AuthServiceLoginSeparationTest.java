@@ -87,6 +87,33 @@ class AuthServiceLoginSeparationTest {
     }
 
     @Test
+    void aReviewAccountSignsInWithTheFixedCodeAndIsNeverMailed() {
+        User reviewer = user(Role.CUSTOMER);
+        reviewer.setInternal(true);
+
+        // Works with no /otp/request call at all — the code is always live.
+        assertEquals("token", auth.verifyOtp("someone@bespoke.in", "000000").token());
+
+        auth.requestOtp("someone@bespoke.in");
+        verify(mail, never()).loginOtp(any(), anyString());
+        assertEquals("000000", reviewer.getOtpCode());
+
+        // Reusable across releases: signing in does not burn it.
+        assertEquals("token", auth.verifyOtp("someone@bespoke.in", "000000").token());
+        assertEquals("000000", reviewer.getOtpCode());
+        // Any other code is still rejected.
+        assertThrows(BadRequestException.class,
+                () -> auth.verifyOtp("someone@bespoke.in", "123456"));
+    }
+
+    @Test
+    void aNormalCustomerCannotUseTheFixedCode() {
+        user(Role.CUSTOMER);  // not flagged, no code issued
+        assertThrows(BadRequestException.class,
+                () -> auth.verifyOtp("someone@bespoke.in", "000000"));
+    }
+
+    @Test
     void customersGetNoResetCode() {
         user(Role.CUSTOMER);
         auth.forgotPassword("someone@bespoke.in");

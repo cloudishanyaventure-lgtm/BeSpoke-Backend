@@ -469,6 +469,18 @@ public class CompanyService {
         if (request.portfolioUrls() != null) {
             company.setPortfolioUrls(cleaned(request.portfolioUrls()));
         }
+        if (request.portfolioSections() != null) {
+            // Only photos that are actually on the profile — a removed photo takes its
+            // section with it rather than leaving an orphan row behind.
+            java.util.Map<String, String> sections = new java.util.LinkedHashMap<>();
+            for (String url : company.getPortfolioUrls()) {
+                String section = request.portfolioSections().get(url);
+                if (section != null && !section.isBlank()) {
+                    sections.put(url, section.trim());
+                }
+            }
+            company.setPortfolioSections(sections);
+        }
         if (request.accentColor() != null) {
             company.setAccentColor(request.accentColor());
         }

@@ -13,9 +13,13 @@ public record CreateStaffTaskRequest(
         @NotNull Long assigneeId,
         LocalDate dueDate,
         @jakarta.validation.constraints.Pattern(regexp = "PUBLIC|PRIVATE") String visibility,
-        @jakarta.validation.constraints.Pattern(regexp = "LOW|NORMAL|HIGH|URGENT") String priority
+        @jakarta.validation.constraints.Pattern(regexp = "LOW|NORMAL|HIGH|URGENT|ESCALATION|SITE_VISIT|COMPLETE_BY_TODAY")
+        String priority,
+        /** Optional: what this work is about. Both are scope-checked against the actor. */
+        Long leadId,
+        Long customerId
 ) {
     public CreateStaffTaskRequest(String title, String details, Long assigneeId, LocalDate dueDate) {
-        this(title, details, assigneeId, dueDate, "PRIVATE", "NORMAL");
+        this(title, details, assigneeId, dueDate, "PRIVATE", "NORMAL", null, null);
     }
 }
