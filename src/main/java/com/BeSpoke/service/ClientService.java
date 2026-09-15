@@ -10,6 +10,7 @@ import com.BeSpoke.dto.QuoteDto;
 import com.BeSpoke.entity.Invoice;
 import com.BeSpoke.entity.Lead;
 import com.BeSpoke.entity.Project;
+import com.BeSpoke.entity.RequirementFormStatus;
 import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.NotFoundException;
@@ -18,6 +19,7 @@ import com.BeSpoke.repository.InvoiceRepository;
 import com.BeSpoke.repository.LeadRepository;
 import com.BeSpoke.repository.ProjectRepository;
 import com.BeSpoke.repository.QuoteRepository;
+import com.BeSpoke.repository.RequirementFormRepository;
 import com.BeSpoke.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,7 @@ public class ClientService {
     private final InvoiceRepository invoiceRepository;
     private final InvoicePaymentRepository invoicePaymentRepository;
     private final QuoteRepository quoteRepository;
+    private final RequirementFormRepository requirementFormRepository;
     private final LeadService leadService;
     private final ProjectService projectService;
     private final InvoiceService invoiceService;
@@ -47,6 +50,7 @@ public class ClientService {
                          InvoiceRepository invoiceRepository,
                          InvoicePaymentRepository invoicePaymentRepository,
                          QuoteRepository quoteRepository,
+                         RequirementFormRepository requirementFormRepository,
                          LeadService leadService,
                          ProjectService projectService,
                          InvoiceService invoiceService) {
@@ -56,6 +60,7 @@ public class ClientService {
         this.invoiceRepository = invoiceRepository;
         this.invoicePaymentRepository = invoicePaymentRepository;
         this.quoteRepository = quoteRepository;
+        this.requirementFormRepository = requirementFormRepository;
         this.leadService = leadService;
         this.projectService = projectService;
         this.invoiceService = invoiceService;
@@ -114,7 +119,7 @@ public class ClientService {
             }
             Map<Long, User> clients = new LinkedHashMap<>();
             for (Lead lead : leadRepository.findByCompanyOrderByCreatedAtDesc(current.getCompany())) {
-                if (lead.getCustomer() != null) {
+                if (briefIsIn(lead)) {
                     clients.putIfAbsent(lead.getCustomer().getId(), lead.getCustomer());
                 }
             }
@@ -123,6 +128,20 @@ public class ClientService {
         return designerClients(current);
     }
 
+    /**
+     * The line between a lead and a customer: a design brief that has been submitted,
+     * by either side. Until then the person is worked from Leads — a website signup has
+     * had an account since the minute they registered, but nothing a designer can work
+     * with, and the studio should still be chasing the brief rather than the project.
+     */
+    private boolean briefIsIn(Lead lead) {
+        return lead.getCustomer() != null
+                && requirementFormRepository.findByLead(lead)
+                        .map(form -> form.getStatus() != RequirementFormStatus.DRAFT)
+                        .orElse(false);
+    }
+
+    /** Platform admins see every customer on the platform, the same way they see the whole pool. */
     private List<User> allCustomers() {
         return userRepository.findAllByOrderByCreatedAtDesc().stream()
                 .filter(user -> user.getRole() == Role.CUSTOMER)
@@ -134,7 +153,7 @@ public class ClientService {
         // Key by id: User has no equals/hashCode override and instances come from separate queries.
         Map<Long, User> clients = new LinkedHashMap<>();
         for (Lead lead : leadRepository.findByAssignedDesignerOrderByCreatedAtDesc(designer)) {
-            if (lead.getCustomer() != null) {
+            if (briefIsIn(lead)) {
                 clients.putIfAbsent(lead.getCustomer().getId(), lead.getCustomer());
             }
         }
@@ -148,7 +167,8 @@ public class ClientService {
 
     private ClientDto toDto(User client, boolean finance) {
         List<Lead> clientLeads = leadRepository.findByCustomerOrderByCreatedAtDesc(client);
-        String leadStatus = clientLeads.isEmpty() ? null : clientLeads.get(0).getStatus().name();
+        Lead latest = clientLeads.isEmpty() ? null : clientLeads.get(0);
+        String leadStatus = latest == null ? null : latest.getStatus().name();
         List<Project> projects = projectRepository.findByClientOrderByCreatedAtDesc(client);
         BigDecimal lifetimeBilled = null;
         BigDecimal lifetimeCollected = null;
@@ -167,6 +187,7 @@ public class ClientService {
         }
         return new ClientDto(client.getId(), client.getName(), client.getEmail(), client.getPhone(),
                 client.getCity(), client.getCreatedAt(), clientLeads.size(), projects.size(),
+                latest == null ? null : latest.getId(),
                 leadStatus, lifetimeBilled, lifetimeCollected);
     }
 }

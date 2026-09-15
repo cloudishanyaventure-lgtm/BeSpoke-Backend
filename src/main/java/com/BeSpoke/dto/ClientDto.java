@@ -16,6 +16,8 @@ public record ClientDto(
         Instant createdAt,
         long leadsCount,
         long projects,
+        /** Their most recent lead — where the rest of the journey is worked. */
+        Long leadId,
         String leadStatus,
         BigDecimal lifetimeBilled,
         BigDecimal lifetimeCollected

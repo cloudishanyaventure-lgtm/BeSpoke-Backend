@@ -92,6 +92,22 @@ class LeadConversionTest {
         assertEquals(1, clientService.list(director).size(), "they are in Customers now");
     }
 
+    @Test void aSignedUpCustomerIsStillALeadUntilTheirBriefIsIn() {
+        // A website signup owns an account from the minute they register — but with no
+        // brief there is nothing to design, so they belong to Leads, not Customers.
+        LeadSummaryDto captured = capture("Signed Up", "signedup@home.test", "9800000012");
+        Lead lead = leads.findById(captured.id()).orElseThrow();
+        lead.setCustomer(users.save(new User("Signed Up", "signedup@home.test", "unused", Role.CUSTOMER)));
+        leads.save(lead);
+        assertTrue(clientService.list(director).isEmpty(), "an account alone is not a customer");
+
+        captureDraftBrief(captured.id());
+        assertTrue(clientService.list(director).isEmpty(), "and neither is a half-typed draft");
+
+        requirementService.staffSubmit(leads.findById(captured.id()).orElseThrow(), director);
+        assertEquals(1, clientService.list(director).size(), "the submitted brief is the line");
+    }
+
     @Test void aLeadWithNoDesignBriefCannotBeMarkedContacted() {
         LeadSummaryDto captured = capture("No Brief", "nobrief@home.test", "9800000009");
 
