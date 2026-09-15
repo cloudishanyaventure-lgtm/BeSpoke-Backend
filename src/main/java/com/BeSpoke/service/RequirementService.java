@@ -93,7 +93,13 @@ public class RequirementService {
         return applyRooms(lead, roomRequests);
     }
 
-    /** Staff PRD edit — same wholesale replace, but skips the quote lock: staff own the PRD after handoff. */
+    /**
+     * Staff PRD edit. Two documents live on this form and they lock at different moments:
+     * the brief is phase one and freezes when the studio locks it, the PRD is phase two
+     * and is filled from that lock onwards — space by space, floor by floor. So this path
+     * deliberately does not check the studio lock. It skips the quote lock too: staff own
+     * the PRD after handoff.
+     */
     @Transactional
     public RequirementFormDto staffReplaceRooms(Lead lead, List<RoomRequest> roomRequests) {
         return applyRooms(lead, roomRequests);
@@ -155,7 +161,6 @@ public class RequirementService {
             created.setStatus(RequirementFormStatus.DRAFT);
             return requirementFormRepository.save(created);
         });
-        assertNotStudioLocked(form);
         unfreezeIfApproved(lead, form);
         form.getRooms().clear();
         int order = 0;
@@ -257,6 +262,30 @@ public class RequirementService {
                 .stream().map(ActivityDto::from).toList();
     }
 
+    /**
+     * Reopens a locked brief. A lock is the studio's final sign-off, not a trapdoor —
+     * work arrives late, a room gets added, and someone has to be able to take the
+     * document off the shelf again. It drops back to SUBMITTED, which is where the
+     * customer's approval and the studio's lock are both earned from.
+     */
+    @Transactional
+    public RequirementFormDto studioReopen(Lead lead, User staff) {
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new NotFoundException("Requirement form not started yet"));
+        if (form.getStatus() != RequirementFormStatus.LOCKED) {
+            return RequirementFormDto.from(form);
+        }
+        form.setStatus(RequirementFormStatus.SUBMITTED);
+        form.setStudioApprovedAt(null);
+        form.setApprovedAt(null);
+        form.setUpdatedAt(Instant.now());
+        form = requirementFormRepository.save(form);
+        leadActivityRepository.save(new LeadActivity(lead, staff, ActivityType.SYSTEM,
+                staff.getName() + " reopened the brief for editing"));
+        rescore(lead, form);
+        return RequirementFormDto.from(form);
+    }
+
     /** A staff edit to a customer-approved scope drops it back to SUBMITTED for re-approval. */
     private void unfreezeIfApproved(Lead lead, RequirementForm form) {
         if (form.getStatus() == RequirementFormStatus.APPROVED) {
@@ -283,7 +312,7 @@ public class RequirementService {
         }
     }
 
-    /** Staff-side counterpart of assertNotLocked — a studio-locked brief is frozen for staff too. */
+    /** A studio-locked brief is frozen for staff too — the brief, not the PRD beneath it. */
     private void assertNotStudioLocked(RequirementForm form) {
         if (form.getStatus() == RequirementFormStatus.LOCKED) {
             throw new ConflictException("This brief has been locked and can no longer be edited");

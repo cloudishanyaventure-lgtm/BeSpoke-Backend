@@ -4,9 +4,12 @@ import com.BeSpoke.config.SeedRunner;
 import com.BeSpoke.dto.CreateLeadRequest;
 import com.BeSpoke.dto.LeadSummaryDto;
 import com.BeSpoke.dto.StageChangeRequest;
+import com.BeSpoke.dto.RequirementFormRequest;
+import com.BeSpoke.dto.RoomRequest;
 import com.BeSpoke.dto.UpdateLeadContactRequest;
 import com.BeSpoke.entity.*;
 import com.BeSpoke.exception.BadRequestException;
+import com.BeSpoke.exception.ConflictException;
 import com.BeSpoke.repository.*;
 import com.BeSpoke.service.ClientService;
 import com.BeSpoke.service.LeadService;
@@ -15,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,6 +95,53 @@ class LeadConversionTest {
         assertEquals("briefonly@home.test", lead.getCustomer().getEmail());
         assertEquals(LeadStatus.NEW_INQUIRY, lead.getStatus(), "and leaves the funnel alone");
         assertEquals(1, clientService.list(director).size(), "they are in Customers now");
+    }
+
+    /**
+     * The two documents lock at different moments: the brief is phase one and freezes on
+     * the studio's sign-off, the PRD is phase two and is filled from that point onwards.
+     * Locking used to freeze both, which left a designer with a locked brief, an empty
+     * PRD and no button to press.
+     */
+    @Test void lockingTheBriefFreezesItAndOpensThePrd() {
+        LeadSummaryDto captured = capture("Locked Brief", "lockedbrief@home.test", "9800000014");
+        captureDraftBrief(captured.id());
+        requirementService.staffSubmit(leads.findById(captured.id()).orElseThrow(), director);
+        requirementService.studioApprove(leads.findById(captured.id()).orElseThrow(), director);
+        assertEquals(RequirementFormStatus.LOCKED,
+                forms.findByLead(leads.findById(captured.id()).orElseThrow()).orElseThrow().getStatus(),
+                "locking an empty PRD is the normal flow, not an error");
+
+        // Phase two: the detail goes in space by space, with the brief already locked.
+        requirementService.staffReplaceRooms(leads.findById(captured.id()).orElseThrow(),
+                List.of(new RoomRequest("KITCHEN", "Kitchen", "Ground floor", null, null,
+                        null, null, null, null, null, null,
+                        List.of(new RoomRequest.RoomItemRequest("Storage", "Base units", null)))));
+        RequirementForm form = forms.findByLead(leads.findById(captured.id()).orElseThrow()).orElseThrow();
+        assertEquals(1, form.getRooms().size(), "the PRD is still writable after the lock");
+        assertEquals(1, form.getRooms().get(0).getItems().size());
+
+        // The brief itself is what the lock froze.
+        Lead lead = leads.findById(captured.id()).orElseThrow();
+        assertThrows(ConflictException.class,
+                () -> requirementService.staffUpsertForm(lead, blankBrief()),
+                "the brief stays frozen");
+
+        requirementService.studioReopen(leads.findById(captured.id()).orElseThrow(), director);
+        assertEquals(RequirementFormStatus.SUBMITTED,
+                forms.findByLead(leads.findById(captured.id()).orElseThrow()).orElseThrow().getStatus(),
+                "and a mistaken lock can be taken back off the shelf");
+    }
+
+    /** Every scalar null — enough to prove the write is refused, not that it writes well. */
+    RequirementFormRequest blankBrief() {
+        Object[] args = new Object[RequirementFormRequest.class.getRecordComponents().length];
+        try {
+            var ctor = RequirementFormRequest.class.getDeclaredConstructors()[0];
+            return (RequirementFormRequest) ctor.newInstance(args);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Test void whoeverCanSeeTheLeadSeesTheCustomerItBecomes() {

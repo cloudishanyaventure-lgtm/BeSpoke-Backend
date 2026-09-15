@@ -199,4 +199,12 @@ public class LeadController {
         User staff = me(authentication);
         return requirementService.studioApprove(leadService.scopedLead(staff, id), staff);
     }
+
+    /** Takes a locked brief back off the shelf so the PRD can be worked again. */
+    @PostMapping("/{id}/prd/reopen")
+    @PreAuthorize(WORKS_THE_LEAD)
+    public RequirementFormDto reopenPrd(Authentication authentication, @PathVariable Long id) {
+        User staff = me(authentication);
+        return requirementService.studioReopen(leadService.scopedLead(staff, id), staff);
+    }
 }
