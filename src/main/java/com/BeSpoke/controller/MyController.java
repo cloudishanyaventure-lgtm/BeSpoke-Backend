@@ -100,6 +100,12 @@ public class MyController {
         return requirementService.approve(me(authentication));
     }
 
+    /** Customer sign-off on the PRD — what opens the quote stage on the studio's side. */
+    @PostMapping("/requirement-form/prd-approve")
+    public RequirementFormDto approvePrd(Authentication authentication) {
+        return requirementService.approvePrd(currentUserService.requireByEmail(authentication.getName()));
+    }
+
     @GetMapping("/requirement-form/activities")
     public List<ActivityDto> formActivities(Authentication authentication) {
         return requirementService.myActivities(me(authentication));

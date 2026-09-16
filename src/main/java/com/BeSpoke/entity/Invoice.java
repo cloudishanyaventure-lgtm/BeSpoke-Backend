@@ -35,6 +35,14 @@ public class Invoice {
     @Column(nullable = false, unique = true)
     private String number;
 
+    /**
+     * Which instalment of the payment schedule this is (ADVANCE / MILESTONE / …), or null
+     * for an invoice a human raised. Project + code is what stops the automatic billing
+     * raising the same instalment twice.
+     */
+    @Column(length = 40)
+    private String scheduleCode;
+
     @Column(nullable = false)
     private String title;
 
@@ -79,6 +87,14 @@ public class Invoice {
 
     public void setMilestone(ProjectMilestone milestone) {
         this.milestone = milestone;
+    }
+
+    public String getScheduleCode() {
+        return scheduleCode;
+    }
+
+    public void setScheduleCode(String scheduleCode) {
+        this.scheduleCode = scheduleCode;
     }
 
     public String getNumber() {

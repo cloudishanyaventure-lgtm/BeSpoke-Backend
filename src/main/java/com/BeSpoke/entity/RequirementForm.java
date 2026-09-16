@@ -44,6 +44,15 @@ public class RequirementForm {
     /** When the studio gave final sign-off and locked the brief for everyone. */
     private Instant studioApprovedAt;
 
+    /**
+     * The PRD's own review cycle. Phase two is a different document from the brief and
+     * is signed off separately: the studio sends the spaces and their detail to the
+     * customer, and the customer's approval is what opens the BOQ / quote stage.
+     */
+    private Instant prdSentForReviewAt;
+
+    private Instant prdApprovedAt;
+
     private Instant updatedAt = Instant.now();
 
     // Step 1 - Property & project
@@ -168,6 +177,22 @@ public class RequirementForm {
 
     public void setStudioApprovedAt(Instant studioApprovedAt) {
         this.studioApprovedAt = studioApprovedAt;
+    }
+
+    public Instant getPrdSentForReviewAt() {
+        return prdSentForReviewAt;
+    }
+
+    public void setPrdSentForReviewAt(Instant prdSentForReviewAt) {
+        this.prdSentForReviewAt = prdSentForReviewAt;
+    }
+
+    public Instant getPrdApprovedAt() {
+        return prdApprovedAt;
+    }
+
+    public void setPrdApprovedAt(Instant prdApprovedAt) {
+        this.prdApprovedAt = prdApprovedAt;
     }
 
     public Instant getUpdatedAt() {

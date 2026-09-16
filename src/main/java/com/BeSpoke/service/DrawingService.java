@@ -46,6 +46,7 @@ public class DrawingService {
     private final LeadService leadService;
     private final AuditService auditService;
     private final MailService mailService;
+    private final BillingScheduleService billing;
     private final DocumentService documents;
     private final NotificationService notifications;
     private final com.BeSpoke.repository.UserRepository users;
@@ -56,6 +57,7 @@ public class DrawingService {
                           LeadService leadService,
                           AuditService auditService,
                           MailService mailService,
+                          BillingScheduleService billing,
                           DocumentService documents,
                           NotificationService notifications,
                           com.BeSpoke.repository.UserRepository users) {
@@ -65,6 +67,7 @@ public class DrawingService {
         this.leadService = leadService;
         this.auditService = auditService;
         this.mailService = mailService;
+        this.billing = billing;
         this.documents = documents;
         this.notifications = notifications;
         this.users = users;
@@ -262,7 +265,11 @@ public class DrawingService {
         drawing.setCustomerDecidedAt(now);
         record(drawing, customer, "DRAWING_CUSTOMER_APPROVED", label(drawing) + ": APPROVED → FINAL by customer #" + customer.getId());
         notifyStudio(drawing, customer, "Customer approved a design", label(drawing) + " is approved by " + customer.getName() + ".");
-        return DrawingDto.forCustomer(drawingRepository.save(drawing));
+        DrawingDto dto = DrawingDto.forCustomer(drawingRepository.save(drawing));
+        // Signed-off work is the only thing that moves the progress bar, so it is also the
+        // only thing that can make the next instalment fall due.
+        billing.onProgress(drawing.getLead());
+        return dto;
     }
 
     @Transactional

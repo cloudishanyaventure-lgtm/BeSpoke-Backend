@@ -501,6 +501,43 @@ public class MailService {
         return value == null || value.isBlank() ? "—" : value;
     }
 
+    /** Phase two is ready for the customer to read and sign off. */
+    public void prdSentForReview(User customer, int spaces) {
+        send(customer.getEmail(), "Your project requirement document is ready to review",
+                "Hi " + customer.getName() + ",\n\n"
+                        + "Your designer has put together the project requirement document — "
+                        + spaces + " space" + (spaces == 1 ? "" : "s") + ", each with its size"
+                        + " and what goes into it.\n\n"
+                        + "Read it and approve it here: " + appUrl + "/my/requirements\n\n"
+                        + "— BeSpoke",
+                page("Your project requirement document is ready to review.", "PRD ready",
+                        h("Ready for your sign-off,", customer.getName() + "."),
+                        p("Your designer has put together the project requirement document — "
+                                + spaces + " space" + (spaces == 1 ? "" : "s") + ", each with its"
+                                + " size and what goes into it. Nothing is ordered or drawn"
+                                + " against it until you approve it.")
+                                + button(appUrl + "/my/requirements", "Read the PRD")));
+        notifyInApp(customer, "Your PRD is ready to review",
+                spaces + " space" + (spaces == 1 ? "" : "s") + " to read and approve.",
+                "/my/requirements");
+    }
+
+    /** An instalment of the agreed payment schedule has fallen due. */
+    public void paymentDue(User customer, String title, java.math.BigDecimal amount) {
+        String rupees = "Rs " + amount.stripTrailingZeros().toPlainString();
+        send(customer.getEmail(), "Payment due — " + title,
+                "Hi " + customer.getName() + ",\n\n"
+                        + title + ": " + rupees + " is now due under your agreed payment"
+                        + " schedule.\n\n"
+                        + "See it here: " + appUrl + "/my/payments\n\n— BeSpoke",
+                page(title + ": " + rupees + " is now due.", "Payment due",
+                        h("Payment due,", customer.getName() + "."),
+                        p(title + " has fallen due under the payment schedule you agreed.")
+                                + facts("Amount", rupees, "For", title)
+                                + button(appUrl + "/my/payments", "View and pay")));
+        notifyInApp(customer, "Payment due — " + title, rupees + " is now due.", "/my/payments");
+    }
+
     /** Sent to the receiving studio's director and sales manager when BeSpoke routes a lead. */
     public void leadRouted(User recipient, Lead lead) {
         String property = label("PROPERTY_TYPE", lead.getPropertyType());

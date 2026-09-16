@@ -140,6 +140,14 @@ final class PlatformOptionDefaults {
                 noteEntry("TURNKEY", "Turnkey [ Design & Build ]", null),
                 noteEntry("MODULAR_FURNITURE", "Modular Furniture", null));
 
+        // How a won project is billed. note = "<percent of the quote>|<progress that triggers it>".
+        // The advance is raised the moment the customer accepts; the rest follow the work,
+        // measured in drawings the customer has signed off. The studio owns these numbers.
+        noted(lists, "PAYMENT_SCHEDULE",
+                noteEntry("ADVANCE", "Advance", "50|0"),
+                noteEntry("MILESTONE", "Milestone", "30|40"),
+                noteEntry("COMPLETION", "Completion", "20|70"));
+
         coded(lists, "PROPERTY_TYPE",
                 entry("APARTMENT", "Apartment"),
                 entry("BUILDER_FLOOR", "Builder floor"),

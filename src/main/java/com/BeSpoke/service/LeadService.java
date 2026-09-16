@@ -286,6 +286,30 @@ public class LeadService {
     }
 
     /**
+     * The customer accepted the quote. Commercially that is the win, so the funnel moves
+     * itself rather than waiting for someone to notice: the lead closes WON and its
+     * project opens, which is what the schedule bills against. Deliberately skips the
+     * "assign a designer first" guard — the customer has already said yes, and a missing
+     * assignment is a staffing detail, not a reason to lose the acceptance.
+     */
+    @Transactional
+    public void winOnQuoteApproval(Lead lead, User customer) {
+        if (lead.getStatus() == LeadStatus.WON) {
+            return;
+        }
+        LeadStatus from = lead.getStatus();
+        lead.setStatus(LeadStatus.WON);
+        lead.setWonAt(Instant.now());
+        lead.setUpdatedAt(Instant.now());
+        leadRepository.save(lead);
+        leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.STAGE,
+                "Stage: " + from.name() + " → WON (quote accepted by the customer)"));
+        if (projectRepository.findByLead(lead).isEmpty()) {
+            createProjectForWonLead(lead);
+        }
+    }
+
+    /**
      * A lead becomes a customer the moment there is something real to work with: the
      * funnel moves it out of the pool, or its design brief is completed. Both routes call
      * this, so "converted" means one thing — the account exists, the lead points at it,
@@ -332,9 +356,9 @@ public class LeadService {
         if (form == null || form.getRooms().isEmpty()) {
             throw new BadRequestException("Fill the PRD before sending a proposal");
         }
-        if (form.getStatus() != RequirementFormStatus.APPROVED
-                && form.getStatus() != RequirementFormStatus.LOCKED) {
-            throw new BadRequestException("The customer has not approved the PRD yet");
+        if (form.getPrdApprovedAt() == null) {
+            throw new BadRequestException(
+                    "Send the PRD for customer review and wait for their approval first");
         }
     }
 

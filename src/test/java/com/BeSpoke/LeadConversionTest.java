@@ -221,12 +221,18 @@ class LeadConversionTest {
         form.getRooms().add(kitchen);
         forms.save(form);
 
+        // Phase two has its own round trip — a PRD that is filled in is not a PRD the
+        // customer has signed off, and only the second one opens the quote stage.
         BadRequestException notApproved = assertThrows(BadRequestException.class, () ->
                 leadService.changeStage(director, captured.id(), new StageChangeRequest("PROPOSAL_SENT", null)));
-        assertTrue(notApproved.getMessage().contains("approved"), notApproved.getMessage());
+        assertTrue(notApproved.getMessage().contains("PRD"), notApproved.getMessage());
 
-        form.setStatus(RequirementFormStatus.APPROVED);
-        forms.save(form);
+        requirementService.sendPrdForReview(leads.findById(captured.id()).orElseThrow(), director);
+        assertNotNull(forms.findByLead(leads.findById(captured.id()).orElseThrow()).orElseThrow()
+                .getPrdSentForReviewAt(), "the customer has it to read");
+
+        requirementService.approvePrd(leads.findById(captured.id()).orElseThrow().getCustomer());
+
         leadService.changeStage(director, captured.id(), new StageChangeRequest("PROPOSAL_SENT", null));
         assertEquals(LeadStatus.PROPOSAL_SENT, leads.findById(captured.id()).orElseThrow().getStatus());
     }

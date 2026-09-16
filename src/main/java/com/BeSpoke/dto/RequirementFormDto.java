@@ -13,6 +13,9 @@ public record RequirementFormDto(
         Instant submittedAt,
         Instant approvedAt,
         Instant studioApprovedAt,
+        /** Phase two's own review cycle — the PRD is signed off separately from the brief. */
+        Instant prdSentForReviewAt,
+        Instant prdApprovedAt,
         Instant updatedAt,
         // Property & project
         String projectSegment,
@@ -69,6 +72,8 @@ public record RequirementFormDto(
                 form.getSubmittedAt(),
                 form.getApprovedAt(),
                 form.getStudioApprovedAt(),
+                form.getPrdSentForReviewAt(),
+                form.getPrdApprovedAt(),
                 form.getUpdatedAt(),
                 form.getProjectSegment(),
                 form.getSpaceType(),

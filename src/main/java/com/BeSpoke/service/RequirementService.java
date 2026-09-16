@@ -267,6 +267,50 @@ public class RequirementService {
     }
 
     /**
+     * Phase two goes out for sign-off. The PRD is a different document from the brief —
+     * the spaces, their sizes and their elements — so it has its own round trip, and the
+     * customer's approval of it is what opens the BOQ / quote stage.
+     */
+    @Transactional
+    public RequirementFormDto sendPrdForReview(Lead lead, User staff) {
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new BadRequestException("Capture the PRD before sending it"));
+        if (form.getRooms().isEmpty()) {
+            throw new ConflictException("Add the spaces to the PRD before sending it for review");
+        }
+        form.setPrdSentForReviewAt(Instant.now());
+        form.setPrdApprovedAt(null);
+        form.setUpdatedAt(Instant.now());
+        form = requirementFormRepository.save(form);
+        leadActivityRepository.save(new LeadActivity(lead, staff, ActivityType.SYSTEM,
+                staff.getName() + " sent the PRD to the customer for review"));
+        if (lead.getCustomer() != null) {
+            mailService.prdSentForReview(lead.getCustomer(), form.getRooms().size());
+        }
+        return RequirementFormDto.from(form);
+    }
+
+    /** The customer signing off phase two. This is the gate the quote stage waits on. */
+    @Transactional
+    public RequirementFormDto approvePrd(User customer) {
+        Lead lead = myLead(customer);
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new NotFoundException("Requirement form not started yet"));
+        if (form.getPrdSentForReviewAt() == null) {
+            throw new ConflictException("Your designer hasn't sent the PRD for review yet");
+        }
+        if (form.getPrdApprovedAt() != null) {
+            return RequirementFormDto.from(form);
+        }
+        form.setPrdApprovedAt(Instant.now());
+        form.setUpdatedAt(Instant.now());
+        form = requirementFormRepository.save(form);
+        leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
+                "Customer approved the PRD — the project requirement document is signed off"));
+        return RequirementFormDto.from(form);
+    }
+
+    /**
      * Reopens a locked brief. A lock is the studio's final sign-off, not a trapdoor —
      * work arrives late, a room gets added, and someone has to be able to take the
      * document off the shelf again. It drops back to SUBMITTED, which is where the

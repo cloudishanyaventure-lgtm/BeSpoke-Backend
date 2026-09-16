@@ -39,17 +39,20 @@ public class QuoteService {
     private final LeadActivityRepository leadActivityRepository;
     private final LeadService leadService;
     private final MailService mailService;
+    private final BillingScheduleService billing;
 
     public QuoteService(QuoteRepository quoteRepository,
                         LeadRepository leadRepository,
                         LeadActivityRepository leadActivityRepository,
                         LeadService leadService,
-                        MailService mailService) {
+                        MailService mailService,
+                        BillingScheduleService billing) {
         this.quoteRepository = quoteRepository;
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.leadService = leadService;
         this.mailService = mailService;
+        this.billing = billing;
     }
 
     @Transactional
@@ -166,6 +169,10 @@ public class QuoteService {
             quote.setStatus(QuoteStatus.APPROVED);
             leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
                     "Quote v" + quote.getVersion() + " approved by customer"));
+            // An accepted quote is the win: the project opens and the advance falls due
+            // under the agreed schedule, without anyone raising it by hand.
+            leadService.winOnQuoteApproval(lead, customer);
+            billing.onQuoteApproved(quote, QuoteDto.from(quote).total());
         } else {
             quote.setStatus(QuoteStatus.CHANGES_REQUESTED);
             quote.setCustomerComment(request.comment());
