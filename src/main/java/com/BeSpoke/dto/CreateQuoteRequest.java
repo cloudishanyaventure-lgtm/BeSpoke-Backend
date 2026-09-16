@@ -14,7 +14,9 @@ public record CreateQuoteRequest(
         @NotBlank @Size(max = 255) String title,
         /** One category for the whole proposal. */
         @NotBlank @jakarta.validation.constraints.Pattern(
-                regexp = "DESIGN_AND_DRAWINGS|DESIGN_AND_PMC|TURNKEY|MODULAR") String category,
+                regexp = "DESIGN_DRAWINGS_STRUCTURE_INTERIOR|DESIGN_DRAWINGS_STRUCTURE"
+                    + "|DESIGN_DRAWINGS_INTERIOR_MEP|DESIGN_DRAWINGS_INTERIOR_NO_MEP"
+                    + "|DESIGN_WITH_PROJECT_MANAGEMENT|TURNKEY|MODULAR_FURNITURE") String category,
         LocalDate validUntil,
         @NotEmpty @Valid List<QuoteItemRequest> items
 ) {

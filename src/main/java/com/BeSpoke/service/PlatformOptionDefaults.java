@@ -129,6 +129,17 @@ final class PlatformOptionDefaults {
         plain(lists, "PORTFOLIO_SECTION", "Master bedroom", "Living room", "Kitchen",
                 "Washroom", "Study room", "Terrace garden");
 
+        // What a proposal is for, and the per-square-foot rate it is quoted at (note = the
+        // rate, blank where the price is built by hand). The admin owns both.
+        noted(lists, "QUOTE_RATE",
+                noteEntry("DESIGN_DRAWINGS_STRUCTURE_INTERIOR", "Design & Drawings - Structure & Interior", "200"),
+                noteEntry("DESIGN_DRAWINGS_STRUCTURE", "Design & Drawings - Structure", "70"),
+                noteEntry("DESIGN_DRAWINGS_INTERIOR_MEP", "Design & Drawings - Interior with MEP", "100"),
+                noteEntry("DESIGN_DRAWINGS_INTERIOR_NO_MEP", "Design & Drawings - Interior without MEP", "80"),
+                noteEntry("DESIGN_WITH_PROJECT_MANAGEMENT", "Design with Project Management", "150"),
+                noteEntry("TURNKEY", "Turnkey [ Design & Build ]", null),
+                noteEntry("MODULAR_FURNITURE", "Modular Furniture", null));
+
         coded(lists, "PROPERTY_TYPE",
                 entry("APARTMENT", "Apartment"),
                 entry("BUILDER_FLOOR", "Builder floor"),
@@ -184,7 +195,12 @@ final class PlatformOptionDefaults {
                 noteEntry("BALCONY", "Balcony", "TERRACE"),
                 noteEntry("TERRACE", "Terrace & garden", "TERRACE"),
                 noteEntry("POOJA", "Pooja room", null),
-                noteEntry("FOYER", "Foyer / entrance", null));
+                noteEntry("FOYER", "Foyer / entrance", null),
+                noteEntry("LOBBY", "Lobby", null),
+                noteEntry("FIRE_AREA", "Fire area / refuge", null),
+                noteEntry("OTS", "Open to sky (OTS)", null),
+                noteEntry("PARKING_STILT", "Stilt parking", null),
+                noteEntry("PARKING", "Parking", null));
 
         // note = the body copy under each step on the material library landing page.
         noted(lists, "MATERIAL_HOW_IT_WORKS",

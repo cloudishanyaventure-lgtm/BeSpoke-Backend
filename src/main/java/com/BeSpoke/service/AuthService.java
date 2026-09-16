@@ -125,6 +125,7 @@ public class AuthService {
                         : "Lead created from website signup"));
 
         mailService.customerSignedUp(user);
+        mailService.leadReceivedInternal(lead, "website signup");
         // No token: the customer signs in with the mailed password (V3 §6).
         return new AuthResponse(null, UserDto.from(user), lead.getId());
     }

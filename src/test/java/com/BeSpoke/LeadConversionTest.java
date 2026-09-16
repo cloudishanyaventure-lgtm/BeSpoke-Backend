@@ -116,10 +116,14 @@ class LeadConversionTest {
         requirementService.staffReplaceRooms(leads.findById(captured.id()).orElseThrow(),
                 List.of(new RoomRequest("KITCHEN", "Kitchen", "Ground floor", null, null,
                         null, null, null, null, null, null,
+                        9.0, 12.0, 10.0, 0.0,
                         List.of(new RoomRequest.RoomItemRequest("Storage", "Base units", null)))));
         RequirementForm form = forms.findByLead(leads.findById(captured.id()).orElseThrow()).orElseThrow();
         assertEquals(1, form.getRooms().size(), "the PRD is still writable after the lock");
         assertEquals(1, form.getRooms().get(0).getItems().size());
+        // Depth was answered 0 — "not applicable" — so it is left out rather than
+        // multiplying the room's area down to nothing.
+        assertEquals(120.0, form.getRooms().get(0).areaSqft(), 0.001);
 
         // The brief itself is what the lock froze.
         Lead lead = leads.findById(captured.id()).orElseThrow();

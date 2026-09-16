@@ -19,6 +19,11 @@ public record RoomRequest(
         @Size(max = 255) String colorPreference,
         @Size(max = 1000) String specialRequirements,
         @Size(max = 1000) String notes,
+        /** Feet. 0 is a valid answer — "not applicable" — and is never used in a calculation. */
+        @jakarta.validation.constraints.PositiveOrZero Double heightFt,
+        @jakarta.validation.constraints.PositiveOrZero Double lengthFt,
+        @jakarta.validation.constraints.PositiveOrZero Double widthFt,
+        @jakarta.validation.constraints.PositiveOrZero Double depthFt,
         @Valid List<RoomItemRequest> items
 ) {
 

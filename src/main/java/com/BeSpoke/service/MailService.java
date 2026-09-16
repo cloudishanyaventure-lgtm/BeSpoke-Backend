@@ -470,6 +470,37 @@ public class MailService {
                                         + " contact@bespokedesign.in if you have anything to add.")));
     }
 
+    /**
+     * Tells the shared mailbox a lead arrived — whatever the source: website signup,
+     * enquiry form, walk-in typed into the CRM, or a mail into contact@ itself. The
+     * customer's own acknowledgement is {@link #leadReceived}; this is the internal copy,
+     * so nothing lands in the funnel without a human being told.
+     */
+    public void leadReceivedInternal(Lead lead, String source) {
+        String name = lead.getContactName() == null ? "Someone" : lead.getContactName();
+        send(internalTo, "New lead: " + name + " (" + source + ")",
+                "A new lead is in the funnel.\n\n"
+                        + "Name: " + name + "\n"
+                        + "Email: " + orDash(lead.getContactEmail()) + "\n"
+                        + "Phone: " + orDash(lead.getContactPhone()) + "\n"
+                        + "City: " + orDash(lead.getCity()) + "\n"
+                        + "Source: " + source + "\n"
+                        + "Reference: BSD-" + lead.getId() + "\n\n"
+                        + appUrl + "/studio/leads/" + lead.getId(),
+                page("A new lead is in the funnel.", "New lead",
+                        h("New lead —", name),
+                        facts("Email", orDash(lead.getContactEmail()),
+                                "Phone", orDash(lead.getContactPhone()),
+                                "City", orDash(lead.getCity()),
+                                "Source", source,
+                                "Reference", "BSD-" + lead.getId())
+                                + button(appUrl + "/studio/leads/" + lead.getId(), "Open the lead")));
+    }
+
+    private static String orDash(String value) {
+        return value == null || value.isBlank() ? "—" : value;
+    }
+
     /** Sent to the receiving studio's director and sales manager when BeSpoke routes a lead. */
     public void leadRouted(User recipient, Lead lead) {
         String property = label("PROPERTY_TYPE", lead.getPropertyType());

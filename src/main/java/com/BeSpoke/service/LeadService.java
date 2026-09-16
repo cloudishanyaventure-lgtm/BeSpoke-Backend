@@ -589,6 +589,8 @@ public class LeadService {
         leadActivityRepository.save(new LeadActivity(lead, actor, ActivityType.SYSTEM,
                 "Lead captured manually (" + source.name() + ")"));
         mailService.leadReceived(lead, null);
+        mailService.leadReceivedInternal(lead, "captured by " + actor.getName()
+                + " · " + source.name().toLowerCase(Locale.ROOT).replace('_', ' '));
         return toSummary(lead);
     }
 
@@ -611,6 +613,7 @@ public class LeadService {
             existing.setUpdatedAt(Instant.now());
             leadRepository.save(existing);
             mailService.leadReceived(existing, subject);
+            mailService.leadReceivedInternal(existing, "reply on an open lead · email");
             return existing;
         }
         Lead lead = new Lead();
@@ -626,6 +629,7 @@ public class LeadService {
                 "Enquiry received by email to contact@bespokedesign.in"));
         leadActivityRepository.save(new LeadActivity(lead, null, ActivityType.NOTE, clip(note)));
         mailService.leadReceived(lead, subject);
+        mailService.leadReceivedInternal(lead, "email to contact@");
         return lead;
     }
 
@@ -684,6 +688,7 @@ public class LeadService {
                     "Enquiry message: " + request.message().trim()));
         }
         mailService.leadReceived(lead, null);
+        mailService.leadReceivedInternal(lead, "website enquiry form");
         return lead.getId();
     }
 

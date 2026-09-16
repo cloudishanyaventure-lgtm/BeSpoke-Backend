@@ -17,6 +17,12 @@ public record RoomDto(
         String colorPreference,
         String specialRequirements,
         String notes,
+        Double heightFt,
+        Double lengthFt,
+        Double widthFt,
+        Double depthFt,
+        /** Length x width in square feet, or null when either is 0 / not given. */
+        Double areaSqft,
         int sortOrder,
         List<RoomItemDto> items
 ) {
@@ -35,6 +41,11 @@ public record RoomDto(
                 room.getColorPreference(),
                 room.getSpecialRequirements(),
                 room.getNotes(),
+                room.getHeightFt(),
+                room.getLengthFt(),
+                room.getWidthFt(),
+                room.getDepthFt(),
+                room.areaSqft(),
                 room.getSortOrder(),
                 room.getItems().stream().map(RoomItemDto::from).toList()
         );

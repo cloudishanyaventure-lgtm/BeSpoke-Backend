@@ -63,6 +63,16 @@ public class RequirementRoom {
     @Column(length = 1000)
     private String notes;
 
+    /**
+     * Room size in feet, captured when the space is added to the PRD. Nullable only for
+     * rooms that predate the question — the form asks for all four and takes 0 for
+     * "not applicable". A 0 is never multiplied into anything: see areaSqft().
+     */
+    private Double heightFt;
+    private Double lengthFt;
+    private Double widthFt;
+    private Double depthFt;
+
     @Column(nullable = false)
     private int sortOrder;
 
@@ -183,6 +193,49 @@ public class RequirementRoom {
 
     public void setSortOrder(int sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public Double getHeightFt() {
+        return heightFt;
+    }
+
+    public void setHeightFt(Double heightFt) {
+        this.heightFt = heightFt;
+    }
+
+    public Double getLengthFt() {
+        return lengthFt;
+    }
+
+    public void setLengthFt(Double lengthFt) {
+        this.lengthFt = lengthFt;
+    }
+
+    public Double getWidthFt() {
+        return widthFt;
+    }
+
+    public void setWidthFt(Double widthFt) {
+        this.widthFt = widthFt;
+    }
+
+    public Double getDepthFt() {
+        return depthFt;
+    }
+
+    public void setDepthFt(Double depthFt) {
+        this.depthFt = depthFt;
+    }
+
+    /**
+     * Floor area, or null when it cannot be worked out. A dimension left at 0 means "not
+     * applicable here" — it is not a measurement, so it never multiplies an area down to
+     * nothing. Width falls back to depth for spaces measured that way.
+     */
+    public Double areaSqft() {
+        double length = lengthFt == null ? 0 : lengthFt;
+        double across = widthFt != null && widthFt > 0 ? widthFt : (depthFt == null ? 0 : depthFt);
+        return length > 0 && across > 0 ? length * across : null;
     }
 
     public List<RequirementRoomItem> getItems() {

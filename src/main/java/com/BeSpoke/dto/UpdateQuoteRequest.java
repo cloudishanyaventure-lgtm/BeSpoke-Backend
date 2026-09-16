@@ -12,7 +12,9 @@ import java.util.List;
 public record UpdateQuoteRequest(
         @NotBlank @Size(max = 255) String title,
         @NotBlank @jakarta.validation.constraints.Pattern(
-                regexp = "DESIGN_AND_DRAWINGS|DESIGN_AND_PMC|TURNKEY|MODULAR") String category,
+                regexp = "DESIGN_DRAWINGS_STRUCTURE_INTERIOR|DESIGN_DRAWINGS_STRUCTURE"
+                    + "|DESIGN_DRAWINGS_INTERIOR_MEP|DESIGN_DRAWINGS_INTERIOR_NO_MEP"
+                    + "|DESIGN_WITH_PROJECT_MANAGEMENT|TURNKEY|MODULAR_FURNITURE") String category,
         LocalDate validUntil,
         @NotEmpty @Valid List<QuoteItemRequest> items
 ) {

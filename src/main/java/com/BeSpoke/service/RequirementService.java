@@ -178,6 +178,10 @@ public class RequirementService {
             room.setColorPreference(roomRequest.colorPreference());
             room.setSpecialRequirements(roomRequest.specialRequirements());
             room.setNotes(roomRequest.notes());
+            room.setHeightFt(roomRequest.heightFt());
+            room.setLengthFt(roomRequest.lengthFt());
+            room.setWidthFt(roomRequest.widthFt());
+            room.setDepthFt(roomRequest.depthFt());
             room.setSortOrder(order++);
             if (roomRequest.items() != null) {
                 for (RoomRequest.RoomItemRequest itemRequest : roomRequest.items()) {
