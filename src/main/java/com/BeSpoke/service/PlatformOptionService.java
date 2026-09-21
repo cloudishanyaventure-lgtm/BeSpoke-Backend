@@ -24,6 +24,14 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class PlatformOptionService {
 
+    /**
+     * Lists whose shipped catalogue keeps growing, so a database seeded with an earlier
+     * (shorter) version is topped up on boot rather than staying stuck at 14 cities.
+     * ponytail: a city the admin deletes comes back on the next restart — deactivate it
+     * instead. Drop the key from this set once the catalogue stops moving.
+     */
+    private static final java.util.Set<String> TOP_UP_LISTS = java.util.Set.of("CITY");
+
     private final PlatformOptionRepository repository;
     private final AuditService auditService;
 
@@ -180,12 +188,29 @@ public class PlatformOptionService {
         for (Map.Entry<String, List<PlatformOption>> entry : PlatformOptionDefaults.LISTS.entrySet()) {
             if (repository.existsByListKey(entry.getKey())) {
                 added += backfillNotes(entry.getValue());
+                if (TOP_UP_LISTS.contains(entry.getKey())) {
+                    added += addMissing(entry.getValue());
+                }
                 continue;
             }
             repository.saveAll(entry.getValue());
             added += entry.getValue().size();
         }
         return added;
+    }
+
+    /** Adds shipped entries the live list has never had, keeping the file's order. */
+    private int addMissing(List<PlatformOption> defaults) {
+        int next = nextSortOrder(defaults.get(0).getListKey());
+        List<PlatformOption> missing = new ArrayList<>();
+        for (PlatformOption fallback : defaults) {
+            if (repository.findByListKeyAndValue(fallback.getListKey(), fallback.getValue()).isEmpty()) {
+                missing.add(new PlatformOption(fallback.getListKey(), fallback.getValue(),
+                        fallback.getLabel(), fallback.getNote(), next++));
+            }
+        }
+        repository.saveAll(missing);
+        return missing.size();
     }
 
     /**

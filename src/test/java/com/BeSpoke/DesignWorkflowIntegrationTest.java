@@ -224,4 +224,29 @@ class DesignWorkflowIntegrationTest {
                 .andExpect(jsonPath("$.finalizedAt").isNotEmpty())
                 .andExpect(jsonPath("$.customerApprovedAt").doesNotExist());
     }
+
+    /** Drawings are not always images: a PDF sheet uploads, becomes a drawing and downloads as a PDF. */
+    @Test void pdfAndOtherFileTypesUploadAsDesigns() throws Exception {
+        String pdf = mvc.perform(multipart("/api/project-documents")
+                .file(new org.springframework.mock.web.MockMultipartFile("file", "plan.pdf", "application/pdf",
+                        "%PDF-1.7\n1 0 obj\n".getBytes(java.nio.charset.StandardCharsets.US_ASCII)))
+                .param("leadId", lead.getId().toString()).param("type", "DESIGN").header("Authorization", token(designer)))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.contentType").value("application/pdf"))
+                .andReturn().getResponse().getContentAsString();
+        String fileUrl = json.readTree(pdf).get("fileUrl").asText();
+        mvc.perform(post("/api/leads/" + lead.getId() + "/drawings").header("Authorization", token(designer))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("title", "Kitchen", "floorLabel", "Ground floor",
+                        "spaceLabel", "Kitchen", "fileUrl", fileUrl))))
+                .andExpect(status().isCreated());
+        mvc.perform(get(fileUrl).header("Authorization", token(designer)))
+                .andExpect(status().isOk()).andExpect(header().string("Content-Type", "application/pdf"));
+
+        // Anything else the browser can't sniff is still stored, as an opaque download.
+        mvc.perform(multipart("/api/project-documents")
+                .file(new org.springframework.mock.web.MockMultipartFile("file", "plan.dwg", "application/acad",
+                        new byte[]{'A', 'C', '1', '0', '2', '7'}))
+                .param("leadId", lead.getId().toString()).param("type", "DESIGN").header("Authorization", token(designer)))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.contentType").value("application/octet-stream"));
+    }
 }

@@ -45,11 +45,10 @@ public class DocumentService {
         if (!Set.of("DESIGN","CONTRACT","SITE_PHOTO","INVOICE","WARRANTY","HANDOVER","OTHER").contains(type)) throw new BadRequestException("Unknown document type");
         if (actor.getRole()==Role.CUSTOMER && !Set.of("SITE_PHOTO","OTHER").contains(type)) throw new ForbiddenException("Customers can attach site photos and supporting documents");
         if (type.equals("DESIGN") && !(actor.getRole().isPlatform() || actor.getRole().canApproveDrawings() || actor.getRole()==Role.DESIGNER || actor.getRole()==Role.PROJECT_MANAGER)) throw new ForbiddenException("Your role cannot upload designs");
-        if (file==null || file.isEmpty() || file.getSize()>5*1024*1024) throw new BadRequestException("Choose a PDF, PNG or JPEG up to 5MB");
+        if (file==null || file.isEmpty() || file.getSize()>5*1024*1024) throw new BadRequestException("Choose a file up to 5MB");
         byte[] bytes;
         try { bytes=file.getBytes(); } catch(Exception e) {throw new BadRequestException("Could not read this file");}
         String mime=detect(bytes);
-        if (mime==null || (type.equals("DESIGN") && mime.equals("application/pdf"))) throw new BadRequestException(type.equals("DESIGN") ? "Choose a PNG or JPEG design" : "Choose a valid PDF, PNG or JPEG");
         ProjectDocument previous=null;
         if (previousId!=null) {
             previous=scoped(actor,previousId);
@@ -73,18 +72,24 @@ public class DocumentService {
         if(actor.getRole()==Role.CUSTOMER)notifications.publish(lead.getAssignedDesigner(),"Customer uploaded a document",d.name,"/studio/leads/"+leadId+"?tab=documents");
         return DocumentDto.from(d);
     }
+    /**
+     * Sniffs the types we can preview (PDF and the ImageIO formats); anything else — DWG,
+     * a zip of sheets, a spreadsheet — is stored as an opaque download. Safe because
+     * /api/documents/{id}/content always answers attachment + nosniff + sandbox CSP, so the
+     * browser never renders uploaded bytes in our origin whatever the content type says.
+     */
     private static String detect(byte[] bytes) {
         if(bytes.length>5 && new String(bytes,0,5,java.nio.charset.StandardCharsets.US_ASCII).equals("%PDF-"))return "application/pdf";
         try(var input=javax.imageio.ImageIO.createImageInputStream(new java.io.ByteArrayInputStream(bytes))) {
             var readers=javax.imageio.ImageIO.getImageReaders(input);
-            if(!readers.hasNext())return null;
+            if(!readers.hasNext())return "application/octet-stream";
             var reader=readers.next();
-            try {reader.setInput(input); String format=reader.getFormatName();
+            try {reader.setInput(input); String format=reader.getFormatName().toLowerCase();
                 if((long)reader.getWidth(0)*reader.getHeight(0)>40000000L)throw new BadRequestException("Image dimensions exceed the limit");
-                if(reader.read(0)==null)return null;
-                return format.equalsIgnoreCase("png")?"image/png":format.equalsIgnoreCase("jpeg")?"image/jpeg":null;
+                if(reader.read(0)==null)return "application/octet-stream";
+                return Set.of("png","jpeg","gif","bmp","tiff").contains(format)?"image/"+format:"application/octet-stream";
             } finally {reader.dispose();}
-        } catch(BadRequestException e){throw e;} catch(Exception e){return null;}
+        } catch(BadRequestException e){throw e;} catch(Exception e){return "application/octet-stream";}
     }
     public ProjectDocument scoped(User actor,Long id) {
         ProjectDocument d=docs.findById(id).orElseThrow(()->new NotFoundException("Document not found"));

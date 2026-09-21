@@ -25,21 +25,8 @@ final class PlatformOptionDefaults {
         // note = "lat,lng" — how the public directory sorts studios near-to-far from a
         // visitor who has shared their location. The admin owns these like any other
         // option, so a new city is added with its coordinates and nothing else changes.
-        noted(lists, "CITY",
-                noteEntry("Delhi", "Delhi", "28.6139,77.2090"),
-                noteEntry("Gurugram", "Gurugram", "28.4595,77.0266"),
-                noteEntry("Noida", "Noida", "28.5355,77.3910"),
-                noteEntry("Ghaziabad", "Ghaziabad", "28.6692,77.4538"),
-                noteEntry("Faridabad", "Faridabad", "28.4089,77.3178"),
-                noteEntry("Mumbai", "Mumbai", "19.0760,72.8777"),
-                noteEntry("Pune", "Pune", "18.5204,73.8567"),
-                noteEntry("Bengaluru", "Bengaluru", "12.9716,77.5946"),
-                noteEntry("Hyderabad", "Hyderabad", "17.3850,78.4867"),
-                noteEntry("Chennai", "Chennai", "13.0827,80.2707"),
-                noteEntry("Kolkata", "Kolkata", "22.5726,88.3639"),
-                noteEntry("Jaipur", "Jaipur", "26.9124,75.7873"),
-                noteEntry("Chandigarh", "Chandigarh", "30.7333,76.7794"),
-                noteEntry("Other", "Other", null));
+        // The catalogue itself lives in cities.csv: ~190 rows is data, not Java.
+        lists.put("CITY", cities());
 
         // What a vendor company supplies. Multi-select, set by the admin at approval.
         plain(lists, "VENDOR_CATEGORY", "Glass", "Electricals", "Modular furniture", "Lighting",
@@ -210,6 +197,34 @@ final class PlatformOptionDefaults {
                 noteEntry("PARKING_STILT", "Stilt parking", null),
                 noteEntry("PARKING", "Parking", null));
 
+        // The WhatsApp bot's reply book: `value` = the keywords that pick the rule
+        // (comma separated, matched anywhere in the message), `label` = what it replies.
+        // The "*" rule answers everything else — that is the one that hands over to a
+        // human, so the number to call lives there and the admin can change it without
+        // a deploy. Order is the order they are tried.
+        noted(lists, "WHATSAPP_BOT",
+                noteEntry("hi,hello,hey,start", "Hi! This is BeSpoke. Your project is with"
+                        + " our design team — ask me about your designer, your quote or"
+                        + " your next step, and I'll help.", null),
+                noteEntry("designer,architect,who", "Your designer is assigned once BeSpoke"
+                        + " matches your brief to a studio in your city — usually the same"
+                        + " day. You'll get an email the moment they're on it.", null),
+                noteEntry("quote,price,cost,budget,boq", "Your quote is prepared after the"
+                        + " design brief and PRD are agreed. You'll see it in your BeSpoke"
+                        + " account, and you approve or ask for changes right there.", null),
+                noteEntry("status,update,progress,where", "You can follow every stage —"
+                        + " brief, designs, quote, project — in your BeSpoke account. Sign"
+                        + " in with the code we email you.", null),
+                noteEntry("brief,prd,requirement", "The design brief is the room-by-room"
+                        + " questionnaire in your account. Fill what you can; your designer"
+                        + " goes through the rest with you.", null),
+                noteEntry("time,timeline,long,when", "Most homes take 8-12 weeks from"
+                        + " approved design to handover, depending on scope. Your designer"
+                        + " will give you the dates for your project.", null),
+                noteEntry("*", "I'm not sure about that one — our team can help you"
+                        + " properly. Please call us on 6387427935 and we'll pick it up"
+                        + " from there.", null));
+
         // note = the body copy under each step on the material library landing page.
         noted(lists, "MATERIAL_HOW_IT_WORKS",
                 noteEntry("select", "Selects material",
@@ -267,5 +282,29 @@ final class PlatformOptionDefaults {
     /** A shop sub-type: its own label, filed under a SHOP_CATEGORY. */
     private static String[] sub(String label, String parentCategory) {
         return new String[]{label, label, parentCategory};
+    }
+
+    /** cities.csv — "name,lat,lng" per line, blank coordinates allowed ("Other"). */
+    private static List<PlatformOption> cities() {
+        List<PlatformOption> rows = new ArrayList<>();
+        int order = 0;
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(
+                PlatformOptionDefaults.class.getResourceAsStream("/cities.csv"),
+                java.nio.charset.StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.isBlank() || line.startsWith("#")) {
+                    continue;
+                }
+                String[] parts = line.split(",", 3);
+                String name = parts[0].trim();
+                String note = parts.length == 3 && !parts[1].isBlank()
+                        ? parts[1].trim() + "," + parts[2].trim() : null;
+                rows.add(new PlatformOption("CITY", name, name, note, order++));
+            }
+        } catch (Exception ex) {
+            throw new IllegalStateException("cities.csv is missing or unreadable", ex);
+        }
+        return rows;
     }
 }

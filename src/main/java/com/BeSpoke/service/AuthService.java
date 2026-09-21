@@ -52,6 +52,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final StaffProfileRepository staffProfileRepository;
     private final MailService mailService;
+    private final WhatsAppService whatsAppService;
     private final GoogleTokenVerifier googleTokenVerifier;
     private final AuditService auditService;
 
@@ -64,6 +65,7 @@ public class AuthService {
                        JwtService jwtService,
                        StaffProfileRepository staffProfileRepository,
                        MailService mailService,
+                       WhatsAppService whatsAppService,
                        GoogleTokenVerifier googleTokenVerifier,
                        AuditService auditService) {
         this.googleTokenVerifier = googleTokenVerifier;
@@ -77,6 +79,7 @@ public class AuthService {
         this.jwtService = jwtService;
         this.staffProfileRepository = staffProfileRepository;
         this.mailService = mailService;
+        this.whatsAppService = whatsAppService;
     }
 
     /**
@@ -126,6 +129,12 @@ public class AuthService {
 
         mailService.customerSignedUp(user);
         mailService.leadReceivedInternal(lead, "website signup");
+        // Signup done: open the WhatsApp conversation ourselves. The opener is a Meta
+        // approved template — a business may not write first without one — and their
+        // reply opens the 24-hour window the bot answers inside.
+        if (whatsAppService != null) {
+            whatsAppService.welcome(user);
+        }
         // No token: the customer signs in with the mailed password (V3 §6).
         return new AuthResponse(null, UserDto.from(user), lead.getId());
     }
@@ -221,6 +230,13 @@ public class AuthService {
         user.setOtpAttempts(0);
         userRepository.save(user);
         send.accept(user, code);
+        // Both channels carry the same code, and every code goes through here — customer
+        // sign-in and staff password reset alike. A WhatsApp that doesn't arrive (no
+        // number, not opted in, template not approved) is logged, never raised: the
+        // email is the one that must not fail.
+        if (whatsAppService != null) {
+            whatsAppService.otp(user, code);
+        }
     }
 
     /**

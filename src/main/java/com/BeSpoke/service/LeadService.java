@@ -468,7 +468,7 @@ public class LeadService {
     @Transactional
     public LeadSummaryDto assign(User actor, Long leadId, Long designerId) {
         Lead lead = scopedLead(actor, leadId);
-        User designer = requireAssignee(lead, designerId, DESIGN_ASSIGNEES, "designer");
+        User designer = requireAssignee(actor, lead, designerId, DESIGN_ASSIGNEES, "designer");
         lead.setAssignedDesigner(designer);
         lead.setUpdatedAt(Instant.now());
         leadRepository.save(lead);
@@ -485,7 +485,7 @@ public class LeadService {
     @Transactional
     public LeadSummaryDto assignSales(User actor, Long leadId, Long userId) {
         Lead lead = scopedLead(actor, leadId);
-        User owner = requireAssignee(lead, userId, SALES_ASSIGNEES, "sales owner");
+        User owner = requireAssignee(actor, lead, userId, SALES_ASSIGNEES, "sales owner");
         lead.setSalesOwner(owner);
         lead.setUpdatedAt(Instant.now());
         leadRepository.save(lead);
@@ -499,7 +499,7 @@ public class LeadService {
     }
 
     /** Loads an active same-studio staffer of one of the given roles (unrouted leads adopt their studio). */
-    private User requireAssignee(Lead lead, Long userId, Set<Role> roles, String label) {
+    private User requireAssignee(User actor, Lead lead, Long userId, Set<Role> roles, String label) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         if (!roles.contains(user.getRole())) {
@@ -509,7 +509,13 @@ public class LeadService {
             throw new BadRequestException("Selected user is deactivated");
         }
         if (lead.getCompany() == null) {
+            // Adopting a pool lead IS taking it on — stamp the handover the same way
+            // createManual() does, or the lead lands in a TRANSFERRED-but-never-accepted
+            // limbo: messaging stays 409-locked and no Accept button ever renders.
             lead.setCompany(user.getCompany());
+            lead.setTransferredAt(Instant.now());
+            lead.setAcceptedAt(Instant.now());
+            lead.setAcceptedBy(actor);
         } else if (user.getCompany() == null
                 || !user.getCompany().getId().equals(lead.getCompany().getId())) {
             throw new BadRequestException("Selected user belongs to a different studio");

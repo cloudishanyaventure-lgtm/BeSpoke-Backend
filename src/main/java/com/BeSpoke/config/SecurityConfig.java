@@ -74,6 +74,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public: auth, enquiry form, catalog, marketing cards, shop, uploads, health.
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Gupshup's callback authenticates with its own shared token.
+                        .requestMatchers(HttpMethod.POST, "/api/whatsapp/gupshup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/enquiries").permitAll()
                         // Partner sign-up: the form is public, the decision queue is not.
                         .requestMatchers(HttpMethod.POST, "/api/partner-applications").permitAll()

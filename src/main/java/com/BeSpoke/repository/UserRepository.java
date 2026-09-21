@@ -20,6 +20,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByPhone(String phone);
 
+    /** WhatsApp hands us a number; these two find whoever owns it. */
+    java.util.Optional<User> findFirstByPhone(String phone);
+
+    java.util.Optional<User> findFirstByPhoneEndingWith(String suffix);
+
     /** Trim; blank → null, so absent phones never collide under the unique index. */
     static String normalisePhone(String raw) {
         if (raw == null) {

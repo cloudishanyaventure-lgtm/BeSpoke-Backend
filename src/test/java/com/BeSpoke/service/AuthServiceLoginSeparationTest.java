@@ -39,7 +39,7 @@ class AuthServiceLoginSeparationTest {
     private final AuditService audit = mock(AuditService.class);
 
     private final AuthService auth = new AuthService(users, null, null, null, null,
-            encoder, jwt, profiles, mail, google, audit);
+            encoder, jwt, profiles, mail, mock(WhatsAppService.class), google, audit);
 
     private User user(Role role) {
         User u = new User("Someone", "someone@bespoke.in", "hash", role);

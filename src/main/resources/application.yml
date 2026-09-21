@@ -65,6 +65,24 @@ app:
     # Where BeSpoke's own notifications land (new partner signups). Read by humans,
     # so it is contact@ — noreply@ above is only ever the From.
     internal: "contact@bespokedesign.in"
+  whatsapp:
+    # WhatsApp through Gupshup: sign-in codes, the welcome after signup, and the bot
+    # that answers replies. false = never send, log the message behind "[WHATSAPP]".
+    # Everything below comes from the Gupshup dashboard once the number is live.
+    enabled: ${WHATSAPP_ENABLED:false}
+    api-key: ${GUPSHUP_API_KEY:}
+    # The WhatsApp business number that sends, digits only with country code.
+    source: ${GUPSHUP_SOURCE:}
+    # Gupshup calls this "app name" (src.name) — the app the number is attached to.
+    app-name: ${GUPSHUP_APP_NAME:}
+    # Meta-approved template ids. OTP takes one parameter (the code); welcome takes
+    # one (the customer's first name). Blank = that message is logged, not sent.
+    otp-template-id: ${GUPSHUP_OTP_TEMPLATE:}
+    welcome-template-id: ${GUPSHUP_WELCOME_TEMPLATE:}
+    # Shared secret on the callback URL. Blank = the callback is closed, not open.
+    webhook-token: ${GUPSHUP_WEBHOOK_TOKEN:}
+    # Prepended to bare 10-digit numbers.
+    country-code: "91"
   inbox:
     # Polls contact@bespokedesign.in over IMAP and turns each unread mail into a lead.
     # Off locally: set app.inbox.enabled + password (contact@'s Google App Password) to try it.

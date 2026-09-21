@@ -26,13 +26,15 @@ import java.util.List;
 @RequestMapping("/api/messages")
 public class MessageController {
 
+    private final com.BeSpoke.service.CustomerMessageService customerMessages;
     private final MessageService messageService;
     private final LeadService leadService;
     private final CurrentUserService currentUserService;
 
-    public MessageController(MessageService messageService,
+    public MessageController(com.BeSpoke.service.CustomerMessageService customerMessages, MessageService messageService,
                              LeadService leadService,
                              CurrentUserService currentUserService) {
+        this.customerMessages = customerMessages;
         this.messageService = messageService;
         this.leadService = leadService;
         this.currentUserService = currentUserService;
@@ -40,6 +42,12 @@ public class MessageController {
 
     private User me(Authentication authentication) {
         return currentUserService.requireByEmail(authentication.getName());
+    }
+
+    @GetMapping("/customer/{leadId}")
+    public List<com.BeSpoke.dto.CustomerConversationDto> customerConversations(
+            Authentication authentication, @PathVariable Long leadId) {
+        return customerMessages.conversations(me(authentication), leadId);
     }
 
     @GetMapping("/threads")
