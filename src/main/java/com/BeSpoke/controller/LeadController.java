@@ -45,7 +45,7 @@ public class LeadController {
      * service layer's job; this only keeps customers and vendors out.
      */
     private static final String WORKS_THE_LEAD = "hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR',"
-            + "'PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER',"
+            + "'PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','REMOTE_DESIGNER','PROJECT_MANAGER',"
             + "'SALES_MANAGER','CUSTOMER_CONSULTANT','SALES_EXECUTIVE')";
 
     private final LeadService leadService;
@@ -117,7 +117,7 @@ public class LeadController {
 
     /** Manual lead capture (walk-in / phone / referral) - platform admin or studio funnel roles. */
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','DESIGN_MANAGER','SALES_MANAGER','DESIGNER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','DESIGN_MANAGER','SALES_MANAGER','DESIGNER','REMOTE_DESIGNER')")
     public ResponseEntity<LeadSummaryDto> create(Authentication authentication,
                                                  @Valid @RequestBody CreateLeadRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -131,8 +131,9 @@ public class LeadController {
         return leadService.approveCreation(me(authentication), id);
     }
 
+    /** The studio staffs its own lead — BeSpoke only routes it there (see /route). */
     @PutMapping("/{id}/assign")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','DESIGN_MANAGER','SALES_MANAGER')")
+    @PreAuthorize("hasAnyRole('DIRECTOR','DESIGN_MANAGER','SALES_MANAGER')")
     public LeadSummaryDto assign(Authentication authentication,
                                  @PathVariable Long id,
                                  @Valid @RequestBody AssignRequest request) {
@@ -141,7 +142,7 @@ public class LeadController {
 
     /** Director/sales manager gives the customer relationship to a consultant / sales exec. */
     @PutMapping("/{id}/assign-sales")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','SALES_MANAGER')")
+    @PreAuthorize("hasAnyRole('DIRECTOR','SALES_MANAGER')")
     public LeadSummaryDto assignSales(Authentication authentication,
                                       @PathVariable Long id,
                                       @Valid @RequestBody AssignSalesRequest request) {

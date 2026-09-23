@@ -151,10 +151,11 @@ public class DashboardService {
                         : leadActivityRepository.findTop15ByLead_CompanyOrderByCreatedAtDesc(company)))
                 .stream().map(ActivityDto::from).toList();
 
+        List<Role> designerSeats = List.of(Role.DESIGNER, Role.REMOTE_DESIGNER);
         List<User> designers = global
-                ? userRepository.findByRole(Role.DESIGNER)
+                ? userRepository.findByRoleIn(designerSeats)
                 : (company == null ? List.of()
-                        : userRepository.findByCompanyAndRole(company, Role.DESIGNER));
+                        : userRepository.findByCompanyAndRoleIn(company, designerSeats));
         List<AdminDashboardDto.TeamLoadDto> teamLoad = new ArrayList<>();
         for (User designer : designers) {
             if (!designer.isActive()) {

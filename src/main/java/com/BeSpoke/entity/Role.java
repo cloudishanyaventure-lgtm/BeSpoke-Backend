@@ -21,6 +21,7 @@ public enum Role {
     PRINCIPAL_ARCHITECT,  // design
     DESIGN_MANAGER,       // design
     DESIGNER,             // design
+    REMOTE_DESIGNER,      // design — freelance/off-site designer, same seat as DESIGNER
     PROJECT_MANAGER,      // design
     SALES_MANAGER,        // design + vendor
     CUSTOMER_CONSULTANT,  // design + vendor
@@ -30,7 +31,7 @@ public enum Role {
 
     private static final Set<Role> DESIGN_ROLES = Collections.unmodifiableSet(EnumSet.of(
             DIRECTOR, ACCOUNT_MANAGER, PRINCIPAL_ARCHITECT, DESIGN_MANAGER, DESIGNER,
-            PROJECT_MANAGER, SALES_MANAGER, CUSTOMER_CONSULTANT, SALES_EXECUTIVE));
+            REMOTE_DESIGNER, PROJECT_MANAGER, SALES_MANAGER, CUSTOMER_CONSULTANT, SALES_EXECUTIVE));
 
     private static final Set<Role> VENDOR_ROLES = Collections.unmodifiableSet(EnumSet.of(
             DIRECTOR, ACCOUNT_MANAGER, SALES_MANAGER, CUSTOMER_CONSULTANT,
@@ -42,6 +43,7 @@ public enum Role {
             DESIGN_MANAGER, DIRECTOR,
             SALES_MANAGER, DIRECTOR,
             DESIGNER, DESIGN_MANAGER,
+            REMOTE_DESIGNER, DESIGN_MANAGER,
             PROJECT_MANAGER, DESIGN_MANAGER,
             CUSTOMER_CONSULTANT, SALES_MANAGER,
             SALES_EXECUTIVE, CUSTOMER_CONSULTANT);
@@ -61,6 +63,11 @@ public enum Role {
     /** Company staff — always attached to a company. Not platform, not customer. */
     public boolean isStaff() {
         return this != CUSTOMER && !isPlatform();
+    }
+
+    /** A designer seat — in-house or remote. Identical scope and permissions. */
+    public boolean isDesigner() {
+        return this == DESIGNER || this == REMOTE_DESIGNER;
     }
 
     /** Sees the whole company book; assigned-only roles see just their own work. */

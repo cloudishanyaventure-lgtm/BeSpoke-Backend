@@ -10,6 +10,7 @@ import com.BeSpoke.dto.UpdateLeadContactRequest;
 import com.BeSpoke.entity.*;
 import com.BeSpoke.exception.BadRequestException;
 import com.BeSpoke.exception.ConflictException;
+import com.BeSpoke.exception.ForbiddenException;
 import com.BeSpoke.repository.*;
 import com.BeSpoke.service.ClientService;
 import com.BeSpoke.service.LeadService;
@@ -304,6 +305,25 @@ class LeadConversionTest {
         users.save(director);
         assertThrows(BadRequestException.class, () -> leadService.updateContact(director, captured.id(),
                 new UpdateLeadContactRequest("Riya Shah", null, "9800000099", null, null, null)));
+    }
+
+    /** BeSpoke hands the lead to a studio; the studio alone puts someone on it. */
+    @Test void thePlatformRoutesToAStudioButNeverPicksTheDesigner() {
+        User remote = new User("Remote", "remote@conversion.test", "unused", Role.REMOTE_DESIGNER);
+        remote.setCompany(studio);
+        remote = users.save(remote);
+
+        LeadSummaryDto lead = capture("Routed", "routed@home.test", "9800000010");
+        leadService.route(admin, lead.id(), studio.getId());   // the platform's lane
+
+        Long remoteId = remote.getId();
+        assertThrows(ForbiddenException.class,
+                () -> leadService.assign(admin, lead.id(), remoteId));
+        assertThrows(ForbiddenException.class,
+                () -> leadService.assignSales(admin, lead.id(), director.getId()));
+
+        leadService.assign(director, lead.id(), remoteId);     // the studio's lane
+        assertEquals(remoteId, leads.findById(lead.id()).orElseThrow().getAssignedDesigner().getId());
     }
 
     @Test void aStaffAddressIsNeverTurnedIntoACustomerAndLostConvertsNobody() {

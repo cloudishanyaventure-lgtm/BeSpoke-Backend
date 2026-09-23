@@ -323,7 +323,7 @@ public class DrawingService {
 
     private static void requireUploader(User actor) {
         if (!(actor.getRole().isPlatform() || actor.getRole().canApproveDrawings()
-                || actor.getRole() == Role.DESIGNER || actor.getRole() == Role.PROJECT_MANAGER))
+                || actor.getRole().isDesigner() || actor.getRole() == Role.PROJECT_MANAGER))
             throw new ForbiddenException("Your role cannot upload drawings");
     }
 

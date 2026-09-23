@@ -55,7 +55,8 @@ public class LeadService {
 
     /** Roles scoped to their own leads (assignment / sales ownership), not the company book. */
     private static final Set<Role> ASSIGNED_ONLY_ROLES = EnumSet.of(
-            Role.DESIGNER, Role.PROJECT_MANAGER, Role.CUSTOMER_CONSULTANT, Role.SALES_EXECUTIVE);
+            Role.DESIGNER, Role.REMOTE_DESIGNER, Role.PROJECT_MANAGER,
+            Role.CUSTOMER_CONSULTANT, Role.SALES_EXECUTIVE);
 
     /**
      * Who may be put on a lead. Seniors are included deliberately: a small studio may have
@@ -63,7 +64,7 @@ public class LeadService {
      * principle as the approval chain, which skips roles the company does not staff.
      */
     private static final Set<Role> DESIGN_ASSIGNEES = EnumSet.of(
-            Role.DESIGNER, Role.PROJECT_MANAGER, Role.DESIGN_MANAGER,
+            Role.DESIGNER, Role.REMOTE_DESIGNER, Role.PROJECT_MANAGER, Role.DESIGN_MANAGER,
             Role.PRINCIPAL_ARCHITECT, Role.DIRECTOR);
 
     private static final Set<Role> SALES_ASSIGNEES = EnumSet.of(
@@ -130,7 +131,7 @@ public class LeadService {
                 || current.getCompany().getType() != CompanyType.DESIGN) {
             return false;
         }
-        if (role == Role.DESIGNER || role == Role.PROJECT_MANAGER) {
+        if (role.isDesigner() || role == Role.PROJECT_MANAGER) {
             return isAssignedDesigner(current, lead);
         }
         if (role == Role.CUSTOMER_CONSULTANT || role == Role.SALES_EXECUTIVE) {
@@ -165,7 +166,7 @@ public class LeadService {
                 || current.getCompany().getType() != CompanyType.DESIGN) {
             return List.of();
         }
-        if (role == Role.DESIGNER || role == Role.PROJECT_MANAGER) {
+        if (role.isDesigner() || role == Role.PROJECT_MANAGER) {
             return leadRepository.findByAssignedDesignerOrderByCreatedAtDesc(current);
         }
         if (role == Role.CUSTOMER_CONSULTANT || role == Role.SALES_EXECUTIVE) {
@@ -261,7 +262,7 @@ public class LeadService {
         if (target == LeadStatus.WON) {
             // Bypass: solo/small studios with the DESIGNER role disabled can win without one.
             boolean designerEnabled = lead.getCompany() == null
-                    || lead.getCompany().effectiveEnabledRoles().contains(Role.DESIGNER);
+                    || lead.getCompany().effectiveEnabledRoles().stream().anyMatch(Role::isDesigner);
             if (designerEnabled && lead.getAssignedDesigner() == null) {
                 throw new BadRequestException("Assign a designer before marking this lead as won");
             }
@@ -498,8 +499,16 @@ public class LeadService {
         return toSummary(lead);
     }
 
-    /** Loads an active same-studio staffer of one of the given roles (unrouted leads adopt their studio). */
+    /**
+     * Loads an active same-studio staffer of one of the given roles. BeSpoke hands a lead
+     * to a studio and stops there — who works it is the studio's own call, so the platform
+     * is turned away here as well as at the controller gate.
+     */
     private User requireAssignee(User actor, Lead lead, Long userId, Set<Role> roles, String label) {
+        if (actor.getRole().isPlatform()) {
+            throw new ForbiddenException(
+                    "BeSpoke transfers leads to a studio; the studio picks the " + label);
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         if (!roles.contains(user.getRole())) {
@@ -509,14 +518,9 @@ public class LeadService {
             throw new BadRequestException("Selected user is deactivated");
         }
         if (lead.getCompany() == null) {
-            // Adopting a pool lead IS taking it on — stamp the handover the same way
-            // createManual() does, or the lead lands in a TRANSFERRED-but-never-accepted
-            // limbo: messaging stays 409-locked and no Accept button ever renders.
-            lead.setCompany(user.getCompany());
-            lead.setTransferredAt(Instant.now());
-            lead.setAcceptedAt(Instant.now());
-            lead.setAcceptedBy(actor);
-        } else if (user.getCompany() == null
+            throw new BadRequestException("This lead has not been transferred to a studio yet");
+        }
+        if (user.getCompany() == null
                 || !user.getCompany().getId().equals(lead.getCompany().getId())) {
             throw new BadRequestException("Selected user belongs to a different studio");
         }
@@ -605,7 +609,7 @@ public class LeadService {
         lead.setCreatedByName(actor.getName());
         lead.setCreatedByRole(actor.getRole().name());
         // Design-side creators need a senior's sign-off on the capture.
-        lead.setApprovalPending(actor.getRole() == Role.DESIGNER
+        lead.setApprovalPending(actor.getRole().isDesigner()
                 || actor.getRole() == Role.DESIGN_MANAGER);
         lead.setCompany(actor.getCompany()); // null for platform admins: route later
         if (actor.getCompany() != null) {
@@ -677,7 +681,8 @@ public class LeadService {
     public LeadSummaryDto approveCreation(User actor, Long leadId) {
         Lead lead = scopedLead(actor, leadId);
         if (actor.getRole() == Role.DESIGN_MANAGER
-                && !Role.DESIGNER.name().equals(lead.getCreatedByRole())) {
+                && !Role.DESIGNER.name().equals(lead.getCreatedByRole())
+                && !Role.REMOTE_DESIGNER.name().equals(lead.getCreatedByRole())) {
             throw new ForbiddenException("A design manager may only approve designer-created leads");
         }
         lead.setApprovalPending(false);

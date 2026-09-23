@@ -37,7 +37,8 @@ public class PublicProfileService {
 
     /** Client-facing design roles, most senior first — the first match fronts the card. */
     private static final List<Role> LEAD_ROLES = List.of(
-            Role.DIRECTOR, Role.PRINCIPAL_ARCHITECT, Role.DESIGN_MANAGER, Role.DESIGNER);
+            Role.DIRECTOR, Role.PRINCIPAL_ARCHITECT, Role.DESIGN_MANAGER, Role.DESIGNER,
+            Role.REMOTE_DESIGNER);
 
     private static final Set<Role> DESIGNER_ROLES = EnumSet.copyOf(LEAD_ROLES);
 

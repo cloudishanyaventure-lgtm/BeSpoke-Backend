@@ -464,6 +464,7 @@ public class SeedRunner implements CommandLineRunner {
             case PRINCIPAL_ARCHITECT -> "Principal Architect";
             case DESIGN_MANAGER -> "Design Manager";
             case DESIGNER -> "Interior Designer";
+            case REMOTE_DESIGNER -> "Remote Designer";
             case PROJECT_MANAGER -> "Project Manager";
             case SALES_MANAGER -> "Sales Manager";
             case CUSTOMER_CONSULTANT -> "Customer Consultant";
@@ -478,7 +479,7 @@ public class SeedRunner implements CommandLineRunner {
         return switch (role) {
             case SUPER_ADMIN, ADMIN, DIRECTOR -> Dept.LEADERSHIP;
             case ACCOUNT_MANAGER -> Dept.ACCOUNTS;
-            case PRINCIPAL_ARCHITECT, DESIGN_MANAGER, DESIGNER -> Dept.DESIGN;
+            case PRINCIPAL_ARCHITECT, DESIGN_MANAGER, DESIGNER, REMOTE_DESIGNER -> Dept.DESIGN;
             default -> Dept.PROJECTS;
         };
     }

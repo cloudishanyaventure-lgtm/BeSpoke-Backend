@@ -32,7 +32,7 @@ import java.util.List;
 public class DrawingController {
 
     private static final String UPLOADERS =
-            "hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','PROJECT_MANAGER')";
+            "hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER','DESIGNER','REMOTE_DESIGNER','PROJECT_MANAGER')";
     private static final String APPROVERS =
             "hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','PRINCIPAL_ARCHITECT','DESIGN_MANAGER')";
 

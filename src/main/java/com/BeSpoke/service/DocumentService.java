@@ -44,7 +44,7 @@ public class DocumentService {
         Lead lead=lead(actor,leadId);
         if (!Set.of("DESIGN","CONTRACT","SITE_PHOTO","INVOICE","WARRANTY","HANDOVER","OTHER").contains(type)) throw new BadRequestException("Unknown document type");
         if (actor.getRole()==Role.CUSTOMER && !Set.of("SITE_PHOTO","OTHER").contains(type)) throw new ForbiddenException("Customers can attach site photos and supporting documents");
-        if (type.equals("DESIGN") && !(actor.getRole().isPlatform() || actor.getRole().canApproveDrawings() || actor.getRole()==Role.DESIGNER || actor.getRole()==Role.PROJECT_MANAGER)) throw new ForbiddenException("Your role cannot upload designs");
+        if (type.equals("DESIGN") && !(actor.getRole().isPlatform() || actor.getRole().canApproveDrawings() || actor.getRole().isDesigner() || actor.getRole()==Role.PROJECT_MANAGER)) throw new ForbiddenException("Your role cannot upload designs");
         if (file==null || file.isEmpty() || file.getSize()>5*1024*1024) throw new BadRequestException("Choose a file up to 5MB");
         byte[] bytes;
         try { bytes=file.getBytes(); } catch(Exception e) {throw new BadRequestException("Could not read this file");}
