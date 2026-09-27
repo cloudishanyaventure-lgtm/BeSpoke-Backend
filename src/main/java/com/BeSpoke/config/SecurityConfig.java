@@ -77,6 +77,9 @@ public class SecurityConfig {
                         // Gupshup's callback authenticates with its own shared token.
                         .requestMatchers(HttpMethod.POST, "/api/whatsapp/gupshup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/enquiries").permitAll()
+                        // A family member accepts a project invite before they have any session.
+                        .requestMatchers(HttpMethod.POST, "/api/invites/*/accept").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/invites/*").permitAll()
                         // Partner sign-up: the form is public, the decision queue is not.
                         .requestMatchers(HttpMethod.POST, "/api/partner-applications").permitAll()
                         .requestMatchers("/api/partner-applications/**")

@@ -1,8 +1,10 @@
 package com.BeSpoke.dto;
 
+import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.Invoice;
 import com.BeSpoke.entity.InvoicePayment;
 import com.BeSpoke.entity.InvoiceStatus;
+import com.BeSpoke.entity.User;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,8 +34,15 @@ public record InvoiceDto(
         LocalDate dueDate,
         String status,
         Instant createdAt,
-        List<PaymentDto> payments
+        List<PaymentDto> payments,
+        Party seller,
+        Party buyer
 ) {
+
+    /** A billing party on the invoice — the studio (seller) or the customer (buyer). */
+    public record Party(String name, String gstin, String pan, String address,
+                        String city, String phone, String email) {
+    }
 
     public static InvoiceDto from(Invoice invoice, List<InvoicePayment> payments) {
         BigDecimal total = totalOf(invoice);
@@ -59,8 +68,35 @@ public record InvoiceDto(
                 invoice.getDueDate(),
                 deriveStatus(invoice, total, paid),
                 invoice.getCreatedAt(),
-                payments.stream().map(PaymentDto::from).toList()
+                payments.stream().map(PaymentDto::from).toList(),
+                sellerOf(invoice),
+                buyerOf(invoice)
         );
+    }
+
+    private static Party sellerOf(Invoice invoice) {
+        Company co = invoice.getProject().getLead() == null
+                ? null : invoice.getProject().getLead().getCompany();
+        if (co == null) {
+            return null;
+        }
+        return new Party(
+                co.getRegisteredName() != null ? co.getRegisteredName() : co.getName(),
+                co.getGstin(), co.getPan(),
+                co.getOfficeAddress() != null ? co.getOfficeAddress() : co.getRegisteredAddress(),
+                co.getHeadquartersCity() != null ? co.getHeadquartersCity() : co.getCity(),
+                co.getPhone(), co.getEmail());
+    }
+
+    private static Party buyerOf(Invoice invoice) {
+        User client = invoice.getProject().getClient();
+        if (client != null) {
+            return new Party(client.getName(), null, null, null,
+                    client.getCity(), client.getPhone(), client.getEmail());
+        }
+        String name = invoice.getProject().getLead() == null
+                ? null : invoice.getProject().getLead().getContactName();
+        return new Party(name, null, null, null, null, null, null);
     }
 
     public static BigDecimal totalOf(Invoice invoice) {

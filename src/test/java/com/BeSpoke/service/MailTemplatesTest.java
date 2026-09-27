@@ -100,7 +100,7 @@ class MailTemplatesTest {
         mail.leadRouted(user("Sara Fernandes"), lead("Poonam Shukla"));
         mail.leadAccepted(user("Poonam Shukla"), "Atelier Kaya");
         mail.quoteSent(lead("Poonam Shukla"), "Full home — 3BHK", 2);
-        mail.invoiceSent(user("Poonam Shukla"), "INV-2026-014", "1,45,000", "12 Sep 2026");
+        mail.invoiceSent(user("Poonam Shukla"), "INV-2026-014", "1,45,000", "12 Sep 2026", null);
         mail.orderPlaced(user("Poonam Shukla"), "BeSpoke Living", "24,600");
         mail.kycDecision(user("Sara Fernandes"), new Company("Atelier Kaya", "atelier-kaya"), true);
         mail.drawingApproved(user("Poonam Shukla"), "Living room — final");

@@ -139,6 +139,28 @@ public class MyController {
                 .toList();
     }
 
+    @GetMapping("/invoices/{id}/pdf")
+    public org.springframework.http.ResponseEntity<byte[]> invoicePdf(Authentication authentication,
+                                                                      @PathVariable Long id) {
+        User customer = me(authentication);
+        Lead lead = requirementService.myLead(customer);
+        Project project = projectRepository.findByLead(lead)
+                .orElseThrow(() -> new com.BeSpoke.exception.NotFoundException("No project found"));
+        return pdf(invoiceService.customerPdf(project, id), "invoice.pdf");
+    }
+
+    @GetMapping("/requirement-form/pdf")
+    public org.springframework.http.ResponseEntity<byte[]> prdPdf(Authentication authentication) {
+        return pdf(requirementService.myPrdPdf(me(authentication)), "requirement-document.pdf");
+    }
+
+    private org.springframework.http.ResponseEntity<byte[]> pdf(byte[] bytes, String name) {
+        return org.springframework.http.ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "inline; filename=\"" + name + "\"")
+                .body(bytes);
+    }
+
     @GetMapping("/messages")
     public List<MessageDto> messages(Authentication authentication) {
         User customer = me(authentication);

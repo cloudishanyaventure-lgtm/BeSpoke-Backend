@@ -117,7 +117,8 @@ public class QuoteService {
         copy.setStatus(QuoteStatus.DRAFT);
         for (QuoteItem item : source.getItems()) {
             copy.getItems().add(new QuoteItem(copy, item.getDescription(),
-                    item.getQty(), item.getRate(), item.getGstPct()));
+                    item.getQty(), item.getRate(), item.getGstPct(),
+                    item.getSection(), item.isHeading()));
         }
         copy = quoteRepository.save(copy);
         leadActivityRepository.save(new LeadActivity(copy.getLead(), admin, ActivityType.SYSTEM,
@@ -168,7 +169,7 @@ public class QuoteService {
         if ("APPROVED".equals(request.decision())) {
             quote.setStatus(QuoteStatus.APPROVED);
             leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
-                    "Quote v" + quote.getVersion() + " approved by customer"));
+                    "Quote v" + quote.getVersion() + " approved by " + customer.getName()));
             // An accepted quote is the win: the project opens and the advance falls due
             // under the agreed schedule, without anyone raising it by hand.
             leadService.winOnQuoteApproval(lead, customer);
@@ -177,7 +178,7 @@ public class QuoteService {
             quote.setStatus(QuoteStatus.CHANGES_REQUESTED);
             quote.setCustomerComment(request.comment());
             leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
-                    "Customer requested changes on quote v" + quote.getVersion()
+                    customer.getName() + " requested changes on quote v" + quote.getVersion()
                             + (request.comment() != null && !request.comment().isBlank()
                                ? ": " + request.comment().trim() : "")));
         }
@@ -203,7 +204,9 @@ public class QuoteService {
         quote.getItems().clear();
         for (QuoteItemRequest item : items) {
             quote.getItems().add(new QuoteItem(quote, item.description().trim(),
-                    item.qty(), item.rate(), item.gstPct()));
+                    item.qty(), item.rate(), item.gstPct(),
+                    item.section() == null || item.section().isBlank() ? null : item.section().trim(),
+                    item.heading()));
         }
     }
 }

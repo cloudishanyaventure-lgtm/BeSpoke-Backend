@@ -35,6 +35,18 @@ public class QuoteItem {
     @Column(nullable = false)
     private int gstPct;
 
+    /**
+     * The space this line belongs to, e.g. "Master Bedroom" — set on a room's own line and
+     * on each element under it, so the proposal can render as rooms with their elements
+     * nested. Null for a standalone hand-typed line.
+     */
+    @Column(length = 200)
+    private String section;
+
+    /** True on the room's own line (the group header); false on the elements under it. */
+    @Column(nullable = false)
+    private boolean heading = false;
+
     public QuoteItem() {
     }
 
@@ -45,6 +57,13 @@ public class QuoteItem {
         this.qty = qty;
         this.rate = rate;
         this.gstPct = gstPct;
+    }
+
+    public QuoteItem(Quote quote, String description, BigDecimal qty, BigDecimal rate,
+                     int gstPct, String section, boolean heading) {
+        this(quote, description, qty, rate, gstPct);
+        this.section = section;
+        this.heading = heading;
     }
 
     public Long getId() {
@@ -93,5 +112,21 @@ public class QuoteItem {
 
     public void setGstPct(int gstPct) {
         this.gstPct = gstPct;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public boolean isHeading() {
+        return heading;
+    }
+
+    public void setHeading(boolean heading) {
+        this.heading = heading;
     }
 }

@@ -64,4 +64,13 @@ public class InvoiceController {
                                  @RequestParam(required = false) String status) {
         return invoiceService.list(me(authentication), status);
     }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> pdf(Authentication authentication, @PathVariable Long id) {
+        byte[] bytes = invoiceService.pdf(me(authentication), id);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "inline; filename=\"invoice.pdf\"")
+                .body(bytes);
+    }
 }

@@ -30,7 +30,12 @@ public record RoomRequest(
     public record RoomItemRequest(
             @NotBlank @Size(max = 255) String category,
             @NotBlank @Size(max = 500) String item,
-            @Size(max = 500) String note
+            @Size(max = 500) String note,
+            /** Feet. 0 means "not applicable" and is never used in a calculation. */
+            @jakarta.validation.constraints.PositiveOrZero Double lengthFt,
+            @jakarta.validation.constraints.PositiveOrZero Double widthFt,
+            @jakarta.validation.constraints.PositiveOrZero Double depthFt,
+            @jakarta.validation.constraints.PositiveOrZero Double heightFt
     ) {
     }
 }

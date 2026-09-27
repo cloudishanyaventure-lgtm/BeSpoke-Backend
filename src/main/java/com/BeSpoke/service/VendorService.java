@@ -74,6 +74,8 @@ public class VendorService {
         product.setRoomType(request.roomType());
         product.setShopCategory(request.shopCategory());
         product.setShopSubCategory(request.shopSubCategory());
+        product.setMrp(request.mrp());
+        product.setMaterial(request.material());
         product.setImageUrl(request.imageUrl());
         if (request.spatial() != null) product.setSpatialSpec(request.spatial());
         product = productRepository.save(product);
@@ -109,6 +111,14 @@ public class VendorService {
         }
         if (request.price() != null) {
             product.setPrice(request.price());
+        }
+        // Zero is how the form says "no list price" — anything else would leave a stale
+        // strike-through price on the card with no way to take it off.
+        if (request.mrp() != null) {
+            product.setMrp(request.mrp().signum() == 0 ? null : request.mrp());
+        }
+        if (request.material() != null) {
+            product.setMaterial(request.material().isBlank() ? null : request.material());
         }
         if (request.imageUrl() != null) {
             product.setImageUrl(request.imageUrl());

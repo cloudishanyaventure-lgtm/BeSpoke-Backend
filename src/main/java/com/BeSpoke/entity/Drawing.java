@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -75,19 +76,23 @@ public class Drawing {
     /** When the customer signed off (APPROVED → FINAL). */
     private Instant customerApprovedAt;
 
-    @ManyToOne
+    // These are LAZY on purpose. Each is a User (→ company, → reportsTo → …) and
+    // previousRevision is a whole Drawing again; eager, they multiply into a fetch graph
+    // that once blew past Postgres's 1664-column SELECT limit. The DTO only reads a name
+    // (inside the tx) or an id (fine on a proxy), so lazy costs nothing here.
+    @ManyToOne(fetch = FetchType.LAZY)
     private User customerDecidedBy;
     private Instant customerDecidedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User uploadedBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User finalizedBy;
     private Instant finalizedAt;
 
     /** One successor per version; old content and decision records are retained. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "previous_revision_id", unique = true)
     private Drawing previousRevision;
 

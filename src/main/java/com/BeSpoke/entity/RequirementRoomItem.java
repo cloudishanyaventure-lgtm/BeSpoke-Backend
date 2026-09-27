@@ -31,6 +31,16 @@ public class RequirementRoomItem {
     @Column(length = 500)
     private String note;
 
+    /**
+     * The element's own size in feet, captured beside the room's. Same rules as
+     * {@link RequirementRoom}: nullable for items that predate the question, and a 0 is
+     * "not applicable" — never multiplied into an area. See {@link #areaSqft()}.
+     */
+    private Double lengthFt;
+    private Double widthFt;
+    private Double depthFt;
+    private Double heightFt;
+
     public RequirementRoomItem() {
     }
 
@@ -79,5 +89,44 @@ public class RequirementRoomItem {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Double getLengthFt() {
+        return lengthFt;
+    }
+
+    public void setLengthFt(Double lengthFt) {
+        this.lengthFt = lengthFt;
+    }
+
+    public Double getWidthFt() {
+        return widthFt;
+    }
+
+    public void setWidthFt(Double widthFt) {
+        this.widthFt = widthFt;
+    }
+
+    public Double getDepthFt() {
+        return depthFt;
+    }
+
+    public void setDepthFt(Double depthFt) {
+        this.depthFt = depthFt;
+    }
+
+    public Double getHeightFt() {
+        return heightFt;
+    }
+
+    public void setHeightFt(Double heightFt) {
+        this.heightFt = heightFt;
+    }
+
+    /** Length × width (or depth when width is 0), or null when it cannot be worked out. */
+    public Double areaSqft() {
+        double length = lengthFt == null ? 0 : lengthFt;
+        double across = widthFt != null && widthFt > 0 ? widthFt : (depthFt == null ? 0 : depthFt);
+        return length > 0 && across > 0 ? length * across : null;
     }
 }

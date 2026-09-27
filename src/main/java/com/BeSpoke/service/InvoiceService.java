@@ -38,19 +38,22 @@ public class InvoiceService {
     private final ProjectMilestoneRepository projectMilestoneRepository;
     private final LeadActivityRepository leadActivityRepository;
     private final MailService mailService;
+    private final PdfService pdfService;
 
     public InvoiceService(InvoiceRepository invoiceRepository,
                           InvoicePaymentRepository invoicePaymentRepository,
                           ProjectRepository projectRepository,
                           ProjectMilestoneRepository projectMilestoneRepository,
                           LeadActivityRepository leadActivityRepository,
-                          MailService mailService) {
+                          MailService mailService,
+                          PdfService pdfService) {
         this.invoiceRepository = invoiceRepository;
         this.invoicePaymentRepository = invoicePaymentRepository;
         this.projectRepository = projectRepository;
         this.projectMilestoneRepository = projectMilestoneRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.mailService = mailService;
+        this.pdfService = pdfService;
     }
 
     /** Studio scoping: directors touch only their own company's invoices; admins everything. */
@@ -104,12 +107,40 @@ public class InvoiceService {
         leadActivityRepository.save(new LeadActivity(invoice.getProject().getLead(), admin,
                 ActivityType.SYSTEM, "Invoice " + invoice.getNumber() + " sent"));
         if (invoice.getProject().getClient() != null) {
+            // A PDF failure must never block sending the invoice — degrade to no attachment.
+            byte[] pdf = null;
+            try {
+                pdf = pdfService.invoice(toDto(invoice));
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger(InvoiceService.class)
+                        .warn("[PDF] invoice {} could not be rendered — sending without attachment: {}",
+                                invoice.getNumber(), e.toString());
+            }
             // totalOf, not getAmount(): the customer must read the same GST-inclusive
             // figure in the mail that /my/payments shows them.
             mailService.invoiceSent(invoice.getProject().getClient(), invoice.getNumber(),
-                    InvoiceDto.totalOf(invoice).toPlainString(), invoice.getDueDate());
+                    InvoiceDto.totalOf(invoice).toPlainString(), invoice.getDueDate(), pdf);
         }
         return toDto(invoice);
+    }
+
+    /** The invoice as a PDF, scoped like every other read. */
+    @Transactional(readOnly = true)
+    public byte[] pdf(User actor, Long invoiceId) {
+        Invoice invoice = requireInvoice(invoiceId);
+        checkScope(actor, invoice.getProject());
+        return pdfService.invoice(toDto(invoice));
+    }
+
+    /** The invoice as a PDF for the customer — their own project, never a draft. */
+    @Transactional(readOnly = true)
+    public byte[] customerPdf(Project project, Long invoiceId) {
+        Invoice invoice = requireInvoice(invoiceId);
+        if (!invoice.getProject().getId().equals(project.getId())
+                || invoice.getStatus() == InvoiceStatus.DRAFT) {
+            throw new NotFoundException("Invoice not found");
+        }
+        return pdfService.invoice(toDto(invoice));
     }
 
     @Transactional

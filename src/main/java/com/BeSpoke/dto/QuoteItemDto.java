@@ -10,7 +10,9 @@ public record QuoteItemDto(
         BigDecimal qty,
         BigDecimal rate,
         int gstPct,
-        BigDecimal lineTotal
+        BigDecimal lineTotal,
+        String section,
+        boolean heading
 ) {
 
     public static QuoteItemDto from(QuoteItem item) {
@@ -18,6 +20,7 @@ public record QuoteItemDto(
         BigDecimal lineTotal = net.add(net.multiply(BigDecimal.valueOf(item.getGstPct()))
                 .divide(BigDecimal.valueOf(100)));
         return new QuoteItemDto(item.getId(), item.getDescription(),
-                item.getQty(), item.getRate(), item.getGstPct(), lineTotal);
+                item.getQty(), item.getRate(), item.getGstPct(), lineTotal,
+                item.getSection(), item.isHeading());
     }
 }

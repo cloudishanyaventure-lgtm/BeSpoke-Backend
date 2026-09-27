@@ -60,7 +60,7 @@ public class ShopService {
     // ponytail: in-memory filter over all active products, matches the codebase's
     // list idiom (QuoteService.list); move to derived queries if the catalog grows.
     public List<ProductDto> products(String category, String room, Long companyId, String q,
-                                     String shopCategory, String shopSubCategory) {
+                                     String shopCategory, String shopSubCategory, String city) {
         String needle = q == null ? null : q.trim().toLowerCase(Locale.ROOT);
         return productRepository.findByActiveTrueOrderByCreatedAtDesc().stream()
                 .filter(p -> eligible(p.getCompany()))
@@ -71,11 +71,18 @@ public class ShopService {
                 .filter(p -> shopSubCategory == null
                         || shopSubCategory.equalsIgnoreCase(p.getShopSubCategory()))
                 .filter(p -> companyId == null || companyId.equals(p.getCompany().getId()))
+                // A vendor serves a city if it is based there or lists it as operational.
+                .filter(p -> city == null || city.isBlank()
+                        || city.equalsIgnoreCase(p.getCompany().getCity())
+                        || p.getCompany().getOperationalCities().stream()
+                            .anyMatch(city::equalsIgnoreCase))
                 .filter(p -> needle == null || needle.isEmpty()
                         || p.getName().toLowerCase(Locale.ROOT).contains(needle)
                         || (p.getDescription() != null
                             && p.getDescription().toLowerCase(Locale.ROOT).contains(needle)))
-                .map(ProductDto::from)
+                // The shop card carries the brand name, so the list needs the vendor too —
+                // it used to come back only on the detail view, and the line was dead.
+                .map(ProductDto::withVendor)
                 .toList();
     }
 

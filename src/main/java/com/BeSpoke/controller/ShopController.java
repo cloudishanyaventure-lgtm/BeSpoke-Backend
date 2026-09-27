@@ -28,8 +28,9 @@ public class ShopController {
                                      @RequestParam(required = false) Long companyId,
                                      @RequestParam(required = false) String q,
                                      @RequestParam(required = false) String shopCategory,
-                                     @RequestParam(required = false) String shopSubCategory) {
-        return shopService.products(category, room, companyId, q, shopCategory, shopSubCategory);
+                                     @RequestParam(required = false) String shopSubCategory,
+                                     @RequestParam(required = false) String city) {
+        return shopService.products(category, room, companyId, q, shopCategory, shopSubCategory, city);
     }
 
     @GetMapping("/products/{id}")

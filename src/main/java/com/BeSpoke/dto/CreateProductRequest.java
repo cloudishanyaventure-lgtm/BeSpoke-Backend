@@ -16,6 +16,8 @@ public record CreateProductRequest(
         @Size(max = 120) String shopCategory,
         @Size(max = 120) String shopSubCategory,
         @NotNull @Positive BigDecimal price,
+        @Positive BigDecimal mrp,
+        @Size(max = 60) String material,
         @Size(max = 1000) String imageUrl,
         @jakarta.validation.Valid ProductSpatialSpec spatial
 ) {

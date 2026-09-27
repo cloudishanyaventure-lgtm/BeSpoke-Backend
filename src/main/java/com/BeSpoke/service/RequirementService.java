@@ -38,6 +38,7 @@ public class RequirementService {
     private final ScoreService scoreService;
     private final MailService mailService;
     private final LeadService leadService;
+    private final PdfService pdfService;
 
     public RequirementService(LeadRepository leadRepository,
                               CustomerContextService context,
@@ -46,7 +47,8 @@ public class RequirementService {
                               LeadActivityRepository leadActivityRepository,
                               ScoreService scoreService,
                               MailService mailService,
-                              LeadService leadService) {
+                              LeadService leadService,
+                              PdfService pdfService) {
         this.leadRepository = leadRepository;
         this.context=context;
         this.requirementFormRepository = requirementFormRepository;
@@ -55,6 +57,7 @@ public class RequirementService {
         this.scoreService = scoreService;
         this.mailService = mailService;
         this.leadService = leadService;
+        this.pdfService = pdfService;
     }
 
     public Lead myLead(User customer) {
@@ -185,8 +188,13 @@ public class RequirementService {
             room.setSortOrder(order++);
             if (roomRequest.items() != null) {
                 for (RoomRequest.RoomItemRequest itemRequest : roomRequest.items()) {
-                    room.getItems().add(new RequirementRoomItem(
-                            room, itemRequest.category().trim(), itemRequest.item().trim(), itemRequest.note()));
+                    RequirementRoomItem item = new RequirementRoomItem(
+                            room, itemRequest.category().trim(), itemRequest.item().trim(), itemRequest.note());
+                    item.setLengthFt(itemRequest.lengthFt());
+                    item.setWidthFt(itemRequest.widthFt());
+                    item.setDepthFt(itemRequest.depthFt());
+                    item.setHeightFt(itemRequest.heightFt());
+                    room.getItems().add(item);
                 }
             }
             form.getRooms().add(room);
@@ -233,7 +241,7 @@ public class RequirementService {
         form.setUpdatedAt(Instant.now());
         form = requirementFormRepository.save(form);
         leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
-                "Customer approved the requirement form"));
+                customer.getName() + " approved the requirement form"));
         rescore(lead, form);
         return RequirementFormDto.from(form);
     }
@@ -285,9 +293,37 @@ public class RequirementService {
         leadActivityRepository.save(new LeadActivity(lead, staff, ActivityType.SYSTEM,
                 staff.getName() + " sent the PRD to the customer for review"));
         if (lead.getCustomer() != null) {
-            mailService.prdSentForReview(lead.getCustomer(), form.getRooms().size());
+            // A PDF failure must never block sending the PRD for review.
+            byte[] pdf = null;
+            try {
+                pdf = pdfService.prd(RequirementFormDto.from(form), lead.getCustomer().getName());
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger(RequirementService.class)
+                        .warn("[PDF] PRD for lead {} could not be rendered — sending without attachment: {}",
+                                lead.getId(), e.toString());
+            }
+            mailService.prdSentForReview(lead.getCustomer(), form.getRooms().size(), pdf);
         }
         return RequirementFormDto.from(form);
+    }
+
+    /** The PRD as a PDF for the studio (scoped lead). */
+    @Transactional(readOnly = true)
+    public byte[] prdPdf(User staff, Long leadId) {
+        Lead lead = leadService.scopedLead(staff, leadId);
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new NotFoundException("No PRD for this lead yet"));
+        String name = lead.getCustomer() != null ? lead.getCustomer().getName() : lead.getContactName();
+        return pdfService.prd(RequirementFormDto.from(form), name);
+    }
+
+    /** The PRD as a PDF for the customer (their own form). */
+    @Transactional(readOnly = true)
+    public byte[] myPrdPdf(User customer) {
+        Lead lead = myLead(customer);
+        RequirementForm form = requirementFormRepository.findByLead(lead)
+                .orElseThrow(() -> new NotFoundException("Your PRD hasn't been started yet"));
+        return pdfService.prd(RequirementFormDto.from(form), customer.getName());
     }
 
     /** The customer signing off phase two. This is the gate the quote stage waits on. */
@@ -306,7 +342,7 @@ public class RequirementService {
         form.setUpdatedAt(Instant.now());
         form = requirementFormRepository.save(form);
         leadActivityRepository.save(new LeadActivity(lead, customer, ActivityType.SYSTEM,
-                "Customer approved the PRD — the project requirement document is signed off"));
+                customer.getName() + " approved the PRD — the project requirement document is signed off"));
         return RequirementFormDto.from(form);
     }
 

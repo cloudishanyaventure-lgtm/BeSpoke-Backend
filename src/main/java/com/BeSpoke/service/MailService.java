@@ -136,6 +136,42 @@ public class MailService {
     }
 
     /**
+     * Same as the HTML send, plus one PDF attachment. A null/empty PDF just sends the mail
+     * without it — a failed document must never swallow the notification.
+     */
+    public void send(String to, String subject, String body, String html,
+                     String pdfName, byte[] pdf) {
+        if (to == null || to.isBlank()) {
+            return;
+        }
+        if (!enabled) {
+            log.info("[MAIL] disabled — would send to {} ({}) with attachment {}", to, subject, pdfName);
+            return;
+        }
+        try {
+            JavaMailSender sender = mailSender.getIfAvailable();
+            if (sender == null) {
+                log.warn("[MAIL] no sender; dropping mail to {} ({})", to, subject);
+                return;
+            }
+            MimeMessage message = sender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(from);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body, html != null ? html : body);
+            if (pdf != null && pdf.length > 0) {
+                helper.addAttachment(pdfName, new org.springframework.core.io.ByteArrayResource(pdf),
+                        "application/pdf");
+            }
+            sender.send(message);
+            log.info("[MAIL] sent to {} ({}) with attachment {}", to, subject, pdfName);
+        } catch (Exception ex) {
+            log.error("[MAIL] failed to send to {} ({}) — {}", to, subject, ex.toString(), ex);
+        }
+    }
+
+    /**
      * Says out loud, once, whether mail can actually leave this box. Every sign-in code,
      * generated password and reset code rides on this; a misconfiguration used to show up
      * only as customers who "never got the email".
@@ -189,6 +225,26 @@ public class MailService {
                                 + code(code, "Expires in 10 minutes")
                                 + note("Didn't try to sign in? You can ignore this email — nobody can"
                                         + " get in without the code.")));
+    }
+
+    /** A family member is invited onto a customer's project — the link creates their account. */
+    public void projectInvite(String toEmail, String invitedByName, String token) {
+        String link = appUrl + "/invite/" + token;
+        send(toEmail, invitedByName + " invited you to their BeSpoke project",
+                "Hi,\n\n"
+                        + invitedByName + " has invited you to their home design project on BeSpoke.\n\n"
+                        + "Open it here — no password needed, your account is created when you click:\n"
+                        + link + "\n\n"
+                        + "You'll be able to see every room, design and quote, and approve alongside them.\n\n"
+                        + "— BeSpoke",
+                page(invitedByName + " invited you to their home design project.",
+                        "You're invited",
+                        h("You've been invited,", "to a BeSpoke project."),
+                        p(invitedByName + " has added you to their home design project. Open it to see"
+                                + " every room, design and quote — and approve alongside them.")
+                                + button(link, "Open the project")
+                                + note("No password needed — clicking the link creates your account and"
+                                        + " signs you in. Wasn't expecting this? You can ignore this email.")));
     }
 
     /** Partner "forgot password": the code that lets them set a new one. */
@@ -502,21 +558,24 @@ public class MailService {
     }
 
     /** Phase two is ready for the customer to read and sign off. */
-    public void prdSentForReview(User customer, int spaces) {
+    public void prdSentForReview(User customer, int spaces, byte[] pdf) {
         send(customer.getEmail(), "Your project requirement document is ready to review",
                 "Hi " + customer.getName() + ",\n\n"
                         + "Your designer has put together the project requirement document — "
                         + spaces + " space" + (spaces == 1 ? "" : "s") + ", each with its size"
-                        + " and what goes into it.\n\n"
-                        + "Read it and approve it here: " + appUrl + "/my/requirements\n\n"
+                        + " and what goes into it. The PDF is attached.\n\n"
+                        + "Read it and approve it — or request changes — here: "
+                        + appUrl + "/my/requirements\n\n"
                         + "— BeSpoke",
                 page("Your project requirement document is ready to review.", "PRD ready",
                         h("Ready for your sign-off,", customer.getName() + "."),
                         p("Your designer has put together the project requirement document — "
                                 + spaces + " space" + (spaces == 1 ? "" : "s") + ", each with its"
-                                + " size and what goes into it. Nothing is ordered or drawn"
-                                + " against it until you approve it.")
-                                + button(appUrl + "/my/requirements", "Read the PRD")));
+                                + " size and what goes into it (the PDF is attached). Nothing is"
+                                + " ordered or drawn against it until you approve it — review it and"
+                                + " either approve or request changes.")
+                                + button(appUrl + "/my/requirements", "Review the PRD")),
+                "Project-Requirement-Document.pdf", pdf);
         notifyInApp(customer, "Your PRD is ready to review",
                 spaces + " space" + (spaces == 1 ? "" : "s") + " to read and approve.",
                 "/my/requirements");
@@ -600,23 +659,24 @@ public class MailService {
                                 + button(appUrl + "/my/proposals", "Review the proposal")));
     }
 
-    public void invoiceSent(User customer, String number, String amount, Object dueDate) {
+    public void invoiceSent(User customer, String number, String amount, Object dueDate, byte[] pdf) {
         notifyInApp(customer, "New invoice", "Invoice " + number + " is ready. View your payment ledger for details.", "/my/payments");
         send(customer.getEmail(), "Invoice " + number + " from BeSpoke",
                 "Hi " + customer.getName() + ",\n\n"
                         + "Invoice " + number + " for ₹" + amount + " is ready"
-                        + (dueDate != null ? ", due " + dueDate : "") + ".\n"
+                        + (dueDate != null ? ", due " + dueDate : "") + ". The PDF is attached.\n"
                         + appUrl + "/my/payments\n\n"
                         + "— BeSpoke",
                 page("Invoice " + number + " is ready.",
                         "Invoice",
                         h("Invoice", number),
-                        p("This invoice is now due on your project. You can view the breakdown and"
-                                + " every payment recorded against it in your dashboard.")
+                        p("This invoice is now due on your project (the PDF is attached). You can view the"
+                                + " breakdown and every payment recorded against it in your dashboard.")
                                 + facts("Invoice", number,
                                         "Amount", "₹ " + amount,
                                         "Due", dueDate != null ? String.valueOf(dueDate) : "On receipt")
-                                + button(appUrl + "/my/payments", "View invoice")));
+                                + button(appUrl + "/my/payments", "View invoice")),
+                "Invoice-" + number + ".pdf", pdf);
     }
 
     public void paymentReceived(User customer, String number, String amount, String outstanding) {

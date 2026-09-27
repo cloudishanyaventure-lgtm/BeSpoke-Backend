@@ -209,6 +209,17 @@ public class LeadController {
         return requirementService.sendPrdForReview(leadService.scopedLead(staff, id), staff);
     }
 
+    /** The PRD as a PDF for the studio. */
+    @GetMapping("/{id}/prd/pdf")
+    public org.springframework.http.ResponseEntity<byte[]> prdPdf(Authentication authentication,
+                                                                  @PathVariable Long id) {
+        byte[] bytes = requirementService.prdPdf(me(authentication), id);
+        return org.springframework.http.ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "inline; filename=\"requirement-document.pdf\"")
+                .body(bytes);
+    }
+
     /** Takes a locked brief back off the shelf so the PRD can be worked again. */
     @PostMapping("/{id}/prd/reopen")
     @PreAuthorize(WORKS_THE_LEAD)

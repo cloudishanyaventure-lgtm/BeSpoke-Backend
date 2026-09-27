@@ -35,14 +35,24 @@ final class PlatformOptionDefaults {
                 "Stone & marble", "Carpentry & joinery", "False ceiling & POP",
                 "Wallpaper & wall finishes", "HVAC", "Home automation");
 
-        // The shop's left-hand rail.
-        plain(lists, "SHOP_CATEGORY", "Sofas & seating", "Beds", "Wardrobes & storage", "Tables",
-                "Chairs & stools", "Kitchen", "TV & media units", "Lighting", "Soft furnishings",
-                "Decor & art", "Outdoor");
+        // The shop's left-hand rail. "Modular" is also the whole of /modular — that page
+        // is this one category, so removing it here empties that destination.
+        plain(lists, "SHOP_CATEGORY", "Modular", "Sofas & seating", "Beds", "Wardrobes & storage",
+                "Tables", "Chairs & stools", "Kitchen", "TV & media units", "Lighting",
+                "Soft furnishings", "Decor & art", "Outdoor");
 
         // note = the SHOP_CATEGORY this sub-type sits under. That one column is the whole
         // parent-child link: adding a sub-type is one row, not a second table.
         noted(lists, "SHOP_SUBCATEGORY",
+                // Modular's own sub-types — what /modular browses by.
+                sub("Kitchen", "Modular"),
+                sub("Wardrobe", "Modular"),
+                sub("TV Unit", "Modular"),
+                sub("Storage Unit", "Modular"),
+                sub("Pantry", "Modular"),
+                sub("Shoe Rack", "Modular"),
+                sub("Vanity", "Modular"),
+                sub("Dresser", "Modular"),
                 sub("3-seater sofa", "Sofas & seating"),
                 sub("2-seater sofa", "Sofas & seating"),
                 sub("L-shaped sofa", "Sofas & seating"),
@@ -106,6 +116,19 @@ final class PlatformOptionDefaults {
                 sub("Garden furniture", "Outdoor"),
                 sub("Swing & hammock", "Outdoor"),
                 sub("Outdoor lighting", "Outdoor"));
+
+        // The promo band on /modular. value = the SHOP_SUBCATEGORY the tile opens,
+        // label = its headline, note = the line under it. The tile's photo is the first
+        // product filed under that sub-type, so there is no image to paste here.
+        noted(lists, "MODULAR_OFFER",
+                noteEntry("Kitchen", "Modular kitchens",
+                        "Built around how you actually cook"),
+                noteEntry("Wardrobe", "Wardrobes",
+                        "Sliding, hinged and walk-in — made to your wall"),
+                noteEntry("TV Unit", "TV & media units",
+                        "Wall-hung storage that hides the cables"),
+                noteEntry("Storage Unit", "Storage units",
+                        "Shelves, drawers and doors sized to the wall"));
 
         plain(lists, "DESIGN_STYLE", "Modern minimal", "Contemporary", "Scandinavian",
                 "Mid-century modern", "Industrial", "Bohemian", "Traditional Indian", "Japandi",

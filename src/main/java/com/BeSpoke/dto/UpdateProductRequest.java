@@ -15,6 +15,9 @@ public record UpdateProductRequest(
         @Size(max = 120) String shopCategory,
         @Size(max = 120) String shopSubCategory,
         @Positive BigDecimal price,
+        /** 0 clears the list price; any other value sets it. */
+        @jakarta.validation.constraints.PositiveOrZero BigDecimal mrp,
+        @Size(max = 60) String material,
         @Size(max = 1000) String imageUrl,
         Boolean active,
         @jakarta.validation.Valid ProductSpatialSpec spatial

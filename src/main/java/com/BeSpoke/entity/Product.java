@@ -52,6 +52,14 @@ public class Product {
     @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal price;
 
+    /** List price before discount. Null on most rows — the card then shows one price. */
+    @Column(precision = 14, scale = 2)
+    private BigDecimal mrp;
+
+    /** A material-library category name ("Plywood") — the card's first chip. */
+    @Column(length = 60)
+    private String material;
+
     @Column(length = 1000)
     private String imageUrl;
 
@@ -155,6 +163,22 @@ public class Product {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getMrp() {
+        return mrp;
+    }
+
+    public void setMrp(BigDecimal mrp) {
+        this.mrp = mrp;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
     }
 
     public String getImageUrl() {

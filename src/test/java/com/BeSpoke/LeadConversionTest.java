@@ -118,7 +118,8 @@ class LeadConversionTest {
                 List.of(new RoomRequest("KITCHEN", "Kitchen", "Ground floor", null, null,
                         null, null, null, null, null, null,
                         9.0, 12.0, 10.0, 0.0,
-                        List.of(new RoomRequest.RoomItemRequest("Storage", "Base units", null)))));
+                        List.of(new RoomRequest.RoomItemRequest("Storage", "Base units", null,
+                                null, null, null, null)))));
         RequirementForm form = forms.findByLead(leads.findById(captured.id()).orElseThrow()).orElseThrow();
         assertEquals(1, form.getRooms().size(), "the PRD is still writable after the lock");
         assertEquals(1, form.getRooms().get(0).getItems().size());
