@@ -23,10 +23,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The drawing timeline: built from the approved BOQ's elements, adjusted by the studio, then
- * signed off by an approver (design manager / director) before work is tracked against it.
+ * The project timelines: built from the approved BOQ's elements, adjusted by the studio, then
+ * signed off by an approver (design manager / director) before work is tracked against them.
  * Scoping and 404s go through {@link LeadService#scopedLead}. Editing is only allowed while
  * the schedule is not yet APPROVED; item progress is only tracked once it is.
+ *
+ * <p>Every method takes a {@link DrawingSchedule.Kind} — drawings and site execution are the
+ * same timeline off the same BOQ, kept as separate rows so each is approved on its own.
  */
 @Service
 public class DrawingScheduleService {
@@ -43,19 +46,20 @@ public class DrawingScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public DrawingScheduleDto get(User staff, Long leadId) {
+    public DrawingScheduleDto get(User staff, Long leadId, DrawingSchedule.Kind kind) {
         Lead lead = leadService.scopedLead(staff, leadId);
         Optional<Quote> boq = approvedBoq(lead);
-        return schedules.findByLead(lead)
+        return schedules.findByLeadAndKind(lead, kind)
                 .map(s -> DrawingScheduleDto.from(s, boq.isPresent()))
                 .orElseGet(() -> proposal(lead, boq));
     }
 
     @Transactional
-    public DrawingScheduleDto save(User staff, Long leadId, DrawingScheduleRequest req) {
+    public DrawingScheduleDto save(User staff, Long leadId, DrawingSchedule.Kind kind,
+                                   DrawingScheduleRequest req) {
         Lead lead = leadService.scopedLead(staff, leadId);
-        DrawingSchedule s = schedules.findByLead(lead)
-                .orElseGet(() -> new DrawingSchedule(lead, req.startDate(), req.endDate()));
+        DrawingSchedule s = schedules.findByLeadAndKind(lead, kind)
+                .orElseGet(() -> new DrawingSchedule(lead, kind, req.startDate(), req.endDate()));
         if (s.getStatus() == DrawingSchedule.Status.APPROVED) {
             throw new ConflictException("The schedule is approved and locked — reopen it to edit.");
         }
@@ -93,9 +97,9 @@ public class DrawingScheduleService {
     }
 
     @Transactional
-    public DrawingScheduleDto submit(User staff, Long leadId) {
+    public DrawingScheduleDto submit(User staff, Long leadId, DrawingSchedule.Kind kind) {
         Lead lead = leadService.scopedLead(staff, leadId);
-        DrawingSchedule s = schedules.findByLead(lead)
+        DrawingSchedule s = schedules.findByLeadAndKind(lead, kind)
                 .orElseThrow(() -> new BadRequestException("Save the schedule before submitting it."));
         if (s.getStatus() == DrawingSchedule.Status.APPROVED) {
             throw new ConflictException("The schedule is already approved.");
@@ -110,9 +114,9 @@ public class DrawingScheduleService {
     }
 
     @Transactional
-    public DrawingScheduleDto approve(User approver, Long leadId) {
+    public DrawingScheduleDto approve(User approver, Long leadId, DrawingSchedule.Kind kind) {
         Lead lead = leadService.scopedLead(approver, leadId);
-        DrawingSchedule s = schedules.findByLead(lead)
+        DrawingSchedule s = schedules.findByLeadAndKind(lead, kind)
                 .orElseThrow(() -> new NotFoundException("There is no schedule to approve."));
         if (s.getStatus() != DrawingSchedule.Status.SUBMITTED) {
             throw new ConflictException("Only a submitted schedule can be approved.");
@@ -125,9 +129,9 @@ public class DrawingScheduleService {
 
     /** An approver reopens an approved schedule so the dates can be adjusted again. */
     @Transactional
-    public DrawingScheduleDto reopen(User approver, Long leadId) {
+    public DrawingScheduleDto reopen(User approver, Long leadId, DrawingSchedule.Kind kind) {
         Lead lead = leadService.scopedLead(approver, leadId);
-        DrawingSchedule s = schedules.findByLead(lead)
+        DrawingSchedule s = schedules.findByLeadAndKind(lead, kind)
                 .orElseThrow(() -> new NotFoundException("There is no schedule to reopen."));
         s.setStatus(DrawingSchedule.Status.DRAFT);
         s.setApprovedByName(null);
@@ -136,9 +140,10 @@ public class DrawingScheduleService {
     }
 
     @Transactional
-    public DrawingScheduleDto setItemStatus(User staff, Long leadId, Long itemId, String status) {
+    public DrawingScheduleDto setItemStatus(User staff, Long leadId, DrawingSchedule.Kind kind,
+                                            Long itemId, String status) {
         Lead lead = leadService.scopedLead(staff, leadId);
-        DrawingSchedule s = schedules.findByLead(lead)
+        DrawingSchedule s = schedules.findByLeadAndKind(lead, kind)
                 .orElseThrow(() -> new NotFoundException("There is no schedule."));
         if (s.getStatus() != DrawingSchedule.Status.APPROVED) {
             throw new ConflictException("Approve the schedule before tracking work against it.");

@@ -225,6 +225,34 @@ class DesignWorkflowIntegrationTest {
                 .andExpect(jsonPath("$.customerApprovedAt").doesNotExist());
     }
 
+    /**
+     * The drawing timeline and the execution timeline are the same endpoints on the same
+     * table, told apart only by the path segment — so the one thing worth pinning down is
+     * that a lead can hold both at once and neither write lands on the other's row.
+     */
+    @Test void drawingAndExecutionSchedulesAreSeparateTimelinesOnTheSameLead() throws Exception {
+        for (String kind : List.of("drawing-schedule", "execution-schedule")) {
+            mvc.perform(put("/api/leads/" + lead.getId() + "/" + kind)
+                    .header("Authorization", token(designer)).contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsString(Map.of("startDate", "2026-10-01", "endDate", "2026-10-31",
+                            "items", List.of(Map.of("section", "Kitchen", "label", kind,
+                                    "startDate", "2026-10-01", "endDate", "2026-10-31"))))))
+                    .andExpect(status().isOk());
+        }
+        // Approving one must not approve the other.
+        mvc.perform(post("/api/leads/" + lead.getId() + "/drawing-schedule/submit")
+                .header("Authorization", token(designer))).andExpect(status().isOk());
+        mvc.perform(post("/api/leads/" + lead.getId() + "/drawing-schedule/approve")
+                .header("Authorization", token(manager))).andExpect(status().isOk());
+
+        mvc.perform(get("/api/leads/" + lead.getId() + "/drawing-schedule").header("Authorization", token(designer)))
+                .andExpect(jsonPath("$.status").value("APPROVED"))
+                .andExpect(jsonPath("$.items[0].label").value("drawing-schedule"));
+        mvc.perform(get("/api/leads/" + lead.getId() + "/execution-schedule").header("Authorization", token(designer)))
+                .andExpect(jsonPath("$.status").value("DRAFT"))
+                .andExpect(jsonPath("$.items[0].label").value("execution-schedule"));
+    }
+
     /** Drawings are not always images: a PDF sheet uploads, becomes a drawing and downloads as a PDF. */
     @Test void pdfAndOtherFileTypesUploadAsDesigns() throws Exception {
         String pdf = mvc.perform(multipart("/api/project-documents")

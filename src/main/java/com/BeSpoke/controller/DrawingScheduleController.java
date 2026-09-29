@@ -2,6 +2,7 @@ package com.BeSpoke.controller;
 
 import com.BeSpoke.dto.DrawingScheduleDto;
 import com.BeSpoke.dto.DrawingScheduleRequest;
+import com.BeSpoke.entity.DrawingSchedule;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.service.CurrentUserService;
 import com.BeSpoke.service.DrawingScheduleService;
@@ -17,11 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * The drawing timeline for a lead. Uploaders build/adjust/submit and track item progress;
+ * The project timelines for a lead. Uploaders build/adjust/submit and track item progress;
  * approvers (design manager / director) approve and reopen. Lead scoping is in the service.
+ *
+ * <p>One set of endpoints serves both timelines: the path segment is the kind, so
+ * /drawing-schedule and /execution-schedule are the same code on different rows.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/leads/{id}/{kind:drawing-schedule|execution-schedule}")
 public class DrawingScheduleController {
 
     private static final String UPLOADERS =
@@ -42,41 +46,53 @@ public class DrawingScheduleController {
         return currentUserService.requireByEmail(a.getName());
     }
 
-    @GetMapping("/leads/{id}/drawing-schedule")
-    public DrawingScheduleDto get(Authentication a, @PathVariable Long id) {
-        return service.get(me(a), id);
+    private static DrawingSchedule.Kind kindOf(String path) {
+        return path.startsWith("execution")
+                ? DrawingSchedule.Kind.EXECUTION
+                : DrawingSchedule.Kind.DRAWING;
     }
 
-    @PutMapping("/leads/{id}/drawing-schedule")
+    @GetMapping
+    public DrawingScheduleDto get(Authentication a, @PathVariable Long id,
+                                  @PathVariable String kind) {
+        return service.get(me(a), id, kindOf(kind));
+    }
+
+    @PutMapping
     @PreAuthorize(UPLOADERS)
     public DrawingScheduleDto save(Authentication a, @PathVariable Long id,
+                                   @PathVariable String kind,
                                    @Valid @RequestBody DrawingScheduleRequest req) {
-        return service.save(me(a), id, req);
+        return service.save(me(a), id, kindOf(kind), req);
     }
 
-    @PostMapping("/leads/{id}/drawing-schedule/submit")
+    @PostMapping("/submit")
     @PreAuthorize(UPLOADERS)
-    public DrawingScheduleDto submit(Authentication a, @PathVariable Long id) {
-        return service.submit(me(a), id);
+    public DrawingScheduleDto submit(Authentication a, @PathVariable Long id,
+                                     @PathVariable String kind) {
+        return service.submit(me(a), id, kindOf(kind));
     }
 
-    @PostMapping("/leads/{id}/drawing-schedule/approve")
+    @PostMapping("/approve")
     @PreAuthorize(APPROVERS)
-    public DrawingScheduleDto approve(Authentication a, @PathVariable Long id) {
-        return service.approve(me(a), id);
+    public DrawingScheduleDto approve(Authentication a, @PathVariable Long id,
+                                      @PathVariable String kind) {
+        return service.approve(me(a), id, kindOf(kind));
     }
 
-    @PostMapping("/leads/{id}/drawing-schedule/reopen")
+    @PostMapping("/reopen")
     @PreAuthorize(APPROVERS)
-    public DrawingScheduleDto reopen(Authentication a, @PathVariable Long id) {
-        return service.reopen(me(a), id);
+    public DrawingScheduleDto reopen(Authentication a, @PathVariable Long id,
+                                     @PathVariable String kind) {
+        return service.reopen(me(a), id, kindOf(kind));
     }
 
-    @PostMapping("/leads/{id}/drawing-schedule/items/{itemId}/status")
+    @PostMapping("/items/{itemId}/status")
     @PreAuthorize(UPLOADERS)
     public DrawingScheduleDto itemStatus(Authentication a, @PathVariable Long id,
-                                         @PathVariable Long itemId, @RequestBody StatusRequest req) {
-        return service.setItemStatus(me(a), id, itemId, req.status());
+                                         @PathVariable String kind, @PathVariable Long itemId,
+                                         @RequestBody StatusRequest req) {
+        return service.setItemStatus(me(a), id, kindOf(kind), itemId, req.status());
     }
 
     public record StatusRequest(String status) {

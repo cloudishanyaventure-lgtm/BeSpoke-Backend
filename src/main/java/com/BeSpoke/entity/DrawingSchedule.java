@@ -9,8 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
@@ -20,9 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The drawing timeline for one project: a start/end window for the whole BOQ, with each
- * BOQ element given a slice of that window. Built from the approved quote, adjusted by the
- * studio, then signed off by a design manager or director before work is tracked against it.
+ * A project timeline: a start/end window for the whole BOQ, with each BOQ element given a
+ * slice of that window. Built from the approved quote, adjusted by the studio, then signed
+ * off by a design manager or director before work is tracked against it.
+ *
+ * <p>{@link Kind} is which timeline it is — the drawings one and the site execution one are
+ * the same shape off the same BOQ, so a lead has one row per kind, not one row.
  */
 @Entity
 @Table(name = "drawing_schedules")
@@ -30,13 +33,22 @@ public class DrawingSchedule {
 
     public enum Status { DRAFT, SUBMITTED, APPROVED }
 
+    /** DRAWING = the drawing schedule tab; EXECUTION = the site execution one. */
+    public enum Kind { DRAWING, EXECUTION }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "lead_id", nullable = false, unique = true)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "lead_id", nullable = false)
     private Lead lead;
+
+    // Nullable in the schema on purpose: ddl-auto adds the column to a table that already
+    // has drawing rows, and the migration backfills them to DRAWING right after.
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Kind kind = Kind.DRAWING;
 
     @Column(nullable = false)
     private LocalDate startDate;
@@ -65,10 +77,19 @@ public class DrawingSchedule {
     public DrawingSchedule() {
     }
 
-    public DrawingSchedule(Lead lead, LocalDate startDate, LocalDate endDate) {
+    public DrawingSchedule(Lead lead, Kind kind, LocalDate startDate, LocalDate endDate) {
         this.lead = lead;
+        this.kind = kind;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public Kind getKind() {
+        return kind;
+    }
+
+    public void setKind(Kind kind) {
+        this.kind = kind;
     }
 
     public Long getId() {
