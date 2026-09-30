@@ -500,15 +500,12 @@ public class LeadService {
     }
 
     /**
-     * Loads an active same-studio staffer of one of the given roles. BeSpoke hands a lead
-     * to a studio and stops there — who works it is the studio's own call, so the platform
-     * is turned away here as well as at the controller gate.
+     * Loads an active staffer of the lead's own studio, in one of the given roles. The
+     * platform is not turned away here: admins sit above every studio and staff any lead
+     * the same way its director would. What nobody may do — admin included — is put a
+     * stranger on it, which is what the company check below is for.
      */
     private User requireAssignee(User actor, Lead lead, Long userId, Set<Role> roles, String label) {
-        if (actor.getRole().isPlatform()) {
-            throw new ForbiddenException(
-                    "BeSpoke transfers leads to a studio; the studio picks the " + label);
-        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         if (!roles.contains(user.getRole())) {

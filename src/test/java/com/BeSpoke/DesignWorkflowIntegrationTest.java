@@ -226,6 +226,44 @@ class DesignWorkflowIntegrationTest {
     }
 
     /**
+     * The brief wizard now asks for photos of the space, and it does that through this
+     * endpoint — so the customer must be able to attach a SITE_PHOTO to their own project
+     * and nothing else, and the designer must hear about it.
+     */
+    @Test void customersAttachSitePhotosToTheirOwnBriefAndNothingElse() throws Exception {
+        var out = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(new java.awt.image.BufferedImage(4, 4,
+                java.awt.image.BufferedImage.TYPE_INT_RGB), "png", out);
+        var photo = new org.springframework.mock.web.MockMultipartFile(
+                "file", "living-room.png", "image/png", out.toByteArray());
+
+        mvc.perform(multipart("/api/project-documents").file(photo)
+                .param("leadId", lead.getId().toString()).param("type", "SITE_PHOTO")
+                .header("Authorization", token(customer)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.type").value("SITE_PHOTO"))
+                // SHARED, not DRAFT: a photo the studio cannot see is worth nothing.
+                .andExpect(jsonPath("$.status").value("SHARED"));
+        assertEquals(1, notifications.countByRecipientAndReadAtIsNull(designer));
+
+        // A contract is the studio's to issue, and someone else's project is nobody's.
+        mvc.perform(multipart("/api/project-documents").file(photo)
+                .param("leadId", lead.getId().toString()).param("type", "CONTRACT")
+                .header("Authorization", token(customer)))
+                .andExpect(status().isForbidden());
+        mvc.perform(multipart("/api/project-documents").file(photo)
+                .param("leadId", lead.getId().toString()).param("type", "SITE_PHOTO")
+                .header("Authorization", token(stranger)))
+                .andExpect(status().isNotFound());
+
+        // And it comes back on the list the brief screens read.
+        mvc.perform(get("/api/project-documents?leadId=" + lead.getId())
+                .header("Authorization", token(designer)))
+                .andExpect(jsonPath("$[0].type").value("SITE_PHOTO"))
+                .andExpect(jsonPath("$[0].name").value("living-room.png"));
+    }
+
+    /**
      * The drawing timeline and the execution timeline are the same endpoints on the same
      * table, told apart only by the path segment — so the one thing worth pinning down is
      * that a lead can hold both at once and neither write lands on the other's row.

@@ -131,18 +131,18 @@ public class LeadController {
         return leadService.approveCreation(me(authentication), id);
     }
 
-    /** The studio staffs its own lead — BeSpoke only routes it there (see /route). */
+    /** The studio staffs its own lead; the platform, sitting above it, may do so too. */
     @PutMapping("/{id}/assign")
-    @PreAuthorize("hasAnyRole('DIRECTOR','DESIGN_MANAGER','SALES_MANAGER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','DESIGN_MANAGER','SALES_MANAGER')")
     public LeadSummaryDto assign(Authentication authentication,
                                  @PathVariable Long id,
                                  @Valid @RequestBody AssignRequest request) {
         return leadService.assign(me(authentication), id, request.designerId());
     }
 
-    /** Director/sales manager gives the customer relationship to a consultant / sales exec. */
+    /** Director/sales manager — or the platform — gives the relationship to a consultant. */
     @PutMapping("/{id}/assign-sales")
-    @PreAuthorize("hasAnyRole('DIRECTOR','SALES_MANAGER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN','DIRECTOR','SALES_MANAGER')")
     public LeadSummaryDto assignSales(Authentication authentication,
                                       @PathVariable Long id,
                                       @Valid @RequestBody AssignSalesRequest request) {

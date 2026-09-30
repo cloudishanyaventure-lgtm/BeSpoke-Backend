@@ -10,7 +10,6 @@ import com.BeSpoke.dto.UpdateLeadContactRequest;
 import com.BeSpoke.entity.*;
 import com.BeSpoke.exception.BadRequestException;
 import com.BeSpoke.exception.ConflictException;
-import com.BeSpoke.exception.ForbiddenException;
 import com.BeSpoke.repository.*;
 import com.BeSpoke.service.ClientService;
 import com.BeSpoke.service.LeadService;
@@ -308,22 +307,37 @@ class LeadConversionTest {
                 new UpdateLeadContactRequest("Riya Shah", null, "9800000099", null, null, null)));
     }
 
-    /** BeSpoke hands the lead to a studio; the studio alone puts someone on it. */
-    @Test void thePlatformRoutesToAStudioButNeverPicksTheDesigner() {
+    /**
+     * BeSpoke routes the lead to a studio and, sitting above every studio, staffs it too.
+     * The one line it does not cross is the studio boundary: an admin may pick anyone on
+     * that studio's bench and nobody off it.
+     */
+    @Test void thePlatformRoutesToAStudioAndStaffsItFromThatStudiosBenchOnly() {
         User remote = new User("Remote", "remote@conversion.test", "unused", Role.REMOTE_DESIGNER);
         remote.setCompany(studio);
         remote = users.save(remote);
 
+        Company other = companies.save(new Company("Other studio", "other-studio"));
+        User outsider = new User("Outsider", "outsider@conversion.test", "unused", Role.DESIGNER);
+        outsider.setCompany(other);
+        outsider = users.save(outsider);
+
         LeadSummaryDto lead = capture("Routed", "routed@home.test", "9800000010");
-        leadService.route(admin, lead.id(), studio.getId());   // the platform's lane
+        leadService.route(admin, lead.id(), studio.getId());
 
         Long remoteId = remote.getId();
-        assertThrows(ForbiddenException.class,
-                () -> leadService.assign(admin, lead.id(), remoteId));
-        assertThrows(ForbiddenException.class,
-                () -> leadService.assignSales(admin, lead.id(), director.getId()));
+        Long outsiderId = outsider.getId();
+        leadService.assign(admin, lead.id(), remoteId);
+        assertEquals(remoteId, leads.findById(lead.id()).orElseThrow().getAssignedDesigner().getId());
+        leadService.assignSales(admin, lead.id(), director.getId());
+        assertEquals(director.getId(), leads.findById(lead.id()).orElseThrow().getSalesOwner().getId());
 
-        leadService.assign(director, lead.id(), remoteId);     // the studio's lane
+        // Another studio's designer stays out of bounds, admin or not.
+        assertThrows(BadRequestException.class,
+                () -> leadService.assign(admin, lead.id(), outsiderId));
+
+        // The studio's own lane is untouched by any of this.
+        leadService.assign(director, lead.id(), remoteId);
         assertEquals(remoteId, leads.findById(lead.id()).orElseThrow().getAssignedDesigner().getId());
     }
 
