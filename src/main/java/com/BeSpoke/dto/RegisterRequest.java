@@ -21,6 +21,12 @@ public record RegisterRequest(
         @NotBlank @Size(max = 120) String city,
         @NotBlank(message = "Pick a property type") @Size(max = 60) String propertyType,
         @Size(max = 60) String budgetBand,
-        Long companyId
+        Long companyId,
+        /**
+         * The code from /otp/start, when signup began by verifying the address. Present
+         * means the email is already proven, so the account is created signed in; absent
+         * is the older order — register first, then collect a code to sign in with.
+         */
+        @Size(max = 10) String code
 ) {
 }

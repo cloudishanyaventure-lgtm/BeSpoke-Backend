@@ -227,6 +227,26 @@ public class MailService {
                                         + " get in without the code.")));
     }
 
+    /**
+     * The first code, before there is an account to address it to — so no name, and the
+     * copy says what the code is for rather than assuming they were signing in.
+     */
+    public void signupOtp(String email, String code) {
+        send(email, "Your BeSpoke verification code",
+                "Hi,\n\n"
+                        + "Your BeSpoke verification code is: " + code + " . It expires in 10 minutes.\n\n"
+                        + "Enter it to carry on setting up your project.\n\n"
+                        + "— BeSpoke",
+                page("Your verification code, valid for 10 minutes.",
+                        "Get started",
+                        h("Let's start", "your project."),
+                        p("Enter this code to confirm this is your email — we'll ask about your"
+                                + " home on the next screen.")
+                                + code(code, "Expires in 10 minutes")
+                                + note("Didn't ask for this? You can ignore this email — no account"
+                                        + " is created until the code is used.")));
+    }
+
     /** A family member is invited onto a customer's project — the link creates their account. */
     public void projectInvite(String toEmail, String invitedByName, String token) {
         String link = appUrl + "/invite/" + token;

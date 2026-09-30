@@ -1,9 +1,11 @@
 package com.BeSpoke;
 
 import com.BeSpoke.config.SeedRunner;
+import com.BeSpoke.dto.AuthResponse;
 import com.BeSpoke.dto.CreateLeadRequest;
 import com.BeSpoke.dto.LeadSummaryDto;
 import com.BeSpoke.dto.StageChangeRequest;
+import com.BeSpoke.dto.RegisterRequest;
 import com.BeSpoke.dto.RequirementFormRequest;
 import com.BeSpoke.dto.RoomRequest;
 import com.BeSpoke.dto.UpdateLeadContactRequest;
@@ -11,6 +13,7 @@ import com.BeSpoke.entity.*;
 import com.BeSpoke.exception.BadRequestException;
 import com.BeSpoke.exception.ConflictException;
 import com.BeSpoke.repository.*;
+import com.BeSpoke.service.AuthService;
 import com.BeSpoke.service.ClientService;
 import com.BeSpoke.service.LeadService;
 import org.junit.jupiter.api.*;
@@ -34,6 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class LeadConversionTest {
     @MockBean SeedRunner seedRunner;
     @Autowired LeadService leadService;
+    @Autowired AuthService authService;
+    @Autowired EmailVerificationRepository verifications;
     @Autowired ClientService clientService;
     @Autowired LeadRepository leads;
     @Autowired UserRepository users;
@@ -339,6 +344,32 @@ class LeadConversionTest {
         // The studio's own lane is untouched by any of this.
         leadService.assign(director, lead.id(), remoteId);
         assertEquals(remoteId, leads.findById(lead.id()).orElseThrow().getAssignedDesigner().getId());
+    }
+
+    /**
+     * Signup in the order people actually arrive: code first, form second. The verified
+     * address is what buys the session — registering without one still hands back no
+     * token, because that path never proved the address belongs to them.
+     */
+    @Test void aVerifiedAddressSignsUpStraightIntoASessionAndSpendsItsCode() {
+        authService.startOtp("newcomer@home.test");
+        String code = verifications.findByEmail("newcomer@home.test").orElseThrow().getCode();
+        assertTrue(authService.confirmOtp("newcomer@home.test", code).newAccount(),
+                "verified, but nothing to sign in to yet");
+
+        AuthResponse created = authService.register(new RegisterRequest(
+                "Newcomer", "newcomer@home.test", "9800000021", null, "Pune",
+                "APARTMENT", null, null, code));
+        assertNotNull(created.token(), "a proven address is signed in, not mailed a password");
+        assertNotNull(created.leadId(), "signing up is still the lead");
+        assertTrue(verifications.findByEmail("newcomer@home.test").isEmpty(),
+                "the code is spent once the account exists");
+
+        // No code, no session — the older order is untouched.
+        AuthResponse unverified = authService.register(new RegisterRequest(
+                "Walk In", "walkin@home.test", "9800000022", null, "Pune",
+                "APARTMENT", null, null, null));
+        assertNull(unverified.token());
     }
 
     @Test void aStaffAddressIsNeverTurnedIntoACustomerAndLostConvertsNobody() {

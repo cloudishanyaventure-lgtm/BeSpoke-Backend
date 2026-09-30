@@ -4,6 +4,8 @@ import com.BeSpoke.dto.LoginRequest;
 import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
+import com.BeSpoke.entity.EmailVerification;
+import com.BeSpoke.repository.EmailVerificationRepository;
 import com.BeSpoke.repository.StaffProfileRepository;
 import com.BeSpoke.repository.UserRepository;
 import com.BeSpoke.security.GoogleTokenVerifier;
@@ -15,9 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,6 +35,7 @@ import static org.mockito.Mockito.when;
 class AuthServiceLoginSeparationTest {
 
     private final UserRepository users = mock(UserRepository.class);
+    private final EmailVerificationRepository verifications = mock(EmailVerificationRepository.class);
     private final PasswordEncoder encoder = mock(PasswordEncoder.class);
     private final JwtService jwt = mock(JwtService.class);
     private final StaffProfileRepository profiles = mock(StaffProfileRepository.class);
@@ -38,7 +44,7 @@ class AuthServiceLoginSeparationTest {
 
     private final AuditService audit = mock(AuditService.class);
 
-    private final AuthService auth = new AuthService(users, null, null, null, null,
+    private final AuthService auth = new AuthService(users, verifications, null, null, null, null,
             encoder, jwt, profiles, mail, mock(WhatsAppService.class), google, audit);
 
     private User user(Role role) {
@@ -111,6 +117,63 @@ class AuthServiceLoginSeparationTest {
         user(Role.CUSTOMER);  // not flagged, no code issued
         assertThrows(BadRequestException.class,
                 () -> auth.verifyOtp("someone@bespoke.in", "000000"));
+    }
+
+    /**
+     * The signup door: a code goes to an address with no account, and the right one says
+     * the address is verified and free rather than opening a session — which is what puts
+     * the visitor into onboarding instead of a dead end.
+     */
+    @Test
+    void anAddressWithNoAccountGetsACodeAndComesBackAsANewAccount() {
+        when(users.findByEmail("nobody@home.test")).thenReturn(Optional.empty());
+        when(verifications.findByEmail("nobody@home.test")).thenReturn(Optional.empty());
+        var saved = org.mockito.ArgumentCaptor.forClass(EmailVerification.class);
+        when(verifications.save(saved.capture())).thenAnswer(call -> call.getArgument(0));
+
+        auth.startOtp("nobody@home.test");
+        verify(mail).signupOtp(eq("nobody@home.test"), anyString());
+        EmailVerification pending = saved.getValue();
+
+        // The stored code is what was mailed, and it is the only one that works.
+        when(verifications.findByEmail("nobody@home.test")).thenReturn(Optional.of(pending));
+        assertThrows(BadRequestException.class,
+                () -> auth.confirmOtp("nobody@home.test", "000000"));
+
+        var answer = auth.confirmOtp("nobody@home.test", pending.getCode());
+        assertTrue(answer.newAccount(), "verified, but there is nothing to sign in to yet");
+        assertNull(answer.token());
+    }
+
+    /** Five wrong guesses kill the code, same as a sign-in code. */
+    @Test
+    void aSignupCodeBurnsAfterFiveWrongGuesses() {
+        when(users.findByEmail("nobody@home.test")).thenReturn(Optional.empty());
+        EmailVerification pending = new EmailVerification("nobody@home.test", "654321",
+                java.time.Instant.now().plusSeconds(600));
+        when(verifications.findByEmail("nobody@home.test")).thenReturn(Optional.of(pending));
+        when(verifications.save(any())).thenAnswer(call -> call.getArgument(0));
+
+        for (int i = 0; i < 5; i++) {
+            assertThrows(BadRequestException.class,
+                    () -> auth.confirmOtp("nobody@home.test", "000000"));
+        }
+        // Even the right code is no good now.
+        assertThrows(BadRequestException.class,
+                () -> auth.confirmOtp("nobody@home.test", "654321"));
+    }
+
+    /**
+     * A partner typing their address into the homeowner door must not be handed a signup
+     * code — that would walk them into creating a second account they cannot use.
+     */
+    @Test
+    void aStaffAddressIsNeverGivenASignupCode() {
+        user(Role.DESIGNER);
+        auth.startOtp("someone@bespoke.in");
+        verify(mail, never()).signupOtp(anyString(), anyString());
+        verify(mail, never()).loginOtp(any(), anyString());
+        verify(verifications, never()).save(any());
     }
 
     @Test

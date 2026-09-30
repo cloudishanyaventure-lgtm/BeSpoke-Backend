@@ -4,6 +4,7 @@ import com.BeSpoke.dto.AuthResponse;
 import com.BeSpoke.dto.LoginRequest;
 import com.BeSpoke.dto.RegisterRequest;
 import com.BeSpoke.dto.UserDto;
+import com.BeSpoke.entity.EmailVerification;
 import com.BeSpoke.entity.ActivityType;
 import com.BeSpoke.entity.Company;
 import com.BeSpoke.entity.Lead;
@@ -14,6 +15,7 @@ import com.BeSpoke.entity.Role;
 import com.BeSpoke.entity.User;
 import com.BeSpoke.exception.BadRequestException;
 import com.BeSpoke.repository.CompanyRepository;
+import com.BeSpoke.repository.EmailVerificationRepository;
 import com.BeSpoke.repository.LeadActivityRepository;
 import com.BeSpoke.repository.LeadRepository;
 import com.BeSpoke.repository.StaffProfileRepository;
@@ -30,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 
@@ -44,6 +47,7 @@ public class AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
+    private final EmailVerificationRepository emailVerificationRepository;
     private final LeadRepository leadRepository;
     private final LeadActivityRepository leadActivityRepository;
     private final CompanyRepository companyRepository;
@@ -57,6 +61,7 @@ public class AuthService {
     private final AuditService auditService;
 
     public AuthService(UserRepository userRepository,
+                       EmailVerificationRepository emailVerificationRepository,
                        LeadRepository leadRepository,
                        LeadActivityRepository leadActivityRepository,
                        CompanyRepository companyRepository,
@@ -71,6 +76,7 @@ public class AuthService {
         this.googleTokenVerifier = googleTokenVerifier;
         this.auditService = auditService;
         this.userRepository = userRepository;
+        this.emailVerificationRepository = emailVerificationRepository;
         this.leadRepository = leadRepository;
         this.leadActivityRepository = leadActivityRepository;
         this.companyRepository = companyRepository;
@@ -93,6 +99,9 @@ public class AuthService {
         if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("An account with this email already exists");
         }
+        // Signup that began with a code arrives here already proven, so it ends signed in
+        // rather than waiting on a mailed password.
+        boolean verified = consumeSignupCode(email, request.code());
         String phone = userRepository.requireFreePhone(request.phone());
         String password = generatePassword();
         User user = new User(request.name().trim(), email,
@@ -135,8 +144,10 @@ public class AuthService {
         if (whatsAppService != null) {
             whatsAppService.welcome(user);
         }
-        // No token: the customer signs in with the mailed password (V3 §6).
-        return new AuthResponse(null, UserDto.from(user), lead.getId());
+        // Verified address: straight into their project. Otherwise no token — the older
+        // order has them sign in with a code of their own (V3 §6).
+        return new AuthResponse(verified ? jwtService.generateToken(user) : null,
+                UserDto.from(user), lead.getId());
     }
 
     /**
@@ -286,6 +297,87 @@ public class AuthService {
                 .filter(User::isActive)
                 .filter(u -> u.getRole() == Role.CUSTOMER)
                 .ifPresent(user -> issueCode(user, mailService::loginOtp));
+    }
+
+    /**
+     * The way in, whether or not they have been here before: a code goes to the address
+     * either way. Most people arrive from an ad and have no account, and making them fill
+     * a form before we will even send a code is the wrong order — this sends first and
+     * asks who they are afterwards, once they have proved the address is theirs.
+     *
+     * <p>Staff addresses are ignored exactly as {@link #requestOtp} ignores them: they
+     * hold a password and belong on the partner sign-in, and silently creating a second
+     * homeowner account for the same address would only strand them.
+     */
+    @Transactional
+    public void startOtp(String email) {
+        String address = email.toLowerCase().trim();
+        Optional<User> existing = userRepository.findByEmail(address);
+        if (existing.isPresent()) {
+            existing.filter(User::isActive)
+                    .filter(u -> u.getRole() == Role.CUSTOMER)
+                    .ifPresent(user -> issueCode(user, mailService::loginOtp));
+            return;
+        }
+        EmailVerification pending = emailVerificationRepository.findByEmail(address)
+                .orElseGet(() -> new EmailVerification(address, null, null));
+        // Same reissue guard as a sign-in code: a live code is kept rather than replaced,
+        // so hammering the button cannot be turned into a way to mail-bomb an address.
+        if (pending.getExpiresAt() != null
+                && pending.getExpiresAt().isAfter(Instant.now().plus(OTP_TTL).minus(OTP_REISSUE_AFTER))) {
+            return;
+        }
+        String code = String.format("%06d", RANDOM.nextInt(1_000_000));
+        pending.setCode(code);
+        pending.setExpiresAt(Instant.now().plus(OTP_TTL));
+        pending.setAttempts(0);
+        emailVerificationRepository.save(pending);
+        mailService.signupOtp(address, code);
+    }
+
+    /**
+     * The other half of {@link #startOtp}: a right code either opens their account or says
+     * the address is verified and free, which is what sends the caller into onboarding.
+     * Nothing is revealed before the code is right, so this cannot be used to ask whether
+     * an address is registered — only someone reading that inbox learns the answer.
+     */
+    @Transactional
+    public AuthResponse confirmOtp(String email, String code) {
+        String address = email.toLowerCase().trim();
+        if (userRepository.findByEmail(address).isPresent()) {
+            return session(consumeCode(address, code, false));
+        }
+        EmailVerification pending = emailVerificationRepository.findByEmail(address)
+                .filter(EmailVerification::isLive)
+                .orElseThrow(() -> new BadRequestException("Invalid or expired code"));
+        if (!pending.getCode().equals(code.trim())) {
+            pending.setAttempts(pending.getAttempts() + 1);
+            if (pending.getAttempts() >= 5) {
+                pending.setExpiresAt(Instant.now());
+            }
+            emailVerificationRepository.save(pending);
+            throw new BadRequestException("Invalid or expired code");
+        }
+        // Deliberately not burned here: register consumes it. Burning now would leave the
+        // onboarding screen holding a code that no longer works.
+        return AuthResponse.unregistered();
+    }
+
+    /**
+     * Spends the signup code, or refuses. Returns true when the address arrived already
+     * verified, which is what lets registration hand back a session instead of a password.
+     */
+    private boolean consumeSignupCode(String email, String code) {
+        if (code == null || code.isBlank()) {
+            return false;
+        }
+        EmailVerification pending = emailVerificationRepository.findByEmail(email)
+                .filter(EmailVerification::isLive)
+                .filter(v -> v.getCode().equals(code.trim()))
+                .orElseThrow(() -> new BadRequestException(
+                        "That verification code has expired — ask for a new one."));
+        emailVerificationRepository.delete(pending);
+        return true;
     }
 
     /**

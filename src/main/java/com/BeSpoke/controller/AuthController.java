@@ -51,6 +51,23 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyOtp(request.email(), request.code()));
     }
 
+    /**
+     * The way in for someone who may or may not have an account: a code goes out either
+     * way. Same flat 200 as /otp/request — who has an account is only ever learned by
+     * whoever can read the inbox, at /otp/confirm.
+     */
+    @PostMapping("/otp/start")
+    public ResponseEntity<Map<String, String>> startOtp(@Valid @RequestBody OtpRequest request) {
+        authService.startOtp(request.email());
+        return ResponseEntity.ok(Map.of("message", "We've sent a code to that email."));
+    }
+
+    /** Signs them in, or answers newAccount so the caller can collect the rest and register. */
+    @PostMapping("/otp/confirm")
+    public ResponseEntity<AuthResponse> confirmOtp(@Valid @RequestBody OtpVerifyRequest request) {
+        return ResponseEntity.ok(authService.confirmOtp(request.email(), request.code()));
+    }
+
     /** Partner password reset — same generic 200 whether or not the account exists. */
     @PostMapping("/password/forgot")
     public ResponseEntity<Map<String, String>> forgotPassword(
